@@ -1,0 +1,127 @@
+import React, { useEffect, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useThemeColor } from '@/components/Themed';
+import FormInput from '@/components/shared/FormInput';
+import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
+import { CurrencyHolding } from '@/types';
+import { useZakah } from '@/context/ZakahContext';
+
+interface Props {
+  visible: boolean;
+  editing?: CurrencyHolding;
+  onClose: () => void;
+}
+
+export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
+  const { addCurrencyHolding, updateCurrencyHolding, state } = useZakah();
+  const bg = useThemeColor({}, 'card');
+  const text = useThemeColor({}, 'text');
+  const tint = useThemeColor({}, 'tint');
+  const muted = useThemeColor({}, 'muted');
+  const border = useThemeColor({}, 'border');
+
+  const [label, setLabel] = useState('');
+  const [currency, setCurrency] = useState(state.priceSettings.baseCurrency);
+  const [amount, setAmount] = useState('');
+  const [showPicker, setShowPicker] = useState(false);
+
+  useEffect(() => {
+    if (editing) {
+      setLabel(editing.label);
+      setCurrency(editing.currency);
+      setAmount(String(editing.amount));
+    } else {
+      setLabel('');
+      setCurrency(state.priceSettings.baseCurrency);
+      setAmount('');
+    }
+  }, [editing, visible]);
+
+  function handleSave() {
+    const parsed = parseFloat(amount);
+    if (!label.trim() || !currency.trim() || isNaN(parsed)) return;
+    if (editing) {
+      updateCurrencyHolding(editing.id, { label: label.trim(), currency, amount: parsed });
+    } else {
+      addCurrencyHolding({ label: label.trim(), currency, amount: parsed });
+    }
+    onClose();
+  }
+
+  return (
+    <>
+      <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+        <Pressable style={styles.overlay} onPress={onClose}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav}>
+            <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
+              <Text style={[styles.title, { color: text }]}>{editing ? 'Edit' : 'Add'} Currency Holding</Text>
+              <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                <FormInput label="Label" placeholder="e.g. Savings Account" value={label} onChangeText={setLabel} />
+
+                {/* Currency dropdown */}
+                <View style={styles.fieldContainer}>
+                  <Text style={[styles.fieldLabel, { color: muted }]}>CURRENCY</Text>
+                  <Pressable
+                    style={[styles.currencyBtn, { borderColor: border, backgroundColor: bg }]}
+                    onPress={() => setShowPicker(true)}>
+                    <Text style={[styles.currencyCode, { color: text }]}>{currency}</Text>
+                    <Text style={[styles.chevron, { color: muted }]}>▾</Text>
+                  </Pressable>
+                </View>
+
+                <FormInput
+                  label="Amount"
+                  placeholder="0.00"
+                  value={amount}
+                  onChangeText={setAmount}
+                  keyboardType="decimal-pad"
+                />
+              </ScrollView>
+              <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
+                <Text style={styles.saveBtnText}>{editing ? 'Update' : 'Add'}</Text>
+              </Pressable>
+              <Pressable onPress={onClose} style={styles.cancelBtn}>
+                <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+              </Pressable>
+            </Pressable>
+          </KeyboardAvoidingView>
+        </Pressable>
+      </Modal>
+
+      <CurrencyPickerSheet
+        visible={showPicker}
+        selected={currency}
+        onSelect={setCurrency}
+        onClose={() => setShowPicker(false)}
+      />
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
+  kav: { justifyContent: 'flex-end' },
+  sheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 },
+  title: { fontSize: 20, fontWeight: '700', marginBottom: 20, textAlign: 'center' },
+  fieldContainer: { marginBottom: 14 },
+  fieldLabel: { fontSize: 13, fontWeight: '600', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 },
+  currencyBtn: {
+    borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+  },
+  currencyCode: { fontSize: 16, fontWeight: '600' },
+  chevron: { fontSize: 16 },
+  saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 8 },
+  saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  cancelBtn: { alignItems: 'center', paddingVertical: 12 },
+  cancelText: { fontSize: 15 },
+});

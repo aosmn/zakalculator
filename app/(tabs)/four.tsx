@@ -2,19 +2,15 @@ import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColor } from '@/components/Themed';
-import NisabCard from '@/components/summary/NisabCard';
-import ZakahBreakdownCard from '@/components/summary/ZakahBreakdownCard';
-import SummaryCard from '@/components/summary/SummaryCard';
+import PriceSettings from '@/components/assets/PriceSettings';
 
-export default function SummaryScreen() {
+export default function PricesScreen() {
   const bg = useThemeColor({}, 'background');
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <NisabCard />
-        <ZakahBreakdownCard />
-        <SummaryCard />
+        <PriceSettings />
       </ScrollView>
     </SafeAreaView>
   );
@@ -22,5 +18,5 @@ export default function SummaryScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  content: { padding: 16 },
+  content: { padding: 16, paddingBottom: 40 },
 });
