@@ -19,7 +19,7 @@ A full-featured Zakah calculator built on Expo Router (tabs). Users track assets
 |---|-----|--------|-------------|
 | 1 | Assets | `index.tsx` | Manage currency balances, gold and silver holdings |
 | 2 | Overview | `overview.tsx` | Per-currency and per-purity asset summaries |
-| 3 | Prices | `prices.tsx` | Gold/silver prices, per-karat overrides, base currency, exchange rates, backup/restore |
+| 3 | Prices | `prices.tsx` | Gold/silver prices, per-karat overrides, base currency, exchange rates, backup/restore, language toggle |
 | 4 | Zakah | `zakah.tsx` | Nisab status, wealth breakdown, zakah due/paid/remaining |
 | 5 | Payments | `payments.tsx` | Log and review zakah payments |
 
@@ -51,6 +51,7 @@ A full-featured Zakah calculator built on Expo Router (tabs). Users track assets
   - **Exchange Rates**: from-currency → base rate table; add/edit/delete
 - **Backup & Restore**: export full data as timestamped JSON; import from file with inline confirmation
 - Fields pre-populate correctly on load and after import (useEffect sync)
+- **Language toggle**: EN / AR pill selector at top of screen
 
 ### Zakah Tab (formerly Summary)
 - **Nisab Card**: threshold value + green/red Above/Below badge
@@ -64,6 +65,37 @@ A full-featured Zakah calculator built on Expo Router (tabs). Users track assets
 - Haptic feedback on log/save
 - Payments listed newest-first
 - Footer shows total paid
+
+### Multi-Person Support
+- Person switcher in every screen header (user icon + chevron)
+- Add, rename, delete people; active person highlighted with a checkmark
+- Each person has their own holdings and payment history
+- Shared price settings and exchange rates across all people
+- Long-press a person to delete (with confirmation); active person cannot be deleted while others exist
+- Active person persisted across restarts
+
+---
+
+## Internationalisation (EN + AR)
+
+### Architecture
+- **`constants/translations.ts`**: typed `en` and `ar` objects (120+ keys); `ar: typeof en` enforces complete coverage
+- **`context/LanguageContext.tsx`**: `LanguageProvider`, `useLanguage()` hook, `t(key, params?)` with `{{param}}` interpolation
+- **Persistence**: `AsyncStorage` key `@zakah_language`; default English on fresh install
+- **RTL — web**: root `<View style={{ direction: 'rtl' }}>` applied immediately on language switch (no restart)
+- **RTL — native**: `I18nManager.forceRTL()` called on startup and on switch; Alert prompts user to restart
+
+### Language Toggle UI
+- EN / AR pill selector at the top of the **Prices** tab
+- Switching language updates all text immediately; layout direction takes effect on next launch (native) or immediately (web)
+
+### What is translated
+- All 5 tab titles
+- All screen headings, section titles, descriptions, empty states
+- All modal titles, field labels, button text, confirmation messages
+- All status/error messages in Backup & Restore
+- All 25 currency names in the currency picker (search also queries translated names)
+- Interpolated strings: "All assets in {{currency}}", "Based on {{grams}}g of 24k gold", exchange rate description
 
 ---
 
@@ -103,6 +135,8 @@ MetalHolding       id, label, type (gold|silver), weightGrams, purity, purityUni
 PriceSettings      goldPricePerGram, silverPricePerGram, baseCurrency, goldPurityPrices (Record<karat, price>)
 ExchangeRate       id, fromCurrency, rate (1 from = rate base)
 ZakahPayment       id, amountBaseCurrency, currency, amountDisplayCurrency, note, paidAt
+Person             id, name, data (PersonalData)
+StoredAppData      version, activePerson, people[], shared { priceSettings, exchangeRates }
 ```
 
 ---
@@ -113,7 +147,8 @@ ZakahPayment       id, amountBaseCurrency, currency, amountDisplayCurrency, note
 |-------|---------------|
 | State | `ZakahContext` — single context, action functions, `useMemo` for calculations |
 | Theme | `ThemeContext` — in-app dark/light toggle, AsyncStorage persistence, overrides `useColorScheme` |
-| Persistence | `AsyncStorage` — full JSON blob on every write, key `@zakah_calculator_v1` |
+| Language | `LanguageContext` — EN/AR toggle, `t()` function, RTL helpers, AsyncStorage persistence |
+| Persistence | `AsyncStorage` — full JSON blob on every write; keys `@zakah_calculator_v1`, `@zakah_theme`, `@zakah_language` |
 | Calculations | Pure functions in `utils/zakahCalculations.ts` |
 | Formatting | `utils/formatting.ts` — currency, weight, date, purity |
 | Navigation | Expo Router file-based tabs; URLs match tab names |
@@ -126,13 +161,14 @@ ZakahPayment       id, amountBaseCurrency, currency, amountDisplayCurrency, note
 | Component | Purpose |
 |-----------|---------|
 | `FormInput` | Themed text input with label |
-| `SectionHeader` | Bold section title + optional "+ Add" button |
+| `SectionHeader` | Bold section title |
 | `SectionSeparator` | Themed horizontal divider between sections |
 | `EmptyState` | Centred empty message |
 | `ConfirmDeleteSheet` | Bottom sheet delete confirmation |
 | `PickerRow` | Horizontal scrollable pill picker |
-| `CurrencyPickerSheet` | Searchable currency selector (25 currencies) |
+| `CurrencyPickerSheet` | Searchable currency selector (25 currencies, names translated) |
 | `DataManagement` | Export/import JSON backup (Backup & Restore card) |
+| `PersonSwitcher` | Header trigger + bottom sheet to manage people |
 
 ---
 
@@ -157,3 +193,7 @@ ZakahPayment       id, amountBaseCurrency, currency, amountDisplayCurrency, note
 | `0d98a22` | Prepare for release |
 | `c515c29` | Add section descriptions, separators, and header logo |
 | `9892e8d` | Add export/import, fix price fields, rename tabs |
+| `c6ed78d` | Fix web import opening Photos instead of Files on mobile browsers |
+| `9b5b898` | Fix payment item displaying converted amount instead of original amount |
+| `bb65437` | Add multi-person support with per-person holdings and payment history |
+| `eda0a9a` | i18n first iteration — add EN/AR support with RTL layout |
