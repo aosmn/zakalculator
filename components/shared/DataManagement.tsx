@@ -74,25 +74,43 @@ export default function DataManagement() {
   }
 
   async function handleImport() {
+    if (Platform.OS === 'web') {
+      // Use a native file input on web so mobile browsers show Files (not Photos).
+      // accept=".json,application/json" is the most compatible combination.
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        try {
+          const json = await file.text();
+          const parsed = JSON.parse(json);
+          if (!isValidState(parsed)) {
+            showStatus('error', 'Invalid backup file.');
+            return;
+          }
+          setPendingData(parsed);
+        } catch {
+          showStatus('error', 'Could not read file. Make sure it is a valid ZaKalculator backup.');
+        }
+      };
+      input.click();
+      return;
+    }
+
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: Platform.OS === 'web' ? '*/*' : 'application/json',
+        type: 'application/json',
         copyToCacheDirectory: true,
       });
 
       if (result.canceled) return;
 
       const asset = result.assets[0];
-      let json: string;
-
-      if (Platform.OS === 'web' && (asset as any).file) {
-        // Use the native File object on web for reliable reading
-        json = await (asset as any).file.text();
-      } else {
-        json = await FileSystem.readAsStringAsync(asset.uri, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-      }
+      const json = await FileSystem.readAsStringAsync(asset.uri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
 
       const parsed = JSON.parse(json);
 
