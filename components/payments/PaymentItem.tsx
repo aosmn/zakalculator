@@ -29,7 +29,7 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
         ) : null}
       </View>
       <Text style={[styles.amount, { color: success }]}>
-        {formatCurrency(payment.amountBaseCurrency, payment.currency)}
+        {formatCurrency(payment.amountDisplayCurrency, payment.currency)}
       </Text>
     </Pressable>
   );
