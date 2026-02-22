@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColor } from '@/components/Themed';
 import PriceSettings from '@/components/assets/PriceSettings';
+import SectionSeparator from '@/components/shared/SectionSeparator';
+import DataManagement from '@/components/shared/DataManagement';
 
 export default function PricesScreen() {
   const bg = useThemeColor({}, 'background');
@@ -11,6 +13,8 @@ export default function PricesScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <PriceSettings />
+        <SectionSeparator />
+        <DataManagement />
       </ScrollView>
     </SafeAreaView>
   );

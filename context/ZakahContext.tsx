@@ -46,6 +46,7 @@ interface ZakahContextValue {
   logPayment: (data: Omit<ZakahPayment, 'id'>) => void;
   updatePayment: (id: string, data: Omit<ZakahPayment, 'id'>) => void;
   deletePayment: (id: string) => void;
+  importState: (data: ZakahState) => void;
 }
 
 const ZakahContext = createContext<ZakahContextValue | null>(null);
@@ -132,6 +133,8 @@ export function ZakahProvider({ children }: { children: React.ReactNode }) {
   const deletePayment = (id: string) =>
     mutate((s) => ({ ...s, payments: s.payments.filter((p) => p.id !== id) }));
 
+  const importState = (data: ZakahState) => setState(data);
+
   return (
     <ZakahContext.Provider
       value={{
@@ -151,6 +154,7 @@ export function ZakahProvider({ children }: { children: React.ReactNode }) {
         logPayment,
         updatePayment,
         deletePayment,
+        importState,
       }}>
       {children}
     </ZakahContext.Provider>

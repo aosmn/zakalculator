@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
@@ -37,6 +37,17 @@ export default function PriceSettings() {
       GOLD_KARATS.map((k) => [String(k), String(priceSettings.goldPurityPrices?.[k] ?? '')])
     )
   );
+
+  // Sync local drafts when context loads from storage or after an import
+  useEffect(() => {
+    setGoldPrice(String(priceSettings.goldPricePerGram));
+    setSilverPrice(String(priceSettings.silverPricePerGram));
+    setPurityPriceDrafts(
+      Object.fromEntries(
+        GOLD_KARATS.map((k) => [String(k), String(priceSettings.goldPurityPrices?.[k] ?? '')])
+      )
+    );
+  }, [priceSettings]);
 
   // Exchange rate form
   const [rateFrom, setRateFrom] = useState('');

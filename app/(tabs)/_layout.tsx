@@ -70,28 +70,28 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="five"
+        name="overview"
         options={{
           title: 'Overview',
           tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="four"
+        name="prices"
         options={{
           title: 'Prices',
           tabBarIcon: ({ color }) => <TabBarIcon name="sliders" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="zakah"
         options={{
-          title: 'Summary',
+          title: 'Zakah',
           tabBarIcon: ({ color }) => <TabBarIcon name="calculator" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="three"
+        name="payments"
         options={{
           title: 'Payments',
           tabBarIcon: ({ color }) => <TabBarIcon name="check-circle" color={color} />,
