@@ -6,10 +6,11 @@ import { formatCurrency, formatDate } from '@/utils/formatting';
 
 interface Props {
   payment: ZakahPayment;
+  onPress: () => void;
   onLongPress: () => void;
 }
 
-export default function PaymentItem({ payment, onLongPress }: Props) {
+export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
   const card = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
   const text = useThemeColor({}, 'text');
@@ -19,6 +20,7 @@ export default function PaymentItem({ payment, onLongPress }: Props) {
   return (
     <Pressable
       style={[styles.row, { backgroundColor: card, borderColor: border }]}
+      onPress={onPress}
       onLongPress={onLongPress}>
       <View style={styles.left}>
         <Text style={[styles.date, { color: muted }]}>{formatDate(payment.paidAt)}</Text>

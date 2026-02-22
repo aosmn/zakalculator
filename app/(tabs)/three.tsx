@@ -21,13 +21,24 @@ export default function PaymentsScreen() {
   const card = useThemeColor({}, 'card');
 
   const [showModal, setShowModal] = useState(false);
+  const [editingPayment, setEditingPayment] = useState<ZakahPayment | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<ZakahPayment | undefined>();
+
+  function openEdit(payment: ZakahPayment) {
+    setEditingPayment(payment);
+    setShowModal(true);
+  }
+
+  function handleClose() {
+    setShowModal(false);
+    setEditingPayment(undefined);
+  }
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: text }]}>Payments</Text>
-        <Pressable style={[styles.logBtn, { backgroundColor: tint }]} onPress={() => setShowModal(true)}>
+        <Pressable style={[styles.logBtn, { backgroundColor: tint }]} onPress={() => { setEditingPayment(undefined); setShowModal(true); }}>
           <Text style={styles.logBtnText}>+ Log Payment</Text>
         </Pressable>
       </View>
@@ -37,7 +48,7 @@ export default function PaymentsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <PaymentItem payment={item} onLongPress={() => setDeleteTarget(item)} />
+          <PaymentItem payment={item} onPress={() => openEdit(item)} onLongPress={() => setDeleteTarget(item)} />
         )}
         ListEmptyComponent={
           <EmptyState message="No payments logged yet. Tap '+ Log Payment' to record one." />
@@ -54,7 +65,7 @@ export default function PaymentsScreen() {
         }
       />
 
-      <AddPaymentModal visible={showModal} onClose={() => setShowModal(false)} />
+      <AddPaymentModal visible={showModal} editing={editingPayment} onClose={handleClose} />
 
       <ConfirmDeleteSheet
         visible={!!deleteTarget}

@@ -9,20 +9,24 @@ import {
   Text,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Haptics from 'expo-haptics';
 import { useThemeColor } from '@/components/Themed';
 import FormInput from '@/components/shared/FormInput';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { useZakah } from '@/context/ZakahContext';
+import { ZakahPayment } from '@/types';
 import { convertToBase } from '@/utils/zakahCalculations';
+import { formatDate } from '@/utils/formatting';
 
 interface Props {
   visible: boolean;
+  editing?: ZakahPayment;
   onClose: () => void;
 }
 
-export default function AddPaymentModal({ visible, onClose }: Props) {
-  const { logPayment, state } = useZakah();
+export default function AddPaymentModal({ visible, editing, onClose }: Props) {
+  const { logPayment, updatePayment, deletePayment, state } = useZakah();
   const { baseCurrency } = state.priceSettings;
 
   const bg = useThemeColor({}, 'card');
@@ -30,33 +34,120 @@ export default function AddPaymentModal({ visible, onClose }: Props) {
   const tint = useThemeColor({}, 'tint');
   const muted = useThemeColor({}, 'muted');
   const border = useThemeColor({}, 'border');
+  const danger = useThemeColor({}, 'danger');
 
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(baseCurrency);
   const [note, setNote] = useState('');
+  const [paidAt, setPaidAt] = useState<Date>(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (visible) {
-      setAmount('');
-      setCurrency(baseCurrency);
-      setNote('');
+      setConfirmDelete(false);
+      setShowDatePicker(false);
+      if (editing) {
+        setAmount(String(editing.amountDisplayCurrency));
+        setCurrency(editing.currency);
+        setNote(editing.note ?? '');
+        setPaidAt(new Date(editing.paidAt));
+      } else {
+        setAmount('');
+        setCurrency(baseCurrency);
+        setNote('');
+        setPaidAt(new Date());
+      }
     }
-  }, [visible, baseCurrency]);
+  }, [visible, editing, baseCurrency]);
 
-  function handleLog() {
+  function handleSave() {
     const parsed = parseFloat(amount);
     if (isNaN(parsed) || parsed <= 0) return;
     const amountBase = convertToBase(parsed, currency, baseCurrency, state.exchangeRates);
-    logPayment({
+    const data = {
       amountBaseCurrency: amountBase,
       currency,
       amountDisplayCurrency: parsed,
       note: note.trim(),
-      paidAt: new Date().toISOString(),
-    });
+      paidAt: paidAt.toISOString(),
+    };
+    if (editing) {
+      updatePayment(editing.id, data);
+    } else {
+      logPayment(data);
+    }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onClose();
+  }
+
+  // Format date as YYYY-MM-DD for the web <input type="date">
+  function toInputDateValue(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function renderDateField() {
+    if (Platform.OS === 'web') {
+      return (
+        <View style={styles.fieldContainer}>
+          <Text style={[styles.fieldLabel, { color: muted }]}>DATE</Text>
+          {/* @ts-ignore — web-only input */}
+          <input
+            type="date"
+            value={toInputDateValue(paidAt)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const d = new Date(e.target.value + 'T12:00:00');
+              if (!isNaN(d.getTime())) setPaidAt(d);
+            }}
+            style={{
+              border: `1px solid ${border}`,
+              borderRadius: 10,
+              padding: '12px 14px',
+              fontSize: 16,
+              background: bg,
+              color: text,
+              width: '100%',
+              boxSizing: 'border-box',
+            }}
+          />
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.fieldContainer}>
+        <Text style={[styles.fieldLabel, { color: muted }]}>DATE</Text>
+        <Pressable
+          style={[styles.currencyBtn, { borderColor: border, backgroundColor: bg }]}
+          onPress={() => setShowDatePicker((v) => !v)}>
+          <Text style={[styles.currencyCode, { color: text }]}>{formatDate(paidAt.toISOString())}</Text>
+          <Text style={[styles.chevron, { color: muted }]}>▾</Text>
+        </Pressable>
+        {showDatePicker && (
+          <>
+            <DateTimePicker
+              value={paidAt}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              maximumDate={new Date()}
+              onChange={(_, date) => {
+                if (Platform.OS === 'android') setShowDatePicker(false);
+                if (date) setPaidAt(date);
+              }}
+            />
+            {Platform.OS === 'ios' && (
+              <Pressable onPress={() => setShowDatePicker(false)} style={styles.dateDoneBtn}>
+                <Text style={[styles.dateDoneText, { color: tint }]}>Done</Text>
+              </Pressable>
+            )}
+          </>
+        )}
+      </View>
+    );
   }
 
   return (
@@ -65,7 +156,7 @@ export default function AddPaymentModal({ visible, onClose }: Props) {
         <Pressable style={styles.overlay} onPress={onClose}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav}>
             <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
-              <Text style={[styles.title, { color: text }]}>Log Zakah Payment</Text>
+              <Text style={[styles.title, { color: text }]}>{editing ? 'Edit Payment' : 'Log Zakah Payment'}</Text>
               <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                 <FormInput
                   label="Amount"
@@ -89,13 +180,40 @@ export default function AddPaymentModal({ visible, onClose }: Props) {
                   value={note}
                   onChangeText={setNote}
                 />
+                {renderDateField()}
               </ScrollView>
-              <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleLog}>
-                <Text style={styles.saveBtnText}>Log Payment</Text>
-              </Pressable>
-              <Pressable onPress={onClose} style={styles.cancelBtn}>
-                <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
-              </Pressable>
+              {confirmDelete ? (
+                <View style={styles.confirmRow}>
+                  <Text style={[styles.confirmText, { color: text }]}>Delete this payment?</Text>
+                  <View style={styles.confirmBtns}>
+                    <Pressable
+                      style={[styles.confirmBtn, { borderColor: border }]}
+                      onPress={() => setConfirmDelete(false)}>
+                      <Text style={[styles.confirmBtnText, { color: muted }]}>Cancel</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.confirmBtn, styles.confirmBtnDanger, { borderColor: danger }]}
+                      onPress={() => { deletePayment(editing!.id); onClose(); }}>
+                      <Text style={[styles.confirmBtnText, { color: danger }]}>Delete</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <>
+                  <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
+                    <Text style={styles.saveBtnText}>{editing ? 'Save Changes' : 'Log Payment'}</Text>
+                  </Pressable>
+                  {editing ? (
+                    <Pressable onPress={() => setConfirmDelete(true)} style={styles.cancelBtn}>
+                      <Text style={[styles.cancelText, { color: danger }]}>Delete Payment</Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable onPress={onClose} style={styles.cancelBtn}>
+                      <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+                    </Pressable>
+                  )}
+                </>
+              )}
             </Pressable>
           </KeyboardAvoidingView>
         </Pressable>
@@ -124,8 +242,16 @@ const styles = StyleSheet.create({
   },
   currencyCode: { fontSize: 16, fontWeight: '600' },
   chevron: { fontSize: 16 },
+  dateDoneBtn: { alignItems: 'flex-end', paddingTop: 6, paddingRight: 4 },
+  dateDoneText: { fontSize: 15, fontWeight: '600' },
   saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 8 },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   cancelBtn: { alignItems: 'center', paddingVertical: 12 },
   cancelText: { fontSize: 15 },
+  confirmRow: { marginTop: 8 },
+  confirmText: { fontSize: 15, fontWeight: '600', textAlign: 'center', marginBottom: 12 },
+  confirmBtns: { flexDirection: 'row', gap: 10 },
+  confirmBtn: { flex: 1, borderWidth: 1, borderRadius: 12, paddingVertical: 13, alignItems: 'center' },
+  confirmBtnDanger: {},
+  confirmBtnText: { fontSize: 15, fontWeight: '600' },
 });
