@@ -36,7 +36,6 @@ function Row({
       <View style={styles.rowLeft}>
         <Text style={[styles.rowLabel, { color: text }, isTotal && styles.bold]}>{label}</Text>
         {sub ? <Text style={[styles.rowSub, { color: muted }]}>{sub}</Text> : null}
-        {zakahRight ? <Text style={[styles.rowSub, { color: warning }]}>{zakahRight}</Text> : null}
       </View>
       <View style={styles.rowRight}>
         <Text style={[styles.rowValue, { color: text }, isTotal && styles.bold]}>{right}</Text>
