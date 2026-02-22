@@ -5,11 +5,14 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
-import { ZakahState } from '@/types';
+import { StoredAppData, ZakahState } from '@/types';
+import { isStoredAppData } from '@/utils/storage';
 
 function isValidState(obj: unknown): obj is ZakahState {
   if (!obj || typeof obj !== 'object') return false;
   const s = obj as Record<string, unknown>;
+  // Exclude v2 blobs — they have a version field
+  if ('version' in s) return false;
   return (
     Array.isArray(s.currencyHoldings) &&
     Array.isArray(s.metalHoldings) &&
@@ -25,7 +28,7 @@ function todayString() {
 }
 
 export default function DataManagement() {
-  const { state, importState } = useZakah();
+  const { state, importState, importAppData } = useZakah();
   const tint = useThemeColor({}, 'tint');
   const danger = useThemeColor({}, 'danger');
   const text = useThemeColor({}, 'text');
@@ -35,7 +38,7 @@ export default function DataManagement() {
 
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   // pendingData holds parsed state waiting for user confirmation
-  const [pendingData, setPendingData] = useState<ZakahState | null>(null);
+  const [pendingData, setPendingData] = useState<ZakahState | StoredAppData | null>(null);
 
   function showStatus(type: 'success' | 'error', message: string) {
     setStatus({ type, message });
@@ -86,7 +89,7 @@ export default function DataManagement() {
         try {
           const json = await file.text();
           const parsed = JSON.parse(json);
-          if (!isValidState(parsed)) {
+          if (!isValidState(parsed) && !isStoredAppData(parsed)) {
             showStatus('error', 'Invalid backup file.');
             return;
           }
@@ -114,7 +117,7 @@ export default function DataManagement() {
 
       const parsed = JSON.parse(json);
 
-      if (!isValidState(parsed)) {
+      if (!isValidState(parsed) && !isStoredAppData(parsed)) {
         showStatus('error', 'Invalid backup file.');
         return;
       }
@@ -127,7 +130,11 @@ export default function DataManagement() {
 
   function confirmImport() {
     if (!pendingData) return;
-    importState(pendingData);
+    if (isStoredAppData(pendingData)) {
+      importAppData(pendingData);
+    } else {
+      importState(pendingData as ZakahState);
+    }
     setPendingData(null);
     showStatus('success', 'Data imported successfully.');
   }
@@ -142,7 +149,9 @@ export default function DataManagement() {
       {pendingData ? (
         <View>
           <Text style={[styles.confirmText, { color: text }]}>
-            Replace all current data with the imported backup?
+            {isStoredAppData(pendingData)
+              ? 'Replace all data (all people) with this backup?'
+              : "Replace current person's data with this backup?"}
           </Text>
           <View style={styles.buttons}>
             <Pressable

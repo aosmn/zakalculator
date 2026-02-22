@@ -46,6 +46,28 @@ export interface ZakahState {
   payments: ZakahPayment[];
 }
 
+export interface PersonalData {
+  currencyHoldings: CurrencyHolding[];
+  metalHoldings: MetalHolding[];
+  payments: ZakahPayment[];
+}
+
+export interface Person {
+  id: string;
+  name: string;
+  data: PersonalData;
+}
+
+export interface StoredAppData {
+  version: 2;
+  activePerson: string;
+  people: Person[];
+  shared: {
+    priceSettings: PriceSettings;
+    exchangeRates: ExchangeRate[];
+  };
+}
+
 export interface ZakahCalculationResult {
   totalWealthBaseCurrency: number;
   nisabValueBaseCurrency: number;

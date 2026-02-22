@@ -7,6 +7,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useThemeToggle } from '@/context/ThemeContext';
+import PersonSwitcher from '@/components/shared/PersonSwitcher';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -53,13 +54,16 @@ export default function TabLayout() {
         headerTintColor: isLight ? text : chromeText,
         headerShadowVisible: false,
         headerRight: () => (
-          <Pressable onPress={toggleTheme} style={{ marginRight: 16 }} hitSlop={8}>
-            <FontAwesome
-              name={scheme === 'dark' ? 'sun-o' : 'moon-o'}
-              size={20}
-              color={isLight ? text : chromeText}
-            />
-          </Pressable>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginRight: 16 }}>
+            <PersonSwitcher />
+            <Pressable onPress={toggleTheme} hitSlop={8}>
+              <FontAwesome
+                name={scheme === 'dark' ? 'sun-o' : 'moon-o'}
+                size={20}
+                color={isLight ? text : chromeText}
+              />
+            </Pressable>
+          </View>
         ),
       }}>
       <Tabs.Screen
