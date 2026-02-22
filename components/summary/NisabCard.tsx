@@ -2,11 +2,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency } from '@/utils/formatting';
 import { NISAB_GOLD_GRAMS } from '@/utils/zakahCalculations';
 
 export default function NisabCard() {
   const { calculation, state } = useZakah();
+  const { t } = useLanguage();
   const { nisabValueBaseCurrency, isAboveNisab } = calculation;
   const { baseCurrency } = state.priceSettings;
 
@@ -18,12 +20,12 @@ export default function NisabCard() {
   const danger = useThemeColor({}, 'danger');
 
   const badgeBg = isAboveNisab ? success : danger;
-  const badgeLabel = isAboveNisab ? 'Above Nisab' : 'Below Nisab';
+  const badgeLabel = isAboveNisab ? t('aboveNisab') : t('belowNisab');
 
   return (
     <View style={[styles.card, { backgroundColor: card, borderColor: border }]}>
       <View style={styles.row}>
-        <Text style={[styles.title, { color: text }]}>Nisab Threshold</Text>
+        <Text style={[styles.title, { color: text }]}>{t('nisabThreshold')}</Text>
         <View style={[styles.badge, { backgroundColor: badgeBg }]}>
           <Text style={styles.badgeText}>{badgeLabel}</Text>
         </View>
@@ -32,7 +34,7 @@ export default function NisabCard() {
         {formatCurrency(nisabValueBaseCurrency, baseCurrency)}
       </Text>
       <Text style={[styles.sub, { color: muted }]}>
-        Based on {NISAB_GOLD_GRAMS}g of 24k gold
+        {t('nisabBasedOn', { grams: NISAB_GOLD_GRAMS })}
       </Text>
     </View>
   );

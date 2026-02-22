@@ -9,33 +9,36 @@ import {
   View,
 } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
+import { useLanguage } from '@/context/LanguageContext';
 
-export const COMMON_CURRENCIES: { code: string; name: string }[] = [
-  { code: 'USD', name: 'US Dollar' },
-  { code: 'EUR', name: 'Euro' },
-  { code: 'GBP', name: 'British Pound' },
-  { code: 'EGP', name: 'Egyptian Pound' },
-  { code: 'SAR', name: 'Saudi Riyal' },
-  { code: 'AED', name: 'UAE Dirham' },
-  { code: 'KWD', name: 'Kuwaiti Dinar' },
-  { code: 'QAR', name: 'Qatari Riyal' },
-  { code: 'BHD', name: 'Bahraini Dinar' },
-  { code: 'OMR', name: 'Omani Rial' },
-  { code: 'JOD', name: 'Jordanian Dinar' },
-  { code: 'TRY', name: 'Turkish Lira' },
-  { code: 'PKR', name: 'Pakistani Rupee' },
-  { code: 'INR', name: 'Indian Rupee' },
-  { code: 'BDT', name: 'Bangladeshi Taka' },
-  { code: 'CAD', name: 'Canadian Dollar' },
-  { code: 'AUD', name: 'Australian Dollar' },
-  { code: 'CHF', name: 'Swiss Franc' },
-  { code: 'JPY', name: 'Japanese Yen' },
-  { code: 'CNY', name: 'Chinese Yuan' },
-  { code: 'MYR', name: 'Malaysian Ringgit' },
-  { code: 'IDR', name: 'Indonesian Rupiah' },
-  { code: 'NGN', name: 'Nigerian Naira' },
-  { code: 'ZAR', name: 'South African Rand' },
-  { code: 'LKR', name: 'Sri Lankan Rupee' },
+import { TranslationKey } from '@/constants/translations';
+
+export const COMMON_CURRENCIES: { code: string; nameKey: TranslationKey }[] = [
+  { code: 'USD', nameKey: 'currencyUSD' },
+  { code: 'EUR', nameKey: 'currencyEUR' },
+  { code: 'GBP', nameKey: 'currencyGBP' },
+  { code: 'EGP', nameKey: 'currencyEGP' },
+  { code: 'SAR', nameKey: 'currencySAR' },
+  { code: 'AED', nameKey: 'currencyAED' },
+  { code: 'KWD', nameKey: 'currencyKWD' },
+  { code: 'QAR', nameKey: 'currencyQAR' },
+  { code: 'BHD', nameKey: 'currencyBHD' },
+  { code: 'OMR', nameKey: 'currencyOMR' },
+  { code: 'JOD', nameKey: 'currencyJOD' },
+  { code: 'TRY', nameKey: 'currencyTRY' },
+  { code: 'PKR', nameKey: 'currencyPKR' },
+  { code: 'INR', nameKey: 'currencyINR' },
+  { code: 'BDT', nameKey: 'currencyBDT' },
+  { code: 'CAD', nameKey: 'currencyCAD' },
+  { code: 'AUD', nameKey: 'currencyAUD' },
+  { code: 'CHF', nameKey: 'currencyCHF' },
+  { code: 'JPY', nameKey: 'currencyJPY' },
+  { code: 'CNY', nameKey: 'currencyCNY' },
+  { code: 'MYR', nameKey: 'currencyMYR' },
+  { code: 'IDR', nameKey: 'currencyIDR' },
+  { code: 'NGN', nameKey: 'currencyNGN' },
+  { code: 'ZAR', nameKey: 'currencyZAR' },
+  { code: 'LKR', nameKey: 'currencyLKR' },
 ];
 
 interface Props {
@@ -47,6 +50,7 @@ interface Props {
 
 export default function CurrencyPickerSheet({ visible, selected, onSelect, onClose }: Props) {
   const [query, setQuery] = useState('');
+  const { t } = useLanguage();
 
   const bg = useThemeColor({}, 'card');
   const text = useThemeColor({}, 'text');
@@ -58,7 +62,7 @@ export default function CurrencyPickerSheet({ visible, selected, onSelect, onClo
     ? COMMON_CURRENCIES.filter(
         (c) =>
           c.code.toLowerCase().includes(query.toLowerCase()) ||
-          c.name.toLowerCase().includes(query.toLowerCase())
+          t(c.nameKey).toLowerCase().includes(query.toLowerCase())
       )
     : COMMON_CURRENCIES;
 
@@ -72,10 +76,10 @@ export default function CurrencyPickerSheet({ visible, selected, onSelect, onClo
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
-          <Text style={[styles.title, { color: text }]}>Select Currency</Text>
+          <Text style={[styles.title, { color: text }]}>{t('selectCurrency')}</Text>
           <TextInput
             style={[styles.search, { borderColor: border, color: text, backgroundColor: bg }]}
-            placeholder="Search..."
+            placeholder={t('searchCurrencies')}
             placeholderTextColor={muted}
             value={query}
             onChangeText={setQuery}
@@ -93,16 +97,16 @@ export default function CurrencyPickerSheet({ visible, selected, onSelect, onClo
                   style={[styles.row, isSelected && { backgroundColor: tint + '22' }]}
                   onPress={() => handleSelect(item.code)}>
                   <Text style={[styles.code, { color: isSelected ? tint : text }]}>{item.code}</Text>
-                  <Text style={[styles.name, { color: muted }]}>{item.name}</Text>
+                  <Text style={[styles.name, { color: muted }]}>{t(item.nameKey)}</Text>
                 </Pressable>
               );
             }}
             ListEmptyComponent={
-              <Text style={[styles.empty, { color: muted }]}>No currencies found.</Text>
+              <Text style={[styles.empty, { color: muted }]}>{t('noCurrenciesFound')}</Text>
             }
           />
           <Pressable style={[styles.cancelBtn, { borderColor: border }]} onPress={onClose}>
-            <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+            <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
           </Pressable>
         </Pressable>
       </Pressable>

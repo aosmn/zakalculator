@@ -9,6 +9,7 @@ import AddCurrencyModal from '@/components/assets/AddCurrencyModal';
 import GoldSilverItem from '@/components/assets/GoldSilverItem';
 import AddMetalModal from '@/components/assets/AddMetalModal';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { CurrencyHolding, MetalHolding } from '@/types';
 import { formatPurity } from '@/utils/formatting';
 import SectionSeparator from '@/components/shared/SectionSeparator';
@@ -45,12 +46,16 @@ function SectionRow({
   grouped,
   onToggleGroup,
   onAdd,
+  groupLabel,
+  addLabel,
 }: {
   title: string;
   description?: string;
   grouped: boolean;
   onToggleGroup: () => void;
   onAdd: () => void;
+  groupLabel: string;
+  addLabel: string;
 }) {
   const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
@@ -60,12 +65,12 @@ function SectionRow({
       <View style={styles.sectionLeft}>
         <View style={styles.sectionTitleRow}>
           <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
-          <Toggle label="Group" active={grouped} onPress={onToggleGroup} />
+          <Toggle label={groupLabel} active={grouped} onPress={onToggleGroup} />
         </View>
         {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
       </View>
       <Pressable onPress={onAdd} style={styles.addButton} hitSlop={8}>
-        <Text style={[styles.addText, { color: tint }]}>+ Add</Text>
+        <Text style={[styles.addText, { color: tint }]}>{addLabel}</Text>
       </Pressable>
     </View>
   );
@@ -81,6 +86,7 @@ function GroupHeader({ label }: { label: string }) {
 
 export default function AssetsScreen() {
   const { state, deleteCurrencyHolding, deleteMetalHolding } = useZakah();
+  const { t } = useLanguage();
   const bg = useThemeColor({}, 'background');
   const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
@@ -154,7 +160,7 @@ export default function AssetsScreen() {
   // Balances grouped content
   function renderBalances() {
     if (sortedBalances.length === 0) {
-      return <EmptyState message="No balances yet. Tap + Add to get started." />;
+      return <EmptyState message={t('noBalances')} />;
     }
     if (balancesGroupMode === 'currency') {
       return groupBy(sortedBalances, (h) => h.currency).map(({ groupKey, items }) => (
@@ -183,25 +189,25 @@ export default function AssetsScreen() {
         <View style={styles.sectionRow}>
           <View style={styles.sectionLeft}>
             <View style={styles.sectionTitleRow}>
-              <Text style={[styles.sectionTitle, { color: text }]}>Balances</Text>
+              <Text style={[styles.sectionTitle, { color: text }]}>{t('balances')}</Text>
               <Toggle
-                label="By Currency"
+                label={t('groupByCurrency')}
                 active={balancesGroupMode === 'currency'}
                 onPress={() => toggleBalancesGroup('currency')}
               />
               <Toggle
-                label="By Label"
+                label={t('groupByLabel')}
                 active={balancesGroupMode === 'label'}
                 onPress={() => toggleBalancesGroup('label')}
               />
             </View>
-            <Text style={[styles.sectionDesc, { color: muted }]}>Cash &amp; currency accounts</Text>
+            <Text style={[styles.sectionDesc, { color: muted }]}>{t('cashAndAccounts')}</Text>
           </View>
           <Pressable
             onPress={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
             style={styles.addButton}
             hitSlop={8}>
-            <Text style={[styles.addText, { color: tint }]}>+ Add</Text>
+            <Text style={[styles.addText, { color: tint }]}>{t('addItem')}</Text>
           </Pressable>
         </View>
         {renderBalances()}
@@ -210,14 +216,16 @@ export default function AssetsScreen() {
 
         {/* Gold — grouped by karat */}
         <SectionRow
-          title="Gold"
-          description="Holdings by weight and purity"
+          title={t('gold')}
+          description={t('goldDesc')}
           grouped={groupGold}
           onToggleGroup={() => setGroupGold((v) => !v)}
           onAdd={openAddGold}
+          groupLabel={t('group')}
+          addLabel={t('addItem')}
         />
         {sortedGold.length === 0 ? (
-          <EmptyState message="No gold holdings yet." />
+          <EmptyState message={t('noGold')} />
         ) : groupGold ? (
           groupBy(sortedGold, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
             <View key={groupKey}>
@@ -233,14 +241,16 @@ export default function AssetsScreen() {
 
         {/* Silver — grouped by purity */}
         <SectionRow
-          title="Silver"
-          description="Holdings by weight and purity"
+          title={t('silver')}
+          description={t('silverDesc')}
           grouped={groupSilver}
           onToggleGroup={() => setGroupSilver((v) => !v)}
           onAdd={openAddSilver}
+          groupLabel={t('group')}
+          addLabel={t('addItem')}
         />
         {sortedSilver.length === 0 ? (
-          <EmptyState message="No silver holdings yet." />
+          <EmptyState message={t('noSilver')} />
         ) : groupSilver ? (
           groupBy(sortedSilver, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
             <View key={groupKey}>

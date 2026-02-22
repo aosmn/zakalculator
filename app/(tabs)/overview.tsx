@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { convertToBase, goldValue, silverValue, ZAKAH_RATE } from '@/utils/zakahCalculations';
 import { formatCurrency, formatWeight, formatPurity } from '@/utils/formatting';
 import SectionSeparator from '@/components/shared/SectionSeparator';
@@ -60,6 +61,7 @@ function Divider() {
 
 export default function AssetsSummaryScreen() {
   const { state } = useZakah();
+  const { t } = useLanguage();
   const { currencyHoldings, metalHoldings, priceSettings, exchangeRates } = state;
   const { baseCurrency, goldPricePerGram, silverPricePerGram, goldPurityPrices } = priceSettings;
   const bg = useThemeColor({}, 'background');
@@ -114,9 +116,9 @@ export default function AssetsSummaryScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         {/* Balances by currency */}
-        <SectionTitle title="Balances by Currency" description="Total holdings per currency" />
+        <SectionTitle title={t('balancesByCurrency')} description={t('balancesByCurrencyDesc')} />
         {currencyGroups.length === 0 ? (
-          <Text style={[styles.empty, { color: muted }]}>No balances added yet.</Text>
+          <Text style={[styles.empty, { color: muted }]}>{t('noBalancesAdded')}</Text>
         ) : (
           <>
             {currencyGroups.map(([currency, amount]) => {
@@ -127,15 +129,15 @@ export default function AssetsSummaryScreen() {
                   label={currency}
                   right={formatCurrency(amount, currency)}
                   rightSub={currency !== baseCurrency ? `= ${formatCurrency(baseVal, baseCurrency)}` : undefined}
-                  zakahRight={`Zakah: ${formatCurrency(amount * ZAKAH_RATE, currency)}`}
+                  zakahRight={`${t('zakahColon')} ${formatCurrency(amount * ZAKAH_RATE, currency)}`}
                 />
               );
             })}
             <Divider />
             <Row
-              label="Total"
+              label={t('total')}
               right={formatCurrency(currenciesBaseTotal, baseCurrency)}
-              zakahRight={`Zakah: ${formatCurrency(currenciesBaseTotal * ZAKAH_RATE, baseCurrency)}`}
+              zakahRight={`${t('zakahColon')} ${formatCurrency(currenciesBaseTotal * ZAKAH_RATE, baseCurrency)}`}
               isTotal
             />
           </>
@@ -144,9 +146,9 @@ export default function AssetsSummaryScreen() {
         <SectionSeparator />
 
         {/* Gold by purity */}
-        <SectionTitle title="Gold by Purity" description="Weight and value grouped by karat" />
+        <SectionTitle title={t('goldByPurity')} description={t('goldByPurityDesc')} />
         {goldGroups.length === 0 ? (
-          <Text style={[styles.empty, { color: muted }]}>No gold holdings added yet.</Text>
+          <Text style={[styles.empty, { color: muted }]}>{t('noGoldAdded')}</Text>
         ) : (
           <>
             {goldGroups.map(([purity, { weightGrams, valueBase }]) => (
@@ -154,15 +156,15 @@ export default function AssetsSummaryScreen() {
                 key={purity}
                 label={purity}
                 sub={formatWeight(weightGrams)}
-                zakahRight={`Zakah: ${formatWeight(weightGrams * ZAKAH_RATE)}`}
+                zakahRight={`${t('zakahColon')} ${formatWeight(weightGrams * ZAKAH_RATE)}`}
                 right={formatCurrency(valueBase, baseCurrency)}
               />
             ))}
             <Divider />
             <Row
-              label="Total"
-              sub={`${formatWeight(goldPureWeightTotal)} (24k eq.)`}
-              zakahRight={`Zakah: ${formatWeight(goldPureWeightTotal * ZAKAH_RATE)}`}
+              label={t('total')}
+              sub={`${formatWeight(goldPureWeightTotal)} ${t('eq24k')}`}
+              zakahRight={`${t('zakahColon')} ${formatWeight(goldPureWeightTotal * ZAKAH_RATE)}`}
               right={formatCurrency(goldBaseTotal, baseCurrency)}
               isTotal
             />
@@ -172,9 +174,9 @@ export default function AssetsSummaryScreen() {
         <SectionSeparator />
 
         {/* Silver by purity */}
-        <SectionTitle title="Silver by Purity" description="Weight and value grouped by purity" />
+        <SectionTitle title={t('silverByPurity')} description={t('silverByPurityDesc')} />
         {silverGroups.length === 0 ? (
-          <Text style={[styles.empty, { color: muted }]}>No silver holdings added yet.</Text>
+          <Text style={[styles.empty, { color: muted }]}>{t('noSilverAdded')}</Text>
         ) : (
           <>
             {silverGroups.map(([purity, { weightGrams, valueBase }]) => (
@@ -187,7 +189,7 @@ export default function AssetsSummaryScreen() {
             ))}
             <Divider />
             <Row
-              label="Total"
+              label={t('total')}
               sub={formatWeight(silverWeightTotal)}
               right={formatCurrency(silverBaseTotal, baseCurrency)}
               isTotal
@@ -198,9 +200,9 @@ export default function AssetsSummaryScreen() {
         <SectionSeparator />
 
         {/* Grand total */}
-        <SectionTitle title="Grand Total" description="Combined value of all assets" />
+        <SectionTitle title={t('grandTotal')} description={t('grandTotalDesc')} />
         <Row
-          label={`All assets in ${baseCurrency}`}
+          label={t('allAssetsIn', { currency: baseCurrency })}
           right={formatCurrency(grandTotal, baseCurrency)}
           isTotal
         />

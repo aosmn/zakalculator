@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import FormInput from '@/components/shared/FormInput';
 import SectionHeader from '@/components/shared/SectionHeader';
 import ConfirmDeleteSheet from '@/components/shared/ConfirmDeleteSheet';
@@ -21,6 +22,7 @@ export default function PriceSettings() {
   } = useZakah();
   const { priceSettings, exchangeRates } = state;
 
+  const { t } = useLanguage();
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const tint = useThemeColor({}, 'tint');
@@ -109,12 +111,12 @@ export default function PriceSettings() {
 
   return (
     <View>
-      <SectionHeader title="Base Currency" />
-      <Text style={[styles.sectionDesc, { color: muted }]}>All values are converted to this currency</Text>
+      <SectionHeader title={t('baseCurrencySection')} />
+      <Text style={[styles.sectionDesc, { color: muted }]}>{t('baseCurrencyDesc')}</Text>
 
       {/* Base currency dropdown */}
       <View style={styles.fieldContainer}>
-        <Text style={[styles.fieldLabel, { color: muted }]}>BASE CURRENCY</Text>
+        <Text style={[styles.fieldLabel, { color: muted }]}>{t('baseCurrencyLabel')}</Text>
         <Pressable
           style={[styles.currencyBtn, { borderColor: border, backgroundColor: card }]}
           onPress={() => setPickerTarget('base')}>
@@ -124,11 +126,11 @@ export default function PriceSettings() {
       </View>
 
       <SectionSeparator />
-      <SectionHeader title="Metal Prices" />
-      <Text style={[styles.sectionDesc, { color: muted }]}>Used to calculate the value of your gold and silver holdings</Text>
+      <SectionHeader title={t('metalPrices')} />
+      <Text style={[styles.sectionDesc, { color: muted }]}>{t('metalPricesDesc')}</Text>
 
       <FormInput
-        label={`Gold price per gram — 24k (${priceSettings.baseCurrency})`}
+        label={t('goldPriceLabel', { currency: priceSettings.baseCurrency })}
         value={goldPrice}
         onChangeText={setGoldPrice}
         keyboardType="decimal-pad"
@@ -136,9 +138,9 @@ export default function PriceSettings() {
       />
 
       {/* Per-purity gold prices */}
-      <Text style={[styles.subHeader, { color: muted }]}>Gold price per gram by purity (optional)</Text>
+      <Text style={[styles.subHeader, { color: muted }]}>{t('goldPurityPricesLabel')}</Text>
       <Text style={[styles.hint, { color: muted }]}>
-        Leave blank to derive from the 24k base price above.
+        {t('goldPurityHint')}
       </Text>
       {GOLD_KARATS.filter((k) => k !== 24).map((karat) => {
         const derived = ((karat / 24) * (parseFloat(goldPrice) || priceSettings.goldPricePerGram)).toFixed(2);
@@ -160,7 +162,7 @@ export default function PriceSettings() {
       })}
 
       <FormInput
-        label={`Silver price per gram (${priceSettings.baseCurrency})`}
+        label={t('silverPriceLabel', { currency: priceSettings.baseCurrency })}
         value={silverPrice}
         onChangeText={setSilverPrice}
         keyboardType="decimal-pad"
@@ -169,9 +171,9 @@ export default function PriceSettings() {
       />
 
       <SectionSeparator />
-      <SectionHeader title="Exchange Rates" />
+      <SectionHeader title={t('exchangeRates')} />
       <Text style={[styles.sectionDesc, { color: muted }]}>
-        Convert foreign currency balances to {priceSettings.baseCurrency} — 1 [currency] = X {priceSettings.baseCurrency}
+        {t('exchangeRateDesc', { base: priceSettings.baseCurrency })}
       </Text>
 
       {exchangeRates.map((rate) => (
@@ -190,19 +192,19 @@ export default function PriceSettings() {
       <View style={styles.rateInputRow}>
         {/* "From" currency dropdown */}
         <View style={styles.rateInputFrom}>
-          <Text style={[styles.fieldLabel, { color: muted }]}>FROM</Text>
+          <Text style={[styles.fieldLabel, { color: muted }]}>{t('from')}</Text>
           <Pressable
             style={[styles.currencyBtn, { borderColor: border, backgroundColor: card }]}
             onPress={() => setPickerTarget('rateFrom')}>
             <Text style={[styles.currencyCode, { color: rateFrom ? text : muted }]}>
-              {rateFrom || 'Select'}
+              {rateFrom || t('select')}
             </Text>
             <Text style={[styles.chevron, { color: muted }]}>▾</Text>
           </Pressable>
         </View>
         <View style={styles.rateInputVal}>
           <FormInput
-            label="Rate"
+            label={t('rate')}
             placeholder="0.00"
             value={rateValue}
             onChangeText={setRateValue}
@@ -212,13 +214,13 @@ export default function PriceSettings() {
       </View>
 
       <Pressable style={[styles.addRateBtn, { backgroundColor: tint }]} onPress={handleAddOrUpdateRate}>
-        <Text style={styles.addRateBtnText}>{editingRate ? 'Update Rate' : 'Add Rate'}</Text>
+        <Text style={styles.addRateBtnText}>{editingRate ? t('updateRate') : t('addRate')}</Text>
       </Pressable>
       {editingRate && (
         <Pressable
           onPress={() => { setEditingRate(null); setRateFrom(''); setRateValue(''); }}
           style={styles.cancelEdit}>
-          <Text style={[styles.cancelText, { color: muted }]}>Cancel edit</Text>
+          <Text style={[styles.cancelText, { color: muted }]}>{t('cancelEdit')}</Text>
         </Pressable>
       )}
 

@@ -2,10 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency } from '@/utils/formatting';
 
 export default function SummaryCard() {
   const { calculation, state } = useZakah();
+  const { t } = useLanguage();
   const { zakahDueBaseCurrency, totalPaidBaseCurrency, remainingBaseCurrency } = calculation;
   const { baseCurrency } = state.priceSettings;
 
@@ -18,14 +20,14 @@ export default function SummaryCard() {
   const tint = useThemeColor({}, 'tint');
 
   const rows = [
-    { label: 'Zakah Due', value: zakahDueBaseCurrency, color: text },
-    { label: 'Total Paid', value: totalPaidBaseCurrency, color: success },
-    { label: 'Remaining', value: remainingBaseCurrency, color: remainingBaseCurrency > 0 ? danger : success },
+    { label: t('zakahDue'), value: zakahDueBaseCurrency, color: text },
+    { label: t('totalPaid'), value: totalPaidBaseCurrency, color: success },
+    { label: t('remaining'), value: remainingBaseCurrency, color: remainingBaseCurrency > 0 ? danger : success },
   ];
 
   return (
     <View style={[styles.card, { backgroundColor: card, borderColor: border }]}>
-      <Text style={[styles.title, { color: text }]}>Zakah Summary</Text>
+      <Text style={[styles.title, { color: text }]}>{t('zakahSummary')}</Text>
       {rows.map((row) => (
         <View key={row.label} style={styles.row}>
           <Text style={[styles.rowLabel, { color: muted }]}>{row.label}</Text>

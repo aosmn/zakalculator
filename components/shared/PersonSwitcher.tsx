@@ -12,6 +12,7 @@ import {
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 type SheetMode = 'list' | 'add' | 'rename';
 
@@ -24,6 +25,7 @@ export default function PersonSwitcher() {
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
+  const { t } = useLanguage();
   const bg = useThemeColor({}, 'card');
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
@@ -108,7 +110,7 @@ export default function PersonSwitcher() {
             {mode === 'list' && !deleteTarget && (
               <>
                 <View style={[styles.sheetHeader, { borderBottomColor: border }]}>
-                  <Text style={[styles.sheetTitle, { color: text }]}>People</Text>
+                  <Text style={[styles.sheetTitle, { color: text }]}>{t('people')}</Text>
                   <Pressable onPress={handleAddPress} hitSlop={8}>
                     <FontAwesome name="plus" size={18} color={tint} />
                   </Pressable>
@@ -145,10 +147,10 @@ export default function PersonSwitcher() {
                   })}
                 </ScrollView>
                 {people.length > 1 && (
-                  <Text style={[styles.hint, { color: muted }]}>Long-press a person to delete</Text>
+                  <Text style={[styles.hint, { color: muted }]}>{t('longPressHint')}</Text>
                 )}
                 <Pressable style={[styles.cancelBtn, { borderTopColor: border }]} onPress={closeSheet}>
-                  <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+                  <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
                 </Pressable>
               </>
             )}
@@ -156,17 +158,17 @@ export default function PersonSwitcher() {
             {/* ── Delete confirmation ── */}
             {mode === 'list' && deleteTarget && (
               <>
-                <Text style={[styles.sheetTitle, { color: text, marginBottom: 8 }]}>Delete {deleteTarget.name}?</Text>
+                <Text style={[styles.sheetTitle, { color: text, marginBottom: 8 }]}>{t('deleteTitle', { name: deleteTarget.name })}</Text>
                 <Text style={[styles.deleteMsg, { color: muted }]}>
-                  Their holdings and payment history will be removed. This cannot be undone.
+                  {t('deletePersonMsg')}
                 </Text>
                 <Pressable style={[styles.actionBtn, { backgroundColor: danger }]} onPress={handleDeleteConfirm}>
-                  <Text style={styles.actionBtnText}>Delete</Text>
+                  <Text style={styles.actionBtnText}>{t('deletePerson')}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
                   onPress={() => setDeleteTarget(null)}>
-                  <Text style={[styles.actionBtnText, { color: text }]}>Cancel</Text>
+                  <Text style={[styles.actionBtnText, { color: text }]}>{t('cancel')}</Text>
                 </Pressable>
               </>
             )}
@@ -174,10 +176,10 @@ export default function PersonSwitcher() {
             {/* ── Add mode ── */}
             {mode === 'add' && (
               <>
-                <Text style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}>Add Person</Text>
+                <Text style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}>{t('addPerson')}</Text>
                 <TextInput
                   style={[styles.input, { borderColor: border, color: text, backgroundColor: bg }]}
-                  placeholder="Name"
+                  placeholder={t('nameField')}
                   placeholderTextColor={muted}
                   value={inputValue}
                   onChangeText={setInputValue}
@@ -189,12 +191,12 @@ export default function PersonSwitcher() {
                   style={[styles.actionBtn, { backgroundColor: inputValue.trim() ? tint : border }]}
                   onPress={handleAddConfirm}
                   disabled={!inputValue.trim()}>
-                  <Text style={styles.actionBtnText}>Add</Text>
+                  <Text style={styles.actionBtnText}>{t('addBtn')}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
                   onPress={() => setMode('list')}>
-                  <Text style={[styles.actionBtnText, { color: muted }]}>Back</Text>
+                  <Text style={[styles.actionBtnText, { color: muted }]}>{t('back')}</Text>
                 </Pressable>
               </>
             )}
@@ -202,10 +204,10 @@ export default function PersonSwitcher() {
             {/* ── Rename mode ── */}
             {mode === 'rename' && (
               <>
-                <Text style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}>Rename Person</Text>
+                <Text style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}>{t('renamePerson')}</Text>
                 <TextInput
                   style={[styles.input, { borderColor: border, color: text, backgroundColor: bg }]}
-                  placeholder="Name"
+                  placeholder={t('nameField')}
                   placeholderTextColor={muted}
                   value={inputValue}
                   onChangeText={setInputValue}
@@ -217,12 +219,12 @@ export default function PersonSwitcher() {
                   style={[styles.actionBtn, { backgroundColor: inputValue.trim() ? tint : border }]}
                   onPress={handleRenameConfirm}
                   disabled={!inputValue.trim()}>
-                  <Text style={styles.actionBtnText}>Done</Text>
+                  <Text style={styles.actionBtnText}>{t('doneBtn')}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
                   onPress={() => setMode('list')}>
-                  <Text style={[styles.actionBtnText, { color: muted }]}>Back</Text>
+                  <Text style={[styles.actionBtnText, { color: muted }]}>{t('back')}</Text>
                 </Pressable>
               </>
             )}

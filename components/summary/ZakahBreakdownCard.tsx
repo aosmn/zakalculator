@@ -2,11 +2,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { goldValue, ZAKAH_RATE } from '@/utils/zakahCalculations';
 import { formatCurrency, formatWeight } from '@/utils/formatting';
 
 export default function ZakahBreakdownCard() {
   const { calculation, state } = useZakah();
+  const { t } = useLanguage();
   const { breakdown, totalWealthBaseCurrency } = calculation;
   const { baseCurrency, goldPricePerGram, goldPurityPrices } = state.priceSettings;
 
@@ -26,11 +28,11 @@ export default function ZakahBreakdownCard() {
 
   return (
     <View style={[styles.card, { backgroundColor: card, borderColor: border }]}>
-      <Text style={[styles.title, { color: text }]}>Wealth Breakdown</Text>
+      <Text style={[styles.title, { color: text }]}>{t('wealthBreakdown')}</Text>
 
       {/* Currencies row */}
       <View style={styles.row}>
-        <Text style={[styles.rowLabel, { color: muted }]}>Currencies</Text>
+        <Text style={[styles.rowLabel, { color: muted }]}>{t('currencies')}</Text>
         <Text style={[styles.rowValue, { color: text }]}>
           {formatCurrency(breakdown.currenciesTotal, baseCurrency)}
         </Text>
@@ -38,19 +40,19 @@ export default function ZakahBreakdownCard() {
 
       {/* Gold row with 24k indicators */}
       <View style={[styles.row, styles.rowAlignTop]}>
-        <Text style={[styles.rowLabel, { color: muted }]}>Gold</Text>
+        <Text style={[styles.rowLabel, { color: muted }]}>{t('gold')}</Text>
         <View style={styles.rowRight}>
           <Text style={[styles.rowValue, { color: text }]}>
             {formatCurrency(breakdown.goldTotal, baseCurrency)}
           </Text>
-          <Text style={[styles.indicator, { color: muted }]}>{formatWeight(goldPureGrams)} (24k eq.)</Text>
-          <Text style={[styles.indicator, { color: warning }]}>Zakah: {formatWeight(goldPureGrams * ZAKAH_RATE)}</Text>
+          <Text style={[styles.indicator, { color: muted }]}>{formatWeight(goldPureGrams)} {t('eq24k')}</Text>
+          <Text style={[styles.indicator, { color: warning }]}>{t('zakahColon')} {formatWeight(goldPureGrams * ZAKAH_RATE)}</Text>
         </View>
       </View>
 
       {/* Silver row */}
       <View style={styles.row}>
-        <Text style={[styles.rowLabel, { color: muted }]}>Silver</Text>
+        <Text style={[styles.rowLabel, { color: muted }]}>{t('silver')}</Text>
         <Text style={[styles.rowValue, { color: text }]}>
           {formatCurrency(breakdown.silverTotal, baseCurrency)}
         </Text>
@@ -58,7 +60,7 @@ export default function ZakahBreakdownCard() {
 
       <View style={[styles.divider, { borderColor: border }]} />
       <View style={styles.row}>
-        <Text style={[styles.totalLabel, { color: text }]}>Total Wealth</Text>
+        <Text style={[styles.totalLabel, { color: text }]}>{t('totalWealth')}</Text>
         <Text style={[styles.totalValue, { color: text }]}>
           {formatCurrency(totalWealthBaseCurrency, baseCurrency)}
         </Text>

@@ -14,6 +14,7 @@ import FormInput from '@/components/shared/FormInput';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { CurrencyHolding } from '@/types';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Props {
   visible: boolean;
@@ -23,6 +24,7 @@ interface Props {
 
 export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
   const { addCurrencyHolding, updateCurrencyHolding, state } = useZakah();
+  const { t } = useLanguage();
   const bg = useThemeColor({}, 'card');
   const text = useThemeColor({}, 'text');
   const tint = useThemeColor({}, 'tint');
@@ -63,13 +65,13 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
         <Pressable style={styles.overlay} onPress={onClose}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav}>
             <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
-              <Text style={[styles.title, { color: text }]}>{editing ? 'Edit' : 'Add'} Currency Holding</Text>
+              <Text style={[styles.title, { color: text }]}>{editing ? t('editCurrencyTitle') : t('addCurrencyTitle')}</Text>
               <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-                <FormInput label="Label" placeholder="e.g. Savings Account" value={label} onChangeText={setLabel} />
+                <FormInput label={t('labelField')} placeholder="e.g. Savings Account" value={label} onChangeText={setLabel} />
 
                 {/* Currency dropdown */}
                 <View style={styles.fieldContainer}>
-                  <Text style={[styles.fieldLabel, { color: muted }]}>CURRENCY</Text>
+                  <Text style={[styles.fieldLabel, { color: muted }]}>{t('currencyField')}</Text>
                   <Pressable
                     style={[styles.currencyBtn, { borderColor: border, backgroundColor: bg }]}
                     onPress={() => setShowPicker(true)}>
@@ -79,7 +81,7 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
                 </View>
 
                 <FormInput
-                  label="Amount"
+                  label={t('amount')}
                   placeholder="0.00"
                   value={amount}
                   onChangeText={setAmount}
@@ -87,10 +89,10 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
                 />
               </ScrollView>
               <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
-                <Text style={styles.saveBtnText}>{editing ? 'Update' : 'Add'}</Text>
+                <Text style={styles.saveBtnText}>{editing ? t('update') : t('add')}</Text>
               </Pressable>
               <Pressable onPress={onClose} style={styles.cancelBtn}>
-                <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+                <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
               </Pressable>
             </Pressable>
           </KeyboardAvoidingView>

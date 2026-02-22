@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Props {
   visible: boolean;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function ConfirmDeleteSheet({ visible, itemName, onConfirm, onCancel }: Props) {
+  const { t } = useLanguage();
   const bg = useThemeColor({}, 'card');
   const text = useThemeColor({}, 'text');
   const danger = useThemeColor({}, 'danger');
@@ -19,13 +21,13 @@ export default function ConfirmDeleteSheet({ visible, itemName, onConfirm, onCan
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
       <Pressable style={styles.overlay} onPress={onCancel}>
         <View style={[styles.sheet, { backgroundColor: bg }]}>
-          <Text style={[styles.title, { color: text }]}>Delete {itemName ?? 'item'}?</Text>
-          <Text style={[styles.subtitle, { color: muted }]}>This action cannot be undone.</Text>
+          <Text style={[styles.title, { color: text }]}>{t('deleteTitle', { name: itemName ?? 'item' })}</Text>
+          <Text style={[styles.subtitle, { color: muted }]}>{t('deleteUndone')}</Text>
           <Pressable style={[styles.btn, { backgroundColor: danger }]} onPress={onConfirm}>
-            <Text style={styles.btnText}>Delete</Text>
+            <Text style={styles.btnText}>{t('delete')}</Text>
           </Pressable>
           <Pressable style={[styles.btn, styles.cancel]} onPress={onCancel}>
-            <Text style={[styles.btnText, { color: text }]}>Cancel</Text>
+            <Text style={[styles.btnText, { color: text }]}>{t('cancel')}</Text>
           </Pressable>
         </View>
       </Pressable>

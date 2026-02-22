@@ -7,6 +7,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useThemeToggle } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import PersonSwitcher from '@/components/shared/PersonSwitcher';
 
 function TabBarIcon(props: {
@@ -41,6 +42,7 @@ export default function TabLayout() {
   const { background, border, tint, tabIconDefault, chrome, chromeText, text, warning } = Colors[scheme];
   const isLight = scheme === 'light';
   const { toggleTheme } = useThemeToggle();
+  const { t } = useLanguage();
 
   return (
     <Tabs
@@ -69,35 +71,35 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Assets',
+          title: t('tabAssets'),
           tabBarIcon: ({ color }) => <TabBarIcon name="dollar" color={color} />,
         }}
       />
       <Tabs.Screen
         name="overview"
         options={{
-          title: 'Overview',
+          title: t('tabOverview'),
           tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
         }}
       />
       <Tabs.Screen
         name="prices"
         options={{
-          title: 'Prices',
+          title: t('tabPrices'),
           tabBarIcon: ({ color }) => <TabBarIcon name="sliders" color={color} />,
         }}
       />
       <Tabs.Screen
         name="zakah"
         options={{
-          title: 'Zakah',
+          title: t('tabZakah'),
           tabBarIcon: ({ color }) => <TabBarIcon name="calculator" color={color} />,
         }}
       />
       <Tabs.Screen
         name="payments"
         options={{
-          title: 'Payments',
+          title: t('tabPayments'),
           tabBarIcon: ({ color }) => <TabBarIcon name="check-circle" color={color} />,
         }}
       />

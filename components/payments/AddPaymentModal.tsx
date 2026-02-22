@@ -15,6 +15,7 @@ import { useThemeColor } from '@/components/Themed';
 import FormInput from '@/components/shared/FormInput';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { ZakahPayment } from '@/types';
 import { convertToBase } from '@/utils/zakahCalculations';
 import { formatDate } from '@/utils/formatting';
@@ -29,6 +30,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
   const { logPayment, updatePayment, deletePayment, state } = useZakah();
   const { baseCurrency } = state.priceSettings;
 
+  const { t } = useLanguage();
   const bg = useThemeColor({}, 'card');
   const text = useThemeColor({}, 'text');
   const tint = useThemeColor({}, 'tint');
@@ -94,7 +96,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
     if (Platform.OS === 'web') {
       return (
         <View style={styles.fieldContainer}>
-          <Text style={[styles.fieldLabel, { color: muted }]}>DATE</Text>
+          <Text style={[styles.fieldLabel, { color: muted }]}>{t('date')}</Text>
           {/* @ts-ignore — web-only input */}
           <input
             type="date"
@@ -120,7 +122,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
 
     return (
       <View style={styles.fieldContainer}>
-        <Text style={[styles.fieldLabel, { color: muted }]}>DATE</Text>
+        <Text style={[styles.fieldLabel, { color: muted }]}>{t('date')}</Text>
         <Pressable
           style={[styles.currencyBtn, { borderColor: border, backgroundColor: bg }]}
           onPress={() => setShowDatePicker((v) => !v)}>
@@ -141,7 +143,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
             />
             {Platform.OS === 'ios' && (
               <Pressable onPress={() => setShowDatePicker(false)} style={styles.dateDoneBtn}>
-                <Text style={[styles.dateDoneText, { color: tint }]}>Done</Text>
+                <Text style={[styles.dateDoneText, { color: tint }]}>{t('done')}</Text>
               </Pressable>
             )}
           </>
@@ -156,17 +158,17 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
         <Pressable style={styles.overlay} onPress={onClose}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav}>
             <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
-              <Text style={[styles.title, { color: text }]}>{editing ? 'Edit Payment' : 'Log Zakah Payment'}</Text>
+              <Text style={[styles.title, { color: text }]}>{editing ? t('editPayment') : t('logZakahPayment')}</Text>
               <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                 <FormInput
-                  label="Amount"
+                  label={t('amount')}
                   placeholder="0.00"
                   value={amount}
                   onChangeText={setAmount}
                   keyboardType="decimal-pad"
                 />
                 <View style={styles.fieldContainer}>
-                  <Text style={[styles.fieldLabel, { color: muted }]}>CURRENCY</Text>
+                  <Text style={[styles.fieldLabel, { color: muted }]}>{t('currency')}</Text>
                   <Pressable
                     style={[styles.currencyBtn, { borderColor: border, backgroundColor: bg }]}
                     onPress={() => setShowPicker(true)}>
@@ -175,7 +177,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
                   </Pressable>
                 </View>
                 <FormInput
-                  label="Note (optional)"
+                  label={t('noteOptional')}
                   placeholder="e.g. Paid to charity X"
                   value={note}
                   onChangeText={setNote}
@@ -184,32 +186,32 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
               </ScrollView>
               {confirmDelete ? (
                 <View style={styles.confirmRow}>
-                  <Text style={[styles.confirmText, { color: text }]}>Delete this payment?</Text>
+                  <Text style={[styles.confirmText, { color: text }]}>{t('deleteThisPayment')}</Text>
                   <View style={styles.confirmBtns}>
                     <Pressable
                       style={[styles.confirmBtn, { borderColor: border }]}
                       onPress={() => setConfirmDelete(false)}>
-                      <Text style={[styles.confirmBtnText, { color: muted }]}>Cancel</Text>
+                      <Text style={[styles.confirmBtnText, { color: muted }]}>{t('cancel')}</Text>
                     </Pressable>
                     <Pressable
                       style={[styles.confirmBtn, styles.confirmBtnDanger, { borderColor: danger }]}
                       onPress={() => { deletePayment(editing!.id); onClose(); }}>
-                      <Text style={[styles.confirmBtnText, { color: danger }]}>Delete</Text>
+                      <Text style={[styles.confirmBtnText, { color: danger }]}>{t('delete')}</Text>
                     </Pressable>
                   </View>
                 </View>
               ) : (
                 <>
                   <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
-                    <Text style={styles.saveBtnText}>{editing ? 'Save Changes' : 'Log Payment'}</Text>
+                    <Text style={styles.saveBtnText}>{editing ? t('saveChanges') : t('logPaymentBtn')}</Text>
                   </Pressable>
                   {editing ? (
                     <Pressable onPress={() => setConfirmDelete(true)} style={styles.cancelBtn}>
-                      <Text style={[styles.cancelText, { color: danger }]}>Delete Payment</Text>
+                      <Text style={[styles.cancelText, { color: danger }]}>{t('deletePayment')}</Text>
                     </Pressable>
                   ) : (
                     <Pressable onPress={onClose} style={styles.cancelBtn}>
-                      <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+                      <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
                     </Pressable>
                   )}
                 </>

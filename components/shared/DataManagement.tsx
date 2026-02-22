@@ -5,6 +5,7 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { StoredAppData, ZakahState } from '@/types';
 import { isStoredAppData } from '@/utils/storage';
 
@@ -29,6 +30,7 @@ function todayString() {
 
 export default function DataManagement() {
   const { state, importState, importAppData } = useZakah();
+  const { t } = useLanguage();
   const tint = useThemeColor({}, 'tint');
   const danger = useThemeColor({}, 'danger');
   const text = useThemeColor({}, 'text');
@@ -58,7 +60,7 @@ export default function DataManagement() {
         a.download = fileName;
         a.click();
         URL.revokeObjectURL(url);
-        showStatus('success', 'Backup downloaded.');
+        showStatus('success', t('backupDownloaded'));
         return;
       }
 
@@ -67,12 +69,12 @@ export default function DataManagement() {
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {
         await Sharing.shareAsync(path, { mimeType: 'application/json', dialogTitle: 'Export ZaKalculator backup' });
-        showStatus('success', 'Backup exported.');
+        showStatus('success', t('backupExported'));
       } else {
-        showStatus('error', 'Sharing is not available on this device.');
+        showStatus('error', t('sharingUnavailable'));
       }
     } catch {
-      showStatus('error', 'Export failed. Please try again.');
+      showStatus('error', t('exportFailed'));
     }
   }
 
@@ -90,12 +92,12 @@ export default function DataManagement() {
           const json = await file.text();
           const parsed = JSON.parse(json);
           if (!isValidState(parsed) && !isStoredAppData(parsed)) {
-            showStatus('error', 'Invalid backup file.');
+            showStatus('error', t('invalidBackup'));
             return;
           }
           setPendingData(parsed);
         } catch {
-          showStatus('error', 'Could not read file. Make sure it is a valid ZaKalculator backup.');
+          showStatus('error', t('couldNotRead'));
         }
       };
       input.click();
@@ -118,13 +120,13 @@ export default function DataManagement() {
       const parsed = JSON.parse(json);
 
       if (!isValidState(parsed) && !isStoredAppData(parsed)) {
-        showStatus('error', 'Invalid backup file.');
+        showStatus('error', t('invalidBackup'));
         return;
       }
 
       setPendingData(parsed);
     } catch {
-      showStatus('error', 'Could not read file. Make sure it is a valid ZaKalculator backup.');
+      showStatus('error', t('couldNotRead'));
     }
   }
 
@@ -136,43 +138,43 @@ export default function DataManagement() {
       importState(pendingData as ZakahState);
     }
     setPendingData(null);
-    showStatus('success', 'Data imported successfully.');
+    showStatus('success', t('importSuccess'));
   }
 
   return (
     <View style={[styles.container, { backgroundColor: card, borderColor: border }]}>
-      <Text style={[styles.title, { color: text }]}>Backup &amp; Restore</Text>
+      <Text style={[styles.title, { color: text }]}>{t('backupRestore')}</Text>
       <Text style={[styles.desc, { color: muted }]}>
-        Export your data as a JSON file to back it up or transfer it to another device.
+        {t('backupDesc')}
       </Text>
 
       {pendingData ? (
         <View>
           <Text style={[styles.confirmText, { color: text }]}>
             {isStoredAppData(pendingData)
-              ? 'Replace all data (all people) with this backup?'
-              : "Replace current person's data with this backup?"}
+              ? t('replaceAllMsg')
+              : t('replacePersonMsg')}
           </Text>
           <View style={styles.buttons}>
             <Pressable
               style={[styles.btn, styles.btnOutline, { borderColor: border }]}
               onPress={() => setPendingData(null)}>
-              <Text style={[styles.btnText, { color: muted }]}>Cancel</Text>
+              <Text style={[styles.btnText, { color: muted }]}>{t('cancel')}</Text>
             </Pressable>
             <Pressable style={[styles.btn, { backgroundColor: danger }]} onPress={confirmImport}>
-              <Text style={styles.btnText}>Replace</Text>
+              <Text style={styles.btnText}>{t('replaceBtn')}</Text>
             </Pressable>
           </View>
         </View>
       ) : (
         <View style={styles.buttons}>
           <Pressable style={[styles.btn, { backgroundColor: tint }]} onPress={handleExport}>
-            <Text style={styles.btnText}>Export</Text>
+            <Text style={styles.btnText}>{t('exportBtn')}</Text>
           </Pressable>
           <Pressable
             style={[styles.btn, styles.btnOutline, { borderColor: border }]}
             onPress={handleImport}>
-            <Text style={[styles.btnText, { color: text }]}>Import</Text>
+            <Text style={[styles.btnText, { color: text }]}>{t('importBtn')}</Text>
           </Pressable>
         </View>
       )}

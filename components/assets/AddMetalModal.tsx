@@ -13,6 +13,7 @@ import FormInput from '@/components/shared/FormInput';
 import PickerRow from '@/components/shared/PickerRow';
 import { MetalHolding } from '@/types';
 import { useZakah } from '@/context/ZakahContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Props {
   visible: boolean;
@@ -39,6 +40,7 @@ const SILVER_PURITY = [
 
 export default function AddMetalModal({ visible, defaultType = 'gold', editing, onClose }: Props) {
   const { addMetalHolding, updateMetalHolding } = useZakah();
+  const { t } = useLanguage();
   const bg = useThemeColor({}, 'card');
   const text = useThemeColor({}, 'text');
   const tint = useThemeColor({}, 'tint');
@@ -100,35 +102,35 @@ export default function AddMetalModal({ visible, defaultType = 'gold', editing, 
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav}>
           <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
             <Text style={[styles.title, { color: text }]}>
-              {editing ? 'Edit' : 'Add'} Metal Holding
+              {editing ? t('editMetalTitle') : t('addMetalTitle')}
             </Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <FormInput label="Label" placeholder="e.g. Gold Ring" value={label} onChangeText={setLabel} />
+              <FormInput label={t('labelField')} placeholder="e.g. Gold Ring" value={label} onChangeText={setLabel} />
               <PickerRow
-                label="Type"
-                options={[{ label: 'Gold', value: 'gold' }, { label: 'Silver', value: 'silver' }]}
+                label={t('type')}
+                options={[{ label: t('goldOption'), value: 'gold' }, { label: t('silverOption'), value: 'silver' }]}
                 value={type}
                 onChange={(v) => setType(v as 'gold' | 'silver')}
               />
               <FormInput
-                label="Weight (grams)"
+                label={t('weightGrams')}
                 placeholder="0.00"
                 value={weight}
                 onChangeText={setWeight}
                 keyboardType="decimal-pad"
               />
               <PickerRow
-                label={type === 'gold' ? 'Purity (karats)' : 'Purity (%)'}
+                label={type === 'gold' ? t('purityKarats') : t('purityPercent')}
                 options={purityOptions}
                 value={purity}
                 onChange={(v) => setPurity(Number(v))}
               />
             </ScrollView>
             <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
-              <Text style={styles.saveBtnText}>{editing ? 'Update' : 'Add'}</Text>
+              <Text style={styles.saveBtnText}>{editing ? t('update') : t('add')}</Text>
             </Pressable>
             <Pressable onPress={onClose} style={styles.cancelBtn}>
-              <Text style={[styles.cancelText, { color: muted }]}>Cancel</Text>
+              <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
             </Pressable>
           </Pressable>
         </KeyboardAvoidingView>

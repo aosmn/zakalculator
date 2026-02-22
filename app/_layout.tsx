@@ -4,11 +4,13 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { ZakahProvider } from '@/context/ZakahContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { LanguageProvider, useLanguage } from '@/context/LanguageContext';
 
 export {
   ErrorBoundary,
@@ -36,24 +38,28 @@ export default function RootLayout() {
 
   if (!loaded) return null;
 
-  // ThemeProvider is outermost so useColorScheme() works everywhere inside
   return (
-    <ThemeProvider>
-      <RootLayoutNav />
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <RootLayoutNav />
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme(); // now reads from ThemeContext
+  const colorScheme = useColorScheme();
+  const { lang } = useLanguage();
 
   return (
     <ZakahProvider>
       <NavThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        </Stack>
+        <View style={{ flex: 1, direction: lang === 'ar' ? 'rtl' : 'ltr' }}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        </View>
       </NavThemeProvider>
     </ZakahProvider>
   );
