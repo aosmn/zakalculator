@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "zakah-calculator",
-    "slug": "zakah-calculator",
+    "name": "ZaKalculator",
+    "slug": "zakalculator",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "zakahcalculator",
+    "scheme": "zakalculator",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -13,10 +13,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#2A6B88"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
+      "package": "com.zakalculator.app",
+      "versionCode": 1,
+      "supportsTablet": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#2A6B88"
@@ -27,7 +27,10 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "ZaKalculator",
+      "shortName": "ZaKalculator",
+      "description": "Calculate and track your annual Zakah obligations"
     },
     "plugins": [
       "expo-router",
