@@ -11,6 +11,7 @@ import AddMetalModal from '@/components/assets/AddMetalModal';
 import { useZakah } from '@/context/ZakahContext';
 import { CurrencyHolding, MetalHolding } from '@/types';
 import { formatPurity } from '@/utils/formatting';
+import SectionSeparator from '@/components/shared/SectionSeparator';
 
 type BalancesGroupMode = null | 'currency' | 'label';
 
@@ -40,22 +41,28 @@ function Toggle({
 
 function SectionRow({
   title,
+  description,
   grouped,
   onToggleGroup,
   onAdd,
 }: {
   title: string;
+  description?: string;
   grouped: boolean;
   onToggleGroup: () => void;
   onAdd: () => void;
 }) {
   const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
+  const muted = useThemeColor({}, 'muted');
   return (
     <View style={styles.sectionRow}>
       <View style={styles.sectionLeft}>
-        <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
-        <Toggle label="Group" active={grouped} onPress={onToggleGroup} />
+        <View style={styles.sectionTitleRow}>
+          <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
+          <Toggle label="Group" active={grouped} onPress={onToggleGroup} />
+        </View>
+        {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
       </View>
       <Pressable onPress={onAdd} style={styles.addButton} hitSlop={8}>
         <Text style={[styles.addText, { color: tint }]}>+ Add</Text>
@@ -77,6 +84,7 @@ export default function AssetsScreen() {
   const bg = useThemeColor({}, 'background');
   const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
+  const muted = useThemeColor({}, 'muted');
 
   // Modals
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
@@ -174,17 +182,20 @@ export default function AssetsScreen() {
         {/* Balances — with two group toggles */}
         <View style={styles.sectionRow}>
           <View style={styles.sectionLeft}>
-            <Text style={[styles.sectionTitle, { color: text }]}>Balances</Text>
-            <Toggle
-              label="By Currency"
-              active={balancesGroupMode === 'currency'}
-              onPress={() => toggleBalancesGroup('currency')}
-            />
-            <Toggle
-              label="By Label"
-              active={balancesGroupMode === 'label'}
-              onPress={() => toggleBalancesGroup('label')}
-            />
+            <View style={styles.sectionTitleRow}>
+              <Text style={[styles.sectionTitle, { color: text }]}>Balances</Text>
+              <Toggle
+                label="By Currency"
+                active={balancesGroupMode === 'currency'}
+                onPress={() => toggleBalancesGroup('currency')}
+              />
+              <Toggle
+                label="By Label"
+                active={balancesGroupMode === 'label'}
+                onPress={() => toggleBalancesGroup('label')}
+              />
+            </View>
+            <Text style={[styles.sectionDesc, { color: muted }]}>Cash &amp; currency accounts</Text>
           </View>
           <Pressable
             onPress={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
@@ -195,9 +206,12 @@ export default function AssetsScreen() {
         </View>
         {renderBalances()}
 
+        <SectionSeparator />
+
         {/* Gold — grouped by karat */}
         <SectionRow
           title="Gold"
+          description="Holdings by weight and purity"
           grouped={groupGold}
           onToggleGroup={() => setGroupGold((v) => !v)}
           onAdd={openAddGold}
@@ -215,9 +229,12 @@ export default function AssetsScreen() {
           sortedGold.map(renderMetalItem)
         )}
 
+        <SectionSeparator />
+
         {/* Silver — grouped by purity */}
         <SectionRow
           title="Silver"
+          description="Holdings by weight and purity"
           grouped={groupSilver}
           onToggleGroup={() => setGroupSilver((v) => !v)}
           onAdd={openAddSilver}
@@ -271,11 +288,13 @@ const styles = StyleSheet.create({
   content: { padding: 16 },
   spacer: { height: 40 },
   sectionRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: 8, marginTop: 20, flexWrap: 'wrap', gap: 6,
+    flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between',
+    marginBottom: 8, marginTop: 4, flexWrap: 'wrap', gap: 6,
   },
-  sectionLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  sectionLeft: { flex: 1 },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   sectionTitle: { fontSize: 18, fontWeight: '700' },
+  sectionDesc: { fontSize: 12, marginTop: 2 },
   groupToggle: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, borderWidth: 1.5 },
   groupToggleText: { fontSize: 12, fontWeight: '700' },
   addButton: { paddingVertical: 4, paddingHorizontal: 8 },

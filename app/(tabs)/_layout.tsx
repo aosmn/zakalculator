@@ -1,7 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -14,6 +14,25 @@ function TabBarIcon(props: {
 }) {
   return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
 }
+
+function HeaderTitle({ color }: { color: string }) {
+  return (
+    <View style={headerStyles.container}>
+      <Image
+        source={require('@/assets/images/icon.png')}
+        style={headerStyles.icon}
+        resizeMode="contain"
+      />
+      <Text style={[headerStyles.text, { color }]}>ZaKalculator</Text>
+    </View>
+  );
+}
+
+const headerStyles = StyleSheet.create({
+  container: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  icon: { width: 28, height: 28, borderRadius: 6 },
+  text: { fontSize: 18, fontWeight: '700' },
+});
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -29,6 +48,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: tabIconDefault,
         tabBarStyle: { backgroundColor: isLight ? background : chrome, borderTopColor: border },
         headerShown: useClientOnlyValue(false, true),
+        headerTitle: () => <HeaderTitle color={isLight ? text : chromeText} />,
         headerStyle: { backgroundColor: isLight ? background : chrome, borderBottomWidth: 1, borderBottomColor: border },
         headerTintColor: isLight ? text : chromeText,
         headerShadowVisible: false,

@@ -5,10 +5,17 @@ import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
 import { convertToBase, goldValue, silverValue, ZAKAH_RATE } from '@/utils/zakahCalculations';
 import { formatCurrency, formatWeight, formatPurity } from '@/utils/formatting';
+import SectionSeparator from '@/components/shared/SectionSeparator';
 
-function SectionTitle({ title }: { title: string }) {
+function SectionTitle({ title, description }: { title: string; description?: string }) {
   const text = useThemeColor({}, 'text');
-  return <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>;
+  const muted = useThemeColor({}, 'muted');
+  return (
+    <>
+      <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
+      {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
+    </>
+  );
 }
 
 function Row({
@@ -107,7 +114,7 @@ export default function AssetsSummaryScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         {/* Balances by currency */}
-        <SectionTitle title="Balances by Currency" />
+        <SectionTitle title="Balances by Currency" description="Total holdings per currency" />
         {currencyGroups.length === 0 ? (
           <Text style={[styles.empty, { color: muted }]}>No balances added yet.</Text>
         ) : (
@@ -134,8 +141,10 @@ export default function AssetsSummaryScreen() {
           </>
         )}
 
+        <SectionSeparator />
+
         {/* Gold by purity */}
-        <SectionTitle title="Gold by Purity" />
+        <SectionTitle title="Gold by Purity" description="Weight and value grouped by karat" />
         {goldGroups.length === 0 ? (
           <Text style={[styles.empty, { color: muted }]}>No gold holdings added yet.</Text>
         ) : (
@@ -160,8 +169,10 @@ export default function AssetsSummaryScreen() {
           </>
         )}
 
+        <SectionSeparator />
+
         {/* Silver by purity */}
-        <SectionTitle title="Silver by Purity" />
+        <SectionTitle title="Silver by Purity" description="Weight and value grouped by purity" />
         {silverGroups.length === 0 ? (
           <Text style={[styles.empty, { color: muted }]}>No silver holdings added yet.</Text>
         ) : (
@@ -184,8 +195,10 @@ export default function AssetsSummaryScreen() {
           </>
         )}
 
+        <SectionSeparator />
+
         {/* Grand total */}
-        <SectionTitle title="Grand Total" />
+        <SectionTitle title="Grand Total" description="Combined value of all assets" />
         <Row
           label={`All assets in ${baseCurrency}`}
           right={formatCurrency(grandTotal, baseCurrency)}
@@ -202,7 +215,8 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: 16 },
   spacer: { height: 40 },
-  sectionTitle: { fontSize: 18, fontWeight: '700', marginTop: 24, marginBottom: 10 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', marginTop: 4, marginBottom: 2 },
+  sectionDesc: { fontSize: 12, marginBottom: 10 },
   row: {
     flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between',
     padding: 14, borderRadius: 12, borderWidth: 1, marginBottom: 6,

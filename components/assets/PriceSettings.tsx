@@ -7,6 +7,7 @@ import SectionHeader from '@/components/shared/SectionHeader';
 import ConfirmDeleteSheet from '@/components/shared/ConfirmDeleteSheet';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { ExchangeRate } from '@/types';
+import SectionSeparator from '@/components/shared/SectionSeparator';
 
 const GOLD_KARATS = [24, 22, 21, 18, 14, 12, 10];
 
@@ -97,7 +98,8 @@ export default function PriceSettings() {
 
   return (
     <View>
-      <SectionHeader title="Prices & Rates" />
+      <SectionHeader title="Base Currency" />
+      <Text style={[styles.sectionDesc, { color: muted }]}>All values are converted to this currency</Text>
 
       {/* Base currency dropdown */}
       <View style={styles.fieldContainer}>
@@ -109,6 +111,10 @@ export default function PriceSettings() {
           <Text style={[styles.chevron, { color: muted }]}>▾</Text>
         </Pressable>
       </View>
+
+      <SectionSeparator />
+      <SectionHeader title="Metal Prices" />
+      <Text style={[styles.sectionDesc, { color: muted }]}>Used to calculate the value of your gold and silver holdings</Text>
 
       <FormInput
         label={`Gold price per gram — 24k (${priceSettings.baseCurrency})`}
@@ -151,10 +157,10 @@ export default function PriceSettings() {
         style={{ marginTop: 8 }}
       />
 
-      {/* Exchange rates */}
-      <Text style={[styles.subHeader, { color: muted }]}>Exchange Rates → {priceSettings.baseCurrency}</Text>
-      <Text style={[styles.hint, { color: muted }]}>
-        1 [currency] = X {priceSettings.baseCurrency}
+      <SectionSeparator />
+      <SectionHeader title="Exchange Rates" />
+      <Text style={[styles.sectionDesc, { color: muted }]}>
+        Convert foreign currency balances to {priceSettings.baseCurrency} — 1 [currency] = X {priceSettings.baseCurrency}
       </Text>
 
       {exchangeRates.map((rate) => (
@@ -233,6 +239,7 @@ const styles = StyleSheet.create({
   chevron: { fontSize: 16 },
   subHeader: { fontSize: 13, fontWeight: '700', marginTop: 16, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
   hint: { fontSize: 12, marginBottom: 10 },
+  sectionDesc: { fontSize: 12, marginBottom: 14, marginTop: -6 },
   purityRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 10 },
   karatLabel: { fontSize: 15, fontWeight: '700', width: 36 },
   purityInput: { flex: 1, borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, fontSize: 15 },
