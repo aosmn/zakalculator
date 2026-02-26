@@ -18,6 +18,7 @@ function TabBarIcon(props: {
 }
 
 function HeaderTitle({ color }: { color: string }) {
+  const { lang } = useLanguage();
   return (
     <View style={headerStyles.container}>
       <Image
@@ -25,7 +26,9 @@ function HeaderTitle({ color }: { color: string }) {
         style={headerStyles.icon}
         resizeMode="contain"
       />
-      <Text style={[headerStyles.text, { color }]}>ZaKalculator</Text>
+      <Text style={[headerStyles.text, { color }]}>
+        {lang === 'ar' ? 'حاسبة الزكاة' : 'ZaKalculator'}
+      </Text>
     </View>
   );
 }

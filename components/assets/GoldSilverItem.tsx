@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useThemeColor } from '@/components/Themed';
+import { useLanguage } from '@/context/LanguageContext';
 import { MetalHolding } from '@/types';
 import { useZakah } from '@/context/ZakahContext';
 import { goldValue, silverValue } from '@/utils/zakahCalculations';
@@ -15,6 +16,8 @@ interface Props {
 
 export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
   const { state } = useZakah();
+  const { lang } = useLanguage();
+  const isRTL = lang === 'ar';
   const { goldPricePerGram, silverPricePerGram, baseCurrency, goldPurityPrices } = state.priceSettings;
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
@@ -35,8 +38,8 @@ export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
       onPress={onPress}>
       <View style={[styles.dot, { backgroundColor: dot }]} />
       <View style={styles.left}>
-        <Text style={[styles.label, { color: text }]}>{holding.label}</Text>
-        <Text style={[styles.sub, { color: muted }]}>
+        <Text style={[styles.label, { color: text, textAlign: isRTL ? 'right' : 'left' }]}>{holding.label}</Text>
+        <Text style={[styles.sub, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>
           {formatWeight(holding.weightGrams)} · {formatPurity(holding.purity, holding.purityUnit)}
         </Text>
       </View>

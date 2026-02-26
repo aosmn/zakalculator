@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useThemeColor } from '@/components/Themed';
+import { useLanguage } from '@/context/LanguageContext';
 import { CurrencyHolding } from '@/types';
 import { useZakah } from '@/context/ZakahContext';
 import { convertToBase } from '@/utils/zakahCalculations';
@@ -15,7 +16,9 @@ interface Props {
 
 export default function CurrencyItem({ holding, onPress, onDelete }: Props) {
   const { state } = useZakah();
+  const { lang } = useLanguage();
   const { baseCurrency } = state.priceSettings;
+  const isRTL = lang === 'ar';
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const card = useThemeColor({}, 'card');
@@ -29,8 +32,8 @@ export default function CurrencyItem({ holding, onPress, onDelete }: Props) {
       style={[styles.row, { backgroundColor: card, borderColor: border }]}
       onPress={onPress}>
       <View style={styles.left}>
-        <Text style={[styles.label, { color: text }]}>{holding.label} · {holding.currency}</Text>
-        <Text style={[styles.sub, { color: muted }]}>
+        <Text style={[styles.label, { color: text, textAlign: isRTL ? 'right' : 'left' }]}>{holding.label} · {holding.currency}</Text>
+        <Text style={[styles.sub, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>
           {formatCurrency(holding.amount, holding.currency)}
         </Text>
       </View>
