@@ -20,6 +20,9 @@ const LanguageContext = createContext<LanguageContextValue>({
 });
 
 function applyRTL(isRTL: boolean) {
+  // I18nManager.forceRTL is a no-op on React Native Web, and setting
+  // document.dir breaks RN Web's flex layout. RTL on web is handled
+  // per-component via the lang value from LanguageContext.
   if (Platform.OS !== 'web') {
     I18nManager.forceRTL(isRTL);
   }
@@ -41,6 +44,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLangState(l);
     AsyncStorage.setItem(LANG_KEY, l);
     applyRTL(l === 'ar');
+    // Native needs a restart to re-apply I18nManager layout direction;
+    // web updates live via document.dir so no alert needed there.
     if (Platform.OS !== 'web') {
       Alert.alert(
         l === 'ar' ? 'تغيير اللغة' : 'Language Changed',

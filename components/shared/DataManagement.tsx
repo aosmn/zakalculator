@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { useThemeColor } from '@/components/Themed';
@@ -64,11 +64,27 @@ export default function DataManagement() {
         return;
       }
 
-      const path = FileSystem.cacheDirectory + fileName;
+      if (Platform.OS === 'android') {
+        // SAF lets the user pick a save location — no FileProvider config needed.
+        const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        if (!perms.granted) return;
+        const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(
+          perms.directoryUri,
+          fileName,
+          'application/json'
+        );
+        await FileSystem.StorageAccessFramework.writeAsStringAsync(fileUri, json);
+        showStatus('success', t('backupExported'));
+        return;
+      }
+
+      // iOS — write to cache then share
+      const dir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory ?? '';
+      const path = dir + fileName;
       await FileSystem.writeAsStringAsync(path, json, { encoding: FileSystem.EncodingType.UTF8 });
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {
-        await Sharing.shareAsync(path, { mimeType: 'application/json', dialogTitle: 'Export ZaKalculator backup' });
+        await Sharing.shareAsync(path, { mimeType: 'application/json', UTI: 'public.json', dialogTitle: 'Export ZaKalculator backup' });
         showStatus('success', t('backupExported'));
       } else {
         showStatus('error', t('sharingUnavailable'));
@@ -106,16 +122,28 @@ export default function DataManagement() {
 
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/json',
+        // Android file pickers often don't recognise 'application/json', causing
+        // the picker to silently return canceled=true even after a file is picked.
+        // Use '*/*' on Android and validate the content ourselves.
+        type: Platform.OS === 'android' ? '*/*' : 'application/json',
         copyToCacheDirectory: true,
       });
 
-      if (result.canceled) return;
+      if (result.canceled || !result.assets?.length) return;
 
       const asset = result.assets[0];
-      const json = await FileSystem.readAsStringAsync(asset.uri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+
+      let json: string;
+      try {
+        json = await FileSystem.readAsStringAsync(asset.uri, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+      } catch {
+        // Fallback: Android content:// URIs are readable via fetch even when
+        // FileSystem.readAsStringAsync fails.
+        const response = await fetch(asset.uri);
+        json = await response.text();
+      }
 
       const parsed = JSON.parse(json);
 

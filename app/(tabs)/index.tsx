@@ -69,8 +69,8 @@ function SectionRow({
         </View>
         {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
       </View>
-      <Pressable onPress={onAdd} style={styles.addButton} hitSlop={8}>
-        <Text style={[styles.addText, { color: tint }]}>{addLabel}</Text>
+      <Pressable onPress={onAdd} style={[styles.addButton, { backgroundColor: tint }]} hitSlop={8}>
+        <Text style={styles.addText}>{addLabel}</Text>
       </Pressable>
     </View>
   );
@@ -141,7 +141,7 @@ export default function AssetsScreen() {
         key={h.id}
         holding={h}
         onPress={() => { setEditingCurrency(h); setShowCurrencyModal(true); }}
-        onLongPress={() => setDeleteCurrency(h)}
+        onDelete={() => setDeleteCurrency(h)}
       />
     );
   }
@@ -152,7 +152,7 @@ export default function AssetsScreen() {
         key={h.id}
         holding={h}
         onPress={() => openEditMetal(h)}
-        onLongPress={() => setDeleteMetal(h)}
+        onDelete={() => setDeleteMetal(h)}
       />
     );
   }
@@ -185,6 +185,12 @@ export default function AssetsScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
+        {/* Intro */}
+        <View style={[styles.intro, { backgroundColor: tint + '12', borderColor: tint + '30' }]}>
+          <Text style={[styles.introTitle, { color: tint }]}>{t('appIntroTitle')}</Text>
+          <Text style={[styles.introDesc, { color: muted }]}>{t('appIntroDesc')}</Text>
+        </View>
+
         {/* Balances — with two group toggles */}
         <View style={styles.sectionRow}>
           <View style={styles.sectionLeft}>
@@ -205,9 +211,9 @@ export default function AssetsScreen() {
           </View>
           <Pressable
             onPress={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
-            style={styles.addButton}
+            style={[styles.addButton, { backgroundColor: tint }]}
             hitSlop={8}>
-            <Text style={[styles.addText, { color: tint }]}>{t('addItem')}</Text>
+            <Text style={styles.addText}>{t('addItem')}</Text>
           </Pressable>
         </View>
         {renderBalances()}
@@ -296,6 +302,9 @@ export default function AssetsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: 16 },
+  intro: { borderRadius: 12, borderWidth: 1, padding: 14, marginBottom: 20 },
+  introTitle: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
+  introDesc: { fontSize: 13, lineHeight: 19 },
   spacer: { height: 40 },
   sectionRow: {
     flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between',
@@ -307,8 +316,8 @@ const styles = StyleSheet.create({
   sectionDesc: { fontSize: 12, marginTop: 2 },
   groupToggle: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, borderWidth: 1.5 },
   groupToggleText: { fontSize: 12, fontWeight: '700' },
-  addButton: { paddingVertical: 4, paddingHorizontal: 8 },
-  addText: { fontSize: 15, fontWeight: '600' },
+  addButton: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20 },
+  addText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   groupHeader: {
     fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8,
     paddingBottom: 6, marginBottom: 4, marginTop: 12, borderBottomWidth: 1,

@@ -40,6 +40,13 @@
     "experiments": {
       "typedRoutes": true,
       "baseUrl": "/zakalculator"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f36ff4f2-f0d0-4f40-af75-5daea5bfa0a6"
+      }
+    },
+    "owner": "aosmn"
   }
 }

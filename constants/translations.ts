@@ -6,6 +6,10 @@ export const en = {
   tabZakah: 'Zakah',
   tabPayments: 'Payments',
 
+  // Assets screen intro
+  appIntroTitle: 'Calculate Your Zakah',
+  appIntroDesc: 'Track your gold, silver, and cash holdings to calculate how much Zakah you owe. Add your assets below, then check the Zakah tab for your due amount.',
+
   // Assets screen
   balances: 'Balances',
   cashAndAccounts: 'Cash & currency accounts',
@@ -114,6 +118,7 @@ export const en = {
 
   // PersonSwitcher
   people: 'People',
+  peopleSectionDesc: 'Track Zakah separately for each person.',
   addPerson: 'Add Person',
   renamePerson: 'Rename Person',
   nameField: 'Name',
@@ -135,19 +140,19 @@ export const en = {
 
   // DataManagement
   backupRestore: 'Backup & Restore',
-  backupDesc: 'Export your data as a JSON file to back it up or transfer it to another device.',
-  exportBtn: 'Export',
-  importBtn: 'Import',
+  backupDesc: 'Save your data to a file to back it up or transfer it to another device.',
+  exportBtn: 'Back Up',
+  importBtn: 'Restore',
   replaceBtn: 'Replace',
-  replaceAllMsg: 'Replace all data (all people) with this backup?',
-  replacePersonMsg: "Replace current person's data with this backup?",
-  backupExported: 'Backup exported.',
+  replaceAllMsg: 'This will replace all data (all people) with the backup. Continue?',
+  replacePersonMsg: "This will replace the current person's data with the backup. Continue?",
+  backupExported: 'Backup saved.',
   backupDownloaded: 'Backup downloaded.',
   sharingUnavailable: 'Sharing is not available on this device.',
-  exportFailed: 'Export failed. Please try again.',
+  exportFailed: 'Could not save backup. Please try again.',
   invalidBackup: 'Invalid backup file.',
   couldNotRead: 'Could not read file. Make sure it is a valid ZaKalculator backup.',
-  importSuccess: 'Data imported successfully.',
+  importSuccess: 'Data restored successfully.',
 
   // Currency names
   currencyUSD: 'US Dollar',
@@ -184,6 +189,10 @@ export const ar: typeof en = {
   tabPrices: 'الأسعار',
   tabZakah: 'الزكاة',
   tabPayments: 'المدفوعات',
+
+  // Assets screen intro
+  appIntroTitle: 'احسب زكاتك',
+  appIntroDesc: 'تتبّع مقتنياتك من الذهب والفضة والنقد لحساب مقدار الزكاة الواجبة عليك. أضف أصولك أدناه، ثم تحقق من تبويب الزكاة لمعرفة المبلغ المستحق.',
 
   // Assets screen
   balances: 'الأرصدة',
@@ -291,6 +300,7 @@ export const ar: typeof en = {
 
   // PersonSwitcher
   people: 'الأشخاص',
+  peopleSectionDesc: 'تتبع الزكاة بشكل منفصل لكل شخص.',
   addPerson: 'إضافة شخص',
   renamePerson: 'إعادة تسمية',
   nameField: 'الاسم',
@@ -312,19 +322,19 @@ export const ar: typeof en = {
 
   // DataManagement
   backupRestore: 'النسخ الاحتياطي والاستعادة',
-  backupDesc: 'تصدير بياناتك كملف JSON',
-  exportBtn: 'تصدير',
-  importBtn: 'استيراد',
+  backupDesc: 'احفظ بياناتك في ملف لأخذ نسخة احتياطية أو نقلها إلى جهاز آخر.',
+  exportBtn: 'نسخ احتياطي',
+  importBtn: 'استعادة',
   replaceBtn: 'استبدال',
-  replaceAllMsg: 'استبدال بيانات جميع الأشخاص بهذه النسخة الاحتياطية؟',
-  replacePersonMsg: 'استبدال بيانات الشخص الحالي بهذه النسخة؟',
-  backupExported: 'تم التصدير.',
-  backupDownloaded: 'تم التنزيل.',
+  replaceAllMsg: 'سيُستبدل جميع البيانات (لجميع الأشخاص) بهذه النسخة الاحتياطية. هل تريد المتابعة؟',
+  replacePersonMsg: 'سيُستبدل بيانات الشخص الحالي بهذه النسخة الاحتياطية. هل تريد المتابعة؟',
+  backupExported: 'تم حفظ النسخة الاحتياطية.',
+  backupDownloaded: 'تم تنزيل النسخة الاحتياطية.',
   sharingUnavailable: 'المشاركة غير متاحة على هذا الجهاز.',
-  exportFailed: 'فشل التصدير.',
-  invalidBackup: 'ملف نسخ احتياطي غير صالح.',
-  couldNotRead: 'تعذّر قراءة الملف.',
-  importSuccess: 'تم استيراد البيانات بنجاح.',
+  exportFailed: 'تعذّر حفظ النسخة الاحتياطية. حاول مرة أخرى.',
+  invalidBackup: 'ملف النسخة الاحتياطية غير صالح.',
+  couldNotRead: 'تعذّر قراءة الملف. تأكد من أنه نسخة احتياطية صالحة من زاكالكيولاتور.',
+  importSuccess: 'تمت استعادة البيانات بنجاح.',
 
   // Currency names
   currencyUSD: 'دولار أمريكي',

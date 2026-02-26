@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Feather } from '@expo/vector-icons';
 import { useThemeColor } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -110,7 +111,10 @@ export default function PersonSwitcher() {
             {mode === 'list' && !deleteTarget && (
               <>
                 <View style={[styles.sheetHeader, { borderBottomColor: border }]}>
-                  <Text style={[styles.sheetTitle, { color: text }]}>{t('people')}</Text>
+                  <View style={styles.titleGroup}>
+                    <Text style={[styles.sheetTitle, { color: text }]}>{t('people')}</Text>
+                    <Text style={[styles.sheetDesc, { color: muted }]}>{t('peopleSectionDesc')}</Text>
+                  </View>
                   <Pressable onPress={handleAddPress} hitSlop={8}>
                     <FontAwesome name="plus" size={18} color={tint} />
                   </Pressable>
@@ -122,10 +126,7 @@ export default function PersonSwitcher() {
                       <Pressable
                         key={person.id}
                         style={[styles.personRow, isActive && { backgroundColor: tint + '18' }]}
-                        onPress={() => handleSwitch(person.id)}
-                        onLongPress={() => {
-                          if (!isActive && people.length > 1) handleDeletePress(person.id, person.name);
-                        }}>
+                        onPress={() => handleSwitch(person.id)}>
                         <View style={styles.personRowLeft}>
                           {isActive ? (
                             <FontAwesome name="check" size={14} color={tint} style={styles.checkIcon} />
@@ -136,19 +137,26 @@ export default function PersonSwitcher() {
                             {person.name}
                           </Text>
                         </View>
-                        <Pressable
-                          onPress={() => handleRenamePress(person.id, person.name)}
-                          hitSlop={8}
-                          style={styles.editBtn}>
-                          <FontAwesome name="pencil" size={14} color={muted} />
-                        </Pressable>
+                        <View style={styles.rowActions}>
+                          <Pressable
+                            onPress={() => handleRenamePress(person.id, person.name)}
+                            hitSlop={8}
+                            style={styles.actionBtn}>
+                            <FontAwesome name="pencil" size={14} color={muted} />
+                          </Pressable>
+                          {!isActive && people.length > 1 && (
+                            <Pressable
+                              onPress={() => handleDeletePress(person.id, person.name)}
+                              hitSlop={8}
+                              style={styles.actionBtn}>
+                              <Feather name="trash-2" size={15} color={danger} />
+                            </Pressable>
+                          )}
+                        </View>
                       </Pressable>
                     );
                   })}
                 </ScrollView>
-                {people.length > 1 && (
-                  <Text style={[styles.hint, { color: muted }]}>{t('longPressHint')}</Text>
-                )}
                 <Pressable style={[styles.cancelBtn, { borderTopColor: border }]} onPress={closeSheet}>
                   <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
                 </Pressable>
@@ -266,10 +274,17 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     marginBottom: 4,
   },
+  titleGroup: {
+    flex: 1,
+    marginRight: 12,
+  },
   sheetTitle: {
     fontSize: 18,
     fontWeight: '700',
-    textAlign: 'center',
+  },
+  sheetDesc: {
+    fontSize: 12,
+    marginTop: 2,
   },
   list: {
     flexGrow: 0,
@@ -278,7 +293,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 13,
+    paddingVertical: 8,
     paddingHorizontal: 6,
     borderRadius: 8,
   },
@@ -297,14 +312,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  editBtn: {
-    padding: 4,
+  rowActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  hint: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 4,
-    marginBottom: 8,
+  actionBtn: {
+    padding: 4,
   },
   cancelBtn: {
     borderTopWidth: 1,
