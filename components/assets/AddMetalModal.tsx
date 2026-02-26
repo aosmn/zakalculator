@@ -99,7 +99,7 @@ export default function AddMetalModal({ visible, defaultType = 'gold', editing, 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav}>
+        <KeyboardAvoidingView behavior="padding" style={styles.kav}>
           <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
             <Text style={[styles.title, { color: text }]}>
               {editing ? t('editMetalTitle') : t('addMetalTitle')}
@@ -140,8 +140,8 @@ export default function AddMetalModal({ visible, defaultType = 'gold', editing, 
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
-  kav: { justifyContent: 'flex-end' },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
+  kav: { flex: 1, justifyContent: 'flex-end' },
   sheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 },
   title: { fontSize: 20, fontWeight: '700', marginBottom: 20, textAlign: 'center' },
   saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 8 },
