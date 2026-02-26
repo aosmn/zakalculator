@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
+import { useLanguage } from '@/context/LanguageContext';
 import { ZakahPayment } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/formatting';
 
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
+  const { lang } = useLanguage();
+  const isRTL = lang === 'ar';
   const card = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
   const text = useThemeColor({}, 'text');
@@ -23,12 +26,12 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
       onPress={onPress}
       onLongPress={onLongPress}>
       <View style={styles.left}>
-        <Text style={[styles.date, { color: muted }]}>{formatDate(payment.paidAt)}</Text>
+        <Text style={[styles.date, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>{formatDate(payment.paidAt)}</Text>
         {payment.note ? (
-          <Text style={[styles.note, { color: text }]}>{payment.note}</Text>
+          <Text style={[styles.note, { color: text, textAlign: isRTL ? 'right' : 'left' }]}>{payment.note}</Text>
         ) : null}
       </View>
-      <Text style={[styles.amount, { color: success }]}>
+      <Text style={[styles.amount, { color: success, textAlign: isRTL ? 'left' : 'right' }]}>
         {formatCurrency(payment.amountDisplayCurrency, payment.currency)}
       </Text>
     </Pressable>
@@ -40,7 +43,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 14, borderRadius: 12, borderWidth: 1, marginBottom: 8,
   },
-  left: { flex: 1, marginRight: 8 },
+  left: { flex: 1, marginEnd: 8 },
   date: { fontSize: 13, marginBottom: 2 },
   note: { fontSize: 15, fontWeight: '500' },
   amount: { fontSize: 17, fontWeight: '700' },

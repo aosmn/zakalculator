@@ -34,6 +34,8 @@ function Row({
   zakahRight?: string;
   isTotal?: boolean;
 }) {
+  const { lang } = useLanguage();
+  const isRTL = lang === 'ar';
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const warning = useThemeColor({}, 'warning');
@@ -42,13 +44,13 @@ function Row({
   return (
     <View style={[styles.row, { backgroundColor: card, borderColor: border }, isTotal && styles.totalRow]}>
       <View style={styles.rowLeft}>
-        <Text style={[styles.rowLabel, { color: text }, isTotal && styles.bold]}>{label}</Text>
-        {sub ? <Text style={[styles.rowSub, { color: muted }]}>{sub}</Text> : null}
+        <Text style={[styles.rowLabel, { color: text, textAlign: isRTL ? 'right' : 'left' }, isTotal && styles.bold]}>{label}</Text>
+        {sub ? <Text style={[styles.rowSub, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>{sub}</Text> : null}
       </View>
       <View style={styles.rowRight}>
-        <Text style={[styles.rowValue, { color: text }, isTotal && styles.bold]}>{right}</Text>
-        {rightSub ? <Text style={[styles.rowSubRight, { color: muted }]}>{rightSub}</Text> : null}
-        {zakahRight ? <Text style={[styles.rowSubRight, { color: warning }]}>{zakahRight}</Text> : null}
+        <Text style={[styles.rowValue, { color: text, textAlign: isRTL ? 'left' : 'right' }, isTotal && styles.bold]}>{right}</Text>
+        {rightSub ? <Text style={[styles.rowSubRight, { color: muted, textAlign: isRTL ? 'left' : 'right' }]}>{rightSub}</Text> : null}
+        {zakahRight ? <Text style={[styles.rowSubRight, { color: warning, textAlign: isRTL ? 'left' : 'right' }]}>{zakahRight}</Text> : null}
       </View>
     </View>
   );
@@ -224,7 +226,7 @@ const styles = StyleSheet.create({
     padding: 14, borderRadius: 12, borderWidth: 1, marginBottom: 6,
   },
   totalRow: { marginTop: 2 },
-  rowLeft: { flex: 1, marginRight: 8 },
+  rowLeft: { flex: 1, marginEnd: 8 },
   rowRight: { alignItems: 'flex-end' },
   rowLabel: { fontSize: 15 },
   rowSub: { fontSize: 12, marginTop: 2 },
