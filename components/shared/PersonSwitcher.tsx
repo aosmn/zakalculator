@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Alert,
   Modal,
   Pressable,
   ScrollView,
@@ -141,14 +140,14 @@ export default function PersonSwitcher() {
                           <Pressable
                             onPress={() => handleRenamePress(person.id, person.name)}
                             hitSlop={8}
-                            style={styles.actionBtn}>
+                            style={styles.iconBtn}>
                             <FontAwesome name="pencil" size={14} color={muted} />
                           </Pressable>
                           {!isActive && people.length > 1 && (
                             <Pressable
                               onPress={() => handleDeletePress(person.id, person.name)}
                               hitSlop={8}
-                              style={styles.actionBtn}>
+                              style={styles.iconBtn}>
                               <Feather name="trash-2" size={15} color={danger} />
                             </Pressable>
                           )}
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
   },
   triggerName: {
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
   },
   overlay: {
     flex: 1,
@@ -260,10 +259,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   sheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    paddingBottom: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 28,
+    paddingBottom: 44,
     maxHeight: '60%',
   },
   sheetHeader: {
@@ -279,11 +278,12 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   sheetTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 20,
+    fontFamily: 'Inter_700Bold',
   },
   sheetDesc: {
     fontSize: 12,
+    fontFamily: 'Inter_400Regular',
     marginTop: 2,
   },
   list: {
@@ -293,9 +293,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 6,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   personRowLeft: {
     flexDirection: 'row',
@@ -309,15 +309,15 @@ const styles = StyleSheet.create({
     width: 20,
   },
   personName: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 15,
+    fontFamily: 'Inter_600SemiBold',
   },
   rowActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  actionBtn: {
+  iconBtn: {
     padding: 4,
   },
   cancelBtn: {
@@ -328,24 +328,27 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 16,
+    fontFamily: 'Inter_400Regular',
   },
   deleteMsg: {
     fontSize: 14,
+    fontFamily: 'Inter_400Regular',
     textAlign: 'center',
     marginBottom: 20,
     lineHeight: 20,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     fontSize: 16,
+    fontFamily: 'Inter_400Regular',
     marginBottom: 14,
   },
   actionBtn: {
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: 14,
+    paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 10,
   },
@@ -355,7 +358,7 @@ const styles = StyleSheet.create({
   },
   actionBtnText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     color: '#fff',
   },
 });

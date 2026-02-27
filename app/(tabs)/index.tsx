@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColor } from '@/components/Themed';
 import EmptyState from '@/components/shared/EmptyState';
 import ConfirmDeleteSheet from '@/components/shared/ConfirmDeleteSheet';
@@ -16,62 +18,70 @@ import SectionSeparator from '@/components/shared/SectionSeparator';
 
 type BalancesGroupMode = null | 'currency' | 'label';
 
-function Toggle({
-  label,
-  active,
-  onPress,
-}: {
-  label: string;
-  active: boolean;
-  onPress: () => void;
-}) {
-  const tint = useThemeColor({}, 'tint');
-  const muted = useThemeColor({}, 'muted');
-  const border = useThemeColor({}, 'border');
-  return (
-    <Pressable
-      style={[
-        styles.groupToggle,
-        { borderColor: active ? tint : border, backgroundColor: active ? tint + '18' : 'transparent' },
-      ]}
-      onPress={onPress}>
-      <Text style={[styles.groupToggleText, { color: active ? tint : muted }]}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function SectionRow({
+function SectionHeader({
   title,
   description,
-  grouped,
-  onToggleGroup,
   onAdd,
-  groupLabel,
   addLabel,
 }: {
   title: string;
   description?: string;
-  grouped: boolean;
-  onToggleGroup: () => void;
   onAdd: () => void;
-  groupLabel: string;
   addLabel: string;
 }) {
   const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   return (
-    <View style={styles.sectionRow}>
+    <View style={styles.sectionHeader}>
       <View style={styles.sectionLeft}>
-        <View style={styles.sectionTitleRow}>
-          <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
-          <Toggle label={groupLabel} active={grouped} onPress={onToggleGroup} />
-        </View>
+        <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
         {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
       </View>
-      <Pressable onPress={onAdd} style={[styles.addButton, { backgroundColor: tint }]} hitSlop={8}>
-        <Text style={styles.addText}>{addLabel}</Text>
+      <Pressable onPress={onAdd} style={[styles.addBtn, { backgroundColor: tint }]} hitSlop={8}>
+        <Text style={styles.addBtnText}>{addLabel}</Text>
       </Pressable>
+    </View>
+  );
+}
+
+function SectionHeaderWithToggle({
+  title,
+  description,
+  toggled,
+  onToggle,
+  toggleLabel,
+  onAdd,
+  addLabel,
+}: {
+  title: string;
+  description?: string;
+  toggled: boolean;
+  onToggle: () => void;
+  toggleLabel: string;
+  onAdd: () => void;
+  addLabel: string;
+}) {
+  const tint = useThemeColor({}, 'tint');
+  const text = useThemeColor({}, 'text');
+  const muted = useThemeColor({}, 'muted');
+  const border = useThemeColor({}, 'border');
+  return (
+    <View style={styles.sectionHeader}>
+      <View style={styles.sectionLeft}>
+        <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
+        {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
+      </View>
+      <View style={styles.sectionRight}>
+        <Pressable
+          style={[styles.togglePill, { borderColor: toggled ? tint : border, backgroundColor: toggled ? tint : 'transparent' }]}
+          onPress={onToggle}>
+          <Text style={[styles.togglePillText, { color: toggled ? '#fff' : muted }]}>{toggleLabel}</Text>
+        </Pressable>
+        <Pressable onPress={onAdd} style={[styles.addBtn, { backgroundColor: tint }]} hitSlop={8}>
+          <Text style={styles.addBtnText}>{addLabel}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -80,7 +90,10 @@ function GroupHeader({ label }: { label: string }) {
   const muted = useThemeColor({}, 'muted');
   const border = useThemeColor({}, 'border');
   return (
-    <Text style={[styles.groupHeader, { color: muted, borderBottomColor: border }]}>{label}</Text>
+    <View style={styles.groupHeaderRow}>
+      <Text style={[styles.groupHeaderText, { color: muted }]}>{label}</Text>
+      <View style={[styles.groupHeaderLine, { backgroundColor: border }]} />
+    </View>
   );
 }
 
@@ -112,12 +125,10 @@ export default function AssetsScreen() {
   function openAddSilver() { setMetalModalType('silver'); setEditingMetal(undefined); setShowMetalModal(true); }
   function openEditMetal(h: MetalHolding) { setEditingMetal(h); setMetalModalType(h.type); setShowMetalModal(true); }
 
-  // Toggle helper: activates mode if not active, clears if already active
   function toggleBalancesGroup(mode: 'currency' | 'label') {
     setBalancesGroupMode((prev) => (prev === mode ? null : mode));
   }
 
-  // Sorted holdings
   const sortedBalances = [...state.currencyHoldings].sort((a, b) => a.label.localeCompare(b.label));
   const sortedGold = state.metalHoldings.filter((h) => h.type === 'gold').sort((a, b) => a.label.localeCompare(b.label));
   const sortedSilver = state.metalHoldings.filter((h) => h.type === 'silver').sort((a, b) => a.label.localeCompare(b.label));
@@ -157,7 +168,6 @@ export default function AssetsScreen() {
     );
   }
 
-  // Balances grouped content
   function renderBalances() {
     if (sortedBalances.length === 0) {
       return <EmptyState message={t('noBalances')} />;
@@ -183,92 +193,104 @@ export default function AssetsScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={styles.inner}>
 
-        {/* Intro */}
-        <View style={[styles.intro, { backgroundColor: tint + '12', borderColor: tint + '30' }]}>
-          <Text style={[styles.introTitle, { color: tint }]}>{t('appIntroTitle')}</Text>
-          <Text style={[styles.introDesc, { color: muted }]}>{t('appIntroDesc')}</Text>
-        </View>
-
-        {/* Balances — with two group toggles */}
-        <View style={styles.sectionRow}>
-          <View style={styles.sectionLeft}>
-            <View style={styles.sectionTitleRow}>
-              <Text style={[styles.sectionTitle, { color: text }]}>{t('balances')}</Text>
-              <Toggle
-                label={t('groupByCurrency')}
-                active={balancesGroupMode === 'currency'}
-                onPress={() => toggleBalancesGroup('currency')}
-              />
-              <Toggle
-                label={t('groupByLabel')}
-                active={balancesGroupMode === 'label'}
-                onPress={() => toggleBalancesGroup('label')}
-              />
+          {/* Intro card */}
+          <View style={[styles.introCard, { backgroundColor: tint + '18' }]}>
+            <LinearGradient
+              colors={['#0D9488', '#0F766E']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.introIconWrap}>
+              <Feather name="star" size={18} color="#fff" />
+            </LinearGradient>
+            <View style={styles.introContent}>
+              <Text style={[styles.introTitle, { color: text }]}>{t('appIntroTitle')}</Text>
+              <Text style={[styles.introDesc, { color: muted }]}>{t('appIntroDesc')}</Text>
             </View>
-            <Text style={[styles.sectionDesc, { color: muted }]}>{t('cashAndAccounts')}</Text>
           </View>
-          <Pressable
-            onPress={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
-            style={[styles.addButton, { backgroundColor: tint }]}
-            hitSlop={8}>
-            <Text style={styles.addText}>{t('addItem')}</Text>
-          </Pressable>
+
+          {/* Balances section header */}
+          <SectionHeader
+            title={t('balances')}
+            description={t('cashAndAccounts')}
+            onAdd={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
+            addLabel={t('addItem')}
+          />
+
+          {/* Segmented group control */}
+          <View style={[styles.segControl, { borderColor: tint }]}>
+            <Pressable
+              style={[styles.seg, balancesGroupMode === 'currency' && { backgroundColor: tint }]}
+              onPress={() => toggleBalancesGroup('currency')}>
+              <Text style={[styles.segText, { color: balancesGroupMode === 'currency' ? '#fff' : text }]}>
+                {t('groupByCurrency')}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.seg, balancesGroupMode === 'label' && { backgroundColor: tint }]}
+              onPress={() => toggleBalancesGroup('label')}>
+              <Text style={[styles.segText, { color: balancesGroupMode === 'label' ? '#fff' : text }]}>
+                {t('groupByLabel')}
+              </Text>
+            </Pressable>
+          </View>
+
+          {renderBalances()}
+
+          <SectionSeparator />
+
+          {/* Gold */}
+          <SectionHeaderWithToggle
+            title={t('gold')}
+            description={t('goldDesc')}
+            toggled={groupGold}
+            onToggle={() => setGroupGold((v) => !v)}
+            toggleLabel={t('group')}
+            onAdd={openAddGold}
+            addLabel={t('addItem')}
+          />
+          {sortedGold.length === 0 ? (
+            <EmptyState message={t('noGold')} />
+          ) : groupGold ? (
+            groupBy(sortedGold, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
+              <View key={groupKey}>
+                <GroupHeader label={groupKey} />
+                {items.map(renderMetalItem)}
+              </View>
+            ))
+          ) : (
+            sortedGold.map(renderMetalItem)
+          )}
+
+          <SectionSeparator />
+
+          {/* Silver */}
+          <SectionHeaderWithToggle
+            title={t('silver')}
+            description={t('silverDesc')}
+            toggled={groupSilver}
+            onToggle={() => setGroupSilver((v) => !v)}
+            toggleLabel={t('group')}
+            onAdd={openAddSilver}
+            addLabel={t('addItem')}
+          />
+          {sortedSilver.length === 0 ? (
+            <EmptyState message={t('noSilver')} />
+          ) : groupSilver ? (
+            groupBy(sortedSilver, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
+              <View key={groupKey}>
+                <GroupHeader label={groupKey} />
+                {items.map(renderMetalItem)}
+              </View>
+            ))
+          ) : (
+            sortedSilver.map(renderMetalItem)
+          )}
+
+          <View style={styles.spacer} />
         </View>
-        {renderBalances()}
-
-        <SectionSeparator />
-
-        {/* Gold — grouped by karat */}
-        <SectionRow
-          title={t('gold')}
-          description={t('goldDesc')}
-          grouped={groupGold}
-          onToggleGroup={() => setGroupGold((v) => !v)}
-          onAdd={openAddGold}
-          groupLabel={t('group')}
-          addLabel={t('addItem')}
-        />
-        {sortedGold.length === 0 ? (
-          <EmptyState message={t('noGold')} />
-        ) : groupGold ? (
-          groupBy(sortedGold, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
-            <View key={groupKey}>
-              <GroupHeader label={groupKey} />
-              {items.map(renderMetalItem)}
-            </View>
-          ))
-        ) : (
-          sortedGold.map(renderMetalItem)
-        )}
-
-        <SectionSeparator />
-
-        {/* Silver — grouped by purity */}
-        <SectionRow
-          title={t('silver')}
-          description={t('silverDesc')}
-          grouped={groupSilver}
-          onToggleGroup={() => setGroupSilver((v) => !v)}
-          onAdd={openAddSilver}
-          groupLabel={t('group')}
-          addLabel={t('addItem')}
-        />
-        {sortedSilver.length === 0 ? (
-          <EmptyState message={t('noSilver')} />
-        ) : groupSilver ? (
-          groupBy(sortedSilver, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
-            <View key={groupKey}>
-              <GroupHeader label={groupKey} />
-              {items.map(renderMetalItem)}
-            </View>
-          ))
-        ) : (
-          sortedSilver.map(renderMetalItem)
-        )}
-
-        <View style={styles.spacer} />
       </ScrollView>
 
       <AddCurrencyModal
@@ -301,25 +323,78 @@ export default function AssetsScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  content: { padding: 16 },
-  intro: { borderRadius: 12, borderWidth: 1, padding: 14, marginBottom: 20 },
-  introTitle: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
-  introDesc: { fontSize: 13, lineHeight: 19 },
+  scroll: { flexGrow: 1 },
+  inner: {
+    padding: 16,
+    maxWidth: 860,
+    width: '100%',
+    alignSelf: 'center',
+  },
   spacer: { height: 40 },
-  sectionRow: {
-    flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between',
-    marginBottom: 8, marginTop: 4, flexWrap: 'wrap', gap: 6,
+
+  // Intro card
+  introCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 28,
+    gap: 14,
   },
-  sectionLeft: { flex: 1 },
-  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  sectionTitle: { fontSize: 18, fontWeight: '700' },
-  sectionDesc: { fontSize: 12, marginTop: 2 },
-  groupToggle: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, borderWidth: 1.5 },
-  groupToggleText: { fontSize: 12, fontWeight: '700' },
-  addButton: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20 },
-  addText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-  groupHeader: {
-    fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8,
-    paddingBottom: 6, marginBottom: 4, marginTop: 12, borderBottomWidth: 1,
+  introIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
+  introContent: { flex: 1 },
+  introTitle: { fontSize: 16, fontFamily: 'Inter_700Bold', marginBottom: 4 },
+  introDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 20 },
+
+  // Section headers
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  sectionLeft: { flex: 1, marginRight: 12 },
+  sectionTitle: { fontSize: 22, fontFamily: 'Inter_700Bold' },
+  sectionDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 2 },
+  sectionRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  togglePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5 },
+  togglePillText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+
+  addBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
+  addBtnText: { fontSize: 14, fontFamily: 'Inter_700Bold', color: '#fff' },
+
+  // Segmented control
+  segControl: {
+    flexDirection: 'row',
+    borderRadius: 24,
+    borderWidth: 1.5,
+    alignSelf: 'flex-start',
+    marginBottom: 14,
+    padding: 3,
+  },
+  seg: { paddingVertical: 7, paddingHorizontal: 20, borderRadius: 20 },
+  segText: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+
+  // Group header with line
+  groupHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 14,
+    marginBottom: 8,
+  },
+  groupHeaderText: {
+    fontSize: 12,
+    fontFamily: 'Inter_600SemiBold',
+    marginRight: 8,
+    letterSpacing: 0.5,
+  },
+  groupHeaderLine: { flex: 1, height: 1 },
 });

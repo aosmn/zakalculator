@@ -16,6 +16,7 @@ export default function ConfirmDeleteSheet({ visible, itemName, onConfirm, onCan
   const text = useThemeColor({}, 'text');
   const danger = useThemeColor({}, 'danger');
   const muted = useThemeColor({}, 'muted');
+  const border = useThemeColor({}, 'border');
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
@@ -26,7 +27,7 @@ export default function ConfirmDeleteSheet({ visible, itemName, onConfirm, onCan
           <Pressable style={[styles.btn, { backgroundColor: danger }]} onPress={onConfirm}>
             <Text style={styles.btnText}>{t('delete')}</Text>
           </Pressable>
-          <Pressable style={[styles.btn, styles.cancel]} onPress={onCancel}>
+          <Pressable style={[styles.btn, styles.cancel, { borderColor: border }]} onPress={onCancel}>
             <Text style={[styles.btnText, { color: text }]}>{t('cancel')}</Text>
           </Pressable>
         </View>
@@ -37,10 +38,10 @@ export default function ConfirmDeleteSheet({ visible, itemName, onConfirm, onCan
 
 const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
-  sheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 },
-  title: { fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
-  subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 24 },
-  btn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
-  cancel: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#ccc' },
-  btnText: { fontSize: 16, fontWeight: '600', color: '#fff' },
+  sheet: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 28, paddingBottom: 44 },
+  title: { fontSize: 20, fontFamily: 'Inter_700Bold', textAlign: 'center', marginBottom: 10 },
+  subtitle: { fontSize: 14, fontFamily: 'Inter_400Regular', textAlign: 'center', marginBottom: 28 },
+  btn: { borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 10 },
+  cancel: { backgroundColor: 'transparent', borderWidth: 1 },
+  btnText: { fontSize: 16, fontFamily: 'Inter_600SemiBold', color: '#fff' },
 });

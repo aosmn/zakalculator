@@ -1,0 +1,79 @@
+{
+  "currencyHoldings": [
+    {
+      "id": "demo-1",
+      "label": "Main Savings",
+      "currency": "USD",
+      "amount": 12500
+    },
+    {
+      "id": "demo-2",
+      "label": "Business Account",
+      "currency": "USD",
+      "amount": 8750
+    },
+    {
+      "id": "demo-3",
+      "label": "Egyptian Pounds",
+      "currency": "EGP",
+      "amount": 150000
+    }
+  ],
+  "metalHoldings": [
+    {
+      "id": "demo-4",
+      "label": "Gold Ring",
+      "type": "gold",
+      "weightGrams": 5,
+      "purity": 18,
+      "purityUnit": "karats"
+    },
+    {
+      "id": "demo-5",
+      "label": "Gold Bracelet",
+      "type": "gold",
+      "weightGrams": 20,
+      "purity": 21,
+      "purityUnit": "karats"
+    },
+    {
+      "id": "demo-6",
+      "label": "Silver Set",
+      "type": "silver",
+      "weightGrams": 150,
+      "purity": 92.5,
+      "purityUnit": "percentage"
+    }
+  ],
+  "priceSettings": {
+    "goldPricePerGram": 95.50,
+    "silverPricePerGram": 1.05,
+    "baseCurrency": "USD",
+    "goldPurityPrices": {}
+  },
+  "exchangeRates": [
+    {
+      "id": "demo-7",
+      "fromCurrency": "EGP",
+      "rate": 0.020
+    }
+  ],
+  "payments": [
+    {
+      "id": "demo-8",
+      "amountBaseCurrency": 200,
+      "currency": "USD",
+      "amountDisplayCurrency": 200,
+      "note": "Local masjid",
+      "paidAt": "2025-03-15T10:00:00.000Z"
+    },
+    {
+      "id": "demo-9",
+      "amountBaseCurrency": 150,
+      "currency": "USD",
+      "amountDisplayCurrency": 150,
+      "note": "Charity organization",
+      "paidAt": "2025-06-01T10:00:00.000Z"
+    }
+  ]
+}

@@ -8,15 +8,15 @@ interface Props extends TextInputProps {
 
 export default function FormInput({ label, style, ...rest }: Props) {
   const text = useThemeColor({}, 'text');
-  const border = useThemeColor({}, 'border');
   const muted = useThemeColor({}, 'muted');
   const card = useThemeColor({}, 'card');
+  const border = useThemeColor({}, 'border');
 
   return (
     <View style={styles.container}>
       <Text style={[styles.label, { color: muted }]}>{label}</Text>
       <TextInput
-        style={[styles.input, { borderColor: border, color: text, backgroundColor: card }, style]}
+        style={[styles.input, { color: text, backgroundColor: card, borderColor: border }, style]}
         placeholderTextColor={muted}
         {...rest}
       />
@@ -26,6 +26,18 @@ export default function FormInput({ label, style, ...rest }: Props) {
 
 const styles = StyleSheet.create({
   container: { marginBottom: 14 },
-  label: { fontSize: 13, fontWeight: '600', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 },
-  input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 16 },
+  label: { fontSize: 12, fontFamily: 'Inter_600SemiBold', marginBottom: 6 },
+  input: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
 });

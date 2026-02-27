@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useThemeColor } from '@/components/Themed';
+import { useThemeColor, cardShadow } from '@/components/Themed';
 import { useZakah } from '@/context/ZakahContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency } from '@/utils/formatting';
@@ -17,33 +17,45 @@ export default function SummaryCard() {
   const muted = useThemeColor({}, 'muted');
   const success = useThemeColor({}, 'success');
   const danger = useThemeColor({}, 'danger');
-  const tint = useThemeColor({}, 'tint');
 
-  const rows = [
-    { label: t('zakahDue'), value: zakahDueBaseCurrency, color: text },
-    { label: t('totalPaid'), value: totalPaidBaseCurrency, color: success },
-    { label: t('remaining'), value: remainingBaseCurrency, color: remainingBaseCurrency > 0 ? danger : success },
-  ];
+  const remainingColor = remainingBaseCurrency > 0 ? danger : success;
 
   return (
-    <View style={[styles.card, { backgroundColor: card, borderColor: border }]}>
+    <View style={[styles.card, { backgroundColor: card }, cardShadow]}>
       <Text style={[styles.title, { color: text }]}>{t('zakahSummary')}</Text>
-      {rows.map((row) => (
-        <View key={row.label} style={styles.row}>
-          <Text style={[styles.rowLabel, { color: muted }]}>{row.label}</Text>
-          <Text style={[styles.rowValue, { color: row.color }]}>
-            {formatCurrency(row.value, baseCurrency)}
-          </Text>
-        </View>
-      ))}
+
+      {/* Hero: remaining */}
+      <Text style={[styles.heroLabel, { color: muted }]}>{t('remaining')}</Text>
+      <Text style={[styles.heroValue, { color: remainingColor }]}>
+        {formatCurrency(remainingBaseCurrency, baseCurrency)}
+      </Text>
+
+      <View style={[styles.divider, { backgroundColor: border }]} />
+
+      {/* Sub rows */}
+      <View style={styles.row}>
+        <Text style={[styles.rowLabel, { color: muted }]}>{t('zakahDue')}</Text>
+        <Text style={[styles.rowValue, { color: text }]}>
+          {formatCurrency(zakahDueBaseCurrency, baseCurrency)}
+        </Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={[styles.rowLabel, { color: muted }]}>{t('totalPaid')}</Text>
+        <Text style={[styles.rowValue, { color: success }]}>
+          {formatCurrency(totalPaidBaseCurrency, baseCurrency)}
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 16, borderWidth: 1, padding: 18, marginBottom: 14 },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 14 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  rowLabel: { fontSize: 15 },
-  rowValue: { fontSize: 18, fontWeight: '800' },
+  card: { borderRadius: 16, padding: 20, marginBottom: 14 },
+  title: { fontSize: 16, fontFamily: 'Inter_600SemiBold', marginBottom: 14 },
+  heroLabel: { fontSize: 13, fontFamily: 'Inter_400Regular', marginBottom: 4 },
+  heroValue: { fontSize: 36, fontFamily: 'Inter_800ExtraBold', marginBottom: 16 },
+  divider: { height: 1, marginBottom: 14 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  rowLabel: { fontSize: 15, fontFamily: 'Inter_400Regular' },
+  rowValue: { fontSize: 16, fontFamily: 'Inter_700Bold' },
 });

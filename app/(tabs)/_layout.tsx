@@ -14,7 +14,7 @@ function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome size={22} style={{ marginBottom: -3 }} {...props} />;
 }
 
 function HeaderTitle({ color }: { color: string }) {
@@ -36,14 +36,13 @@ function HeaderTitle({ color }: { color: string }) {
 const headerStyles = StyleSheet.create({
   container: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   icon: { width: 28, height: 28, borderRadius: 6 },
-  text: { fontSize: 18, fontWeight: '700' },
+  text: { fontSize: 17, fontFamily: 'Inter_700Bold' },
 });
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const scheme = colorScheme ?? 'light';
-  const { background, border, tint, tabIconDefault, chrome, chromeText, text } = Colors[scheme];
-  const isLight = scheme === 'light';
+  const { border, tint, tabIconDefault, chrome, chromeText } = Colors[scheme];
   const { t } = useLanguage();
 
   const [optionsVisible, setOptionsVisible] = useState(false);
@@ -52,13 +51,25 @@ export default function TabLayout() {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: isLight ? '#8B6315' : tint,
+          tabBarActiveTintColor: tint,
           tabBarInactiveTintColor: tabIconDefault,
-          tabBarStyle: { backgroundColor: isLight ? background : chrome, borderTopColor: border },
+          tabBarStyle: {
+            backgroundColor: chrome,
+            borderTopWidth: 0,
+            elevation: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 8,
+          },
           headerShown: useClientOnlyValue(false, true),
-          headerTitle: () => <HeaderTitle color={isLight ? text : chromeText} />,
-          headerStyle: { backgroundColor: isLight ? background : chrome, borderBottomWidth: 1, borderBottomColor: border },
-          headerTintColor: isLight ? text : chromeText,
+          headerTitle: () => <HeaderTitle color={chromeText} />,
+          headerStyle: {
+            backgroundColor: chrome,
+            borderBottomWidth: 1,
+            borderBottomColor: border,
+          },
+          headerTintColor: chromeText,
           headerShadowVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginHorizontal: 16 }}>
@@ -66,7 +77,7 @@ export default function TabLayout() {
               <Pressable
                 onPress={() => setOptionsVisible(true)}
                 hitSlop={8}>
-                <FontAwesome name="bars" size={20} color={isLight ? text : chromeText} />
+                <FontAwesome name="bars" size={20} color={chromeText} />
               </Pressable>
             </View>
           ),

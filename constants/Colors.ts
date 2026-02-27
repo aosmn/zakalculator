@@ -1,35 +1,35 @@
-const tintColorLight = '#0E7A6E'; // darker teal for contrast on light backgrounds
-const tintColorDark  = '#2BBFAD'; // bright teal for dark backgrounds
+const tintColorLight = '#0D9488'; // teal-600
+const tintColorDark  = '#14B8A6'; // teal-400
 
 export default {
   light: {
-    text: '#1A3A5C',         // deep navy
-    background: '#F4F1EC',   // warm off-white (inner circle cream)
+    text: '#111827',           // gray-900
+    background: '#F9FAFB',     // gray-50
     tint: tintColorLight,
-    tabIconDefault: '#5A7080',   // readable slate on cream background
+    tabIconDefault: '#9CA3AF', // gray-400
     tabIconSelected: tintColorLight,
-    success: '#0E7A6E',      // darker teal
+    success: '#10B981',        // emerald-500
     danger: '#EF4444',
-    warning: '#C9922A',      // gold from coins & logo text
-    muted: '#7A8EA0',
-    card: '#EDE8DF',         // warm cream
-    border: '#DDD7CB',
-    chrome: '#7A5018',       // dark gold (gradient start)
-    chromeText: '#F5EDD5',   // cream text on dark gold
+    warning: '#F59E0B',
+    muted: '#6B7280',          // gray-500
+    card: '#FFFFFF',
+    border: '#F3F4F6',         // gray-100
+    chrome: '#FFFFFF',
+    chromeText: '#111827',
   },
   dark: {
-    text: '#F5EDD5',         // warm cream
-    background: '#0F2535',   // deep navy (darker than logo bg)
+    text: '#F1F5F9',           // slate-100
+    background: '#0F172A',     // slate-900
     tint: tintColorDark,
-    tabIconDefault: '#4A6878',
+    tabIconDefault: '#64748B', // slate-500
     tabIconSelected: tintColorDark,
-    success: '#2BBFAD',      // bright teal
-    danger: '#EF4444',
-    warning: '#C9922A',      // gold
-    muted: '#7A93A8',
-    card: '#172F44',         // slightly lighter navy
-    border: '#243D52',
-    chrome: '#0F2535',       // same as background — seamless on dark
-    chromeText: '#F5EDD5',
+    success: '#10B981',
+    danger: '#F87171',
+    warning: '#FBBF24',
+    muted: '#94A3B8',          // slate-400
+    card: '#1E293B',           // slate-800
+    border: '#334155',         // slate-700
+    chrome: '#0F172A',
+    chromeText: '#F1F5F9',
   },
 };
