@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useThemeColor, cardShadow } from '@/components/Themed';
+import { useThemeColor } from '@/components/Themed';
 import { useLanguage } from '@/context/LanguageContext';
 import { MetalHolding } from '@/types';
 import { useZakah } from '@/context/ZakahContext';
 import { goldValue, silverValue } from '@/utils/zakahCalculations';
 import { formatCurrency, formatWeight, formatPurity } from '@/utils/formatting';
-
-const GOLD_GRADIENT: [string, string] = ['#FBBF24', '#F59E0B'];
-const SILVER_GRADIENT: [string, string] = ['#D1D5DB', '#9CA3AF'];
+import { G } from '@/constants/Gradients';
 
 interface Props {
   holding: MetalHolding;
@@ -26,33 +24,50 @@ export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const card = useThemeColor({}, 'card');
+  const border = useThemeColor({}, 'border');
   const danger = useThemeColor({}, 'danger');
 
   const [hovered, setHovered] = useState(false);
+  const hoverAnim = useRef(new Animated.Value(0)).current;
+
+  function onHoverIn() {
+    setHovered(true);
+    Animated.spring(hoverAnim, { toValue: 1, useNativeDriver: true, speed: 40, bounciness: 3 }).start();
+  }
+  function onHoverOut() {
+    setHovered(false);
+    Animated.spring(hoverAnim, { toValue: 0, useNativeDriver: true, speed: 40, bounciness: 3 }).start();
+  }
+
+  const translateY = hoverAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
 
   const valueBase =
     holding.type === 'gold'
       ? goldValue(holding, goldPricePerGram, goldPurityPrices?.[String(holding.purity)])
       : silverValue(holding, silverPricePerGram);
 
-  const gradient = holding.type === 'gold' ? GOLD_GRADIENT : SILVER_GRADIENT;
+  const gradient = holding.type === 'gold' ? G.gold : G.silver;
   const iconName: React.ComponentProps<typeof Feather>['name'] =
     holding.type === 'gold' ? 'star' : 'disc';
 
+  const hoverShadow = hovered
+    ? { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }
+    : {};
+
   return (
-    <View style={[styles.outerCard, cardShadow, hovered && styles.outerCardHovered, { backgroundColor: card }]}>
+    <Animated.View style={[styles.outerCard, hoverShadow, { backgroundColor: card, borderColor: border, transform: [{ translateY }] }]}>
       <Pressable
         style={[styles.card, { backgroundColor: card }]}
         onPress={onPress}
-        onHoverIn={() => setHovered(true)}
-        onHoverOut={() => setHovered(false)}>
+        onHoverIn={onHoverIn}
+        onHoverOut={onHoverOut}>
         <View style={[styles.row, isRTL && styles.rowRTL]}>
           {/* Gradient icon avatar */}
           <LinearGradient
             colors={gradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.iconWrap}>
+            style={[styles.iconWrap, { shadowColor: gradient[0], shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 }]}>
             <Feather name={iconName} size={20} color="#fff" />
           </LinearGradient>
           {/* Label + sub */}
@@ -78,18 +93,12 @@ export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
           style={styles.strip}
         />
       </Pressable>
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  outerCard: { borderRadius: 16, marginBottom: 10 },
-  outerCardHovered: {
-    shadowOpacity: 0.15,
-    shadowRadius: 18,
-    elevation: 8,
-    transform: [{ translateY: -2 }],
-  },
+  outerCard: { borderRadius: 16, marginBottom: 10, borderWidth: 1 },
   card: { borderRadius: 16, overflow: 'hidden' },
   row: {
     flexDirection: 'row',

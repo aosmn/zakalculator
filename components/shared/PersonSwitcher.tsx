@@ -11,6 +11,7 @@ import {
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Feather } from '@expo/vector-icons';
 import { useThemeColor } from '@/components/Themed';
+import GradientButton, { GRADIENT_DANGER } from '@/components/shared/GradientButton';
 import { useZakah } from '@/context/ZakahContext';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -169,9 +170,12 @@ export default function PersonSwitcher() {
                 <Text style={[styles.deleteMsg, { color: muted }]}>
                   {t('deletePersonMsg')}
                 </Text>
-                <Pressable style={[styles.actionBtn, { backgroundColor: danger }]} onPress={handleDeleteConfirm}>
-                  <Text style={styles.actionBtnText}>{t('deletePerson')}</Text>
-                </Pressable>
+                <GradientButton
+                  label={t('deletePerson')}
+                  onPress={handleDeleteConfirm}
+                  colors={GRADIENT_DANGER}
+                  style={styles.actionBtn}
+                />
                 <Pressable
                   style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
                   onPress={() => setDeleteTarget(null)}>
@@ -194,12 +198,12 @@ export default function PersonSwitcher() {
                   onSubmitEditing={handleAddConfirm}
                   returnKeyType="done"
                 />
-                <Pressable
-                  style={[styles.actionBtn, { backgroundColor: inputValue.trim() ? tint : border }]}
+                <GradientButton
+                  label={t('addBtn')}
                   onPress={handleAddConfirm}
-                  disabled={!inputValue.trim()}>
-                  <Text style={styles.actionBtnText}>{t('addBtn')}</Text>
-                </Pressable>
+                  disabled={!inputValue.trim()}
+                  style={styles.actionBtn}
+                />
                 <Pressable
                   style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
                   onPress={() => setMode('list')}>
@@ -222,12 +226,12 @@ export default function PersonSwitcher() {
                   onSubmitEditing={handleRenameConfirm}
                   returnKeyType="done"
                 />
-                <Pressable
-                  style={[styles.actionBtn, { backgroundColor: inputValue.trim() ? tint : border }]}
+                <GradientButton
+                  label={t('doneBtn')}
                   onPress={handleRenameConfirm}
-                  disabled={!inputValue.trim()}>
-                  <Text style={styles.actionBtnText}>{t('doneBtn')}</Text>
-                </Pressable>
+                  disabled={!inputValue.trim()}
+                  style={styles.actionBtn}
+                />
                 <Pressable
                   style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
                   onPress={() => setMode('list')}>

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useThemeColor, cardShadow } from '@/components/Themed';
+import React, { useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useThemeColor } from '@/components/Themed';
 import { useLanguage } from '@/context/LanguageContext';
 import { ZakahPayment } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/formatting';
@@ -15,22 +15,35 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
   const { lang } = useLanguage();
   const isRTL = lang === 'ar';
   const card = useThemeColor({}, 'card');
+  const border = useThemeColor({}, 'border');
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const success = useThemeColor({}, 'success');
 
   const [hovered, setHovered] = useState(false);
+  const hoverAnim = useRef(new Animated.Value(0)).current;
+
+  function onHoverIn() {
+    setHovered(true);
+    Animated.spring(hoverAnim, { toValue: 1, useNativeDriver: true, speed: 40, bounciness: 3 }).start();
+  }
+  function onHoverOut() {
+    setHovered(false);
+    Animated.spring(hoverAnim, { toValue: 0, useNativeDriver: true, speed: 40, bounciness: 3 }).start();
+  }
+
+  const translateY = hoverAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
+
+  const hoverShadow = hovered
+    ? { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }
+    : {};
 
   return (
+    <Animated.View style={[styles.row, hoverShadow, { backgroundColor: card, borderColor: border, borderLeftColor: success, transform: [{ translateY }] }]}>
     <Pressable
-      style={[
-        styles.row,
-        { backgroundColor: card, borderLeftColor: success },
-        cardShadow,
-        hovered && styles.rowHovered,
-      ]}
-      onHoverIn={() => setHovered(true)}
-      onHoverOut={() => setHovered(false)}
+      style={styles.pressable}
+      onHoverIn={onHoverIn}
+      onHoverOut={onHoverOut}
       onPress={onPress}
       onLongPress={onLongPress}>
       <View style={styles.left}>
@@ -43,25 +56,24 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
         {formatCurrency(payment.amountDisplayCurrency, payment.currency)}
       </Text>
     </Pressable>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
+    borderRadius: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderLeftWidth: 3,
+  },
+  pressable: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     paddingVertical: 18,
     borderRadius: 16,
-    marginBottom: 10,
-    borderLeftWidth: 3,
-  },
-  rowHovered: {
-    shadowOpacity: 0.15,
-    shadowRadius: 18,
-    elevation: 8,
-    transform: [{ translateY: -2 }],
   },
   left: { flex: 1, marginEnd: 8 },
   date: { fontSize: 12, fontFamily: 'Inter_400Regular', marginBottom: 2 },

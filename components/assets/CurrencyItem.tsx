@@ -1,31 +1,21 @@
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useThemeColor, cardShadow } from '@/components/Themed';
+import { useThemeColor } from '@/components/Themed';
 import { useLanguage } from '@/context/LanguageContext';
 import { CurrencyHolding } from '@/types';
 import { useZakah } from '@/context/ZakahContext';
 import { convertToBase } from '@/utils/zakahCalculations';
 import { formatCurrency } from '@/utils/formatting';
+import { CURRENCY_GRADIENTS, Gradient } from '@/constants/Gradients';
 
-const GRADIENT_PAIRS: [string, string][] = [
-  ['#7C3AED', '#8B5CF6'],  // violet
-  ['#059669', '#10B981'],  // emerald
-  ['#DC2626', '#EF4444'],  // red
-  ['#2563EB', '#3B82F6'],  // blue
-  ['#D97706', '#F59E0B'],  // amber
-  ['#DB2777', '#EC4899'],  // pink
-  ['#0F766E', '#0D9488'],  // teal
-  ['#4F46E5', '#6366F1'],  // indigo
-];
-
-function getIconGradient(seed: string): [string, string] {
+function getIconGradient(seed: string): Gradient {
   let h = 0;
   for (let i = 0; i < seed.length; i++) {
     h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
   }
-  return GRADIENT_PAIRS[Math.abs(h) % GRADIENT_PAIRS.length];
+  return CURRENCY_GRADIENTS[Math.abs(h) % CURRENCY_GRADIENTS.length];
 }
 
 interface Props {
@@ -42,9 +32,22 @@ export default function CurrencyItem({ holding, onPress, onDelete }: Props) {
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const card = useThemeColor({}, 'card');
+  const border = useThemeColor({}, 'border');
   const danger = useThemeColor({}, 'danger');
 
   const [hovered, setHovered] = useState(false);
+  const hoverAnim = useRef(new Animated.Value(0)).current;
+
+  function onHoverIn() {
+    setHovered(true);
+    Animated.spring(hoverAnim, { toValue: 1, useNativeDriver: true, speed: 40, bounciness: 3 }).start();
+  }
+  function onHoverOut() {
+    setHovered(false);
+    Animated.spring(hoverAnim, { toValue: 0, useNativeDriver: true, speed: 40, bounciness: 3 }).start();
+  }
+
+  const translateY = hoverAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
 
   const baseValue = convertToBase(holding.amount, holding.currency, baseCurrency, state.exchangeRates);
   const gradient = getIconGradient(holding.label + holding.currency);
@@ -52,20 +55,24 @@ export default function CurrencyItem({ holding, onPress, onDelete }: Props) {
     ? formatCurrency(holding.amount, baseCurrency)
     : formatCurrency(baseValue, baseCurrency);
 
+  const hoverShadow = hovered
+    ? { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }
+    : {};
+
   return (
-    <View style={[styles.outerCard, cardShadow, hovered && styles.outerCardHovered, { backgroundColor: card }]}>
+    <Animated.View style={[styles.outerCard, hoverShadow, { backgroundColor: card, borderColor: border, transform: [{ translateY }] }]}>
       <Pressable
         style={[styles.card, { backgroundColor: card }]}
         onPress={onPress}
-        onHoverIn={() => setHovered(true)}
-        onHoverOut={() => setHovered(false)}>
+        onHoverIn={onHoverIn}
+        onHoverOut={onHoverOut}>
         <View style={[styles.row, isRTL && styles.rowRTL]}>
           {/* Gradient icon avatar */}
           <LinearGradient
             colors={gradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.iconWrap}>
+            style={[styles.iconWrap, { shadowColor: gradient[0], shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 }]}>
             <Feather name="briefcase" size={20} color="#fff" />
           </LinearGradient>
           {/* Label + sub amount */}
@@ -93,18 +100,12 @@ export default function CurrencyItem({ holding, onPress, onDelete }: Props) {
           style={styles.strip}
         />
       </Pressable>
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  outerCard: { borderRadius: 16, marginBottom: 10 },
-  outerCardHovered: {
-    shadowOpacity: 0.15,
-    shadowRadius: 18,
-    elevation: 8,
-    transform: [{ translateY: -2 }],
-  },
+  outerCard: { borderRadius: 16, marginBottom: 10, borderWidth: 1 },
   card: { borderRadius: 16, overflow: 'hidden' },
   row: {
     flexDirection: 'row',

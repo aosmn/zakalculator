@@ -9,6 +9,7 @@ import {
   Text,
 } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
+import GradientButton from '@/components/shared/GradientButton';
 import FormInput from '@/components/shared/FormInput';
 import PickerRow from '@/components/shared/PickerRow';
 import { MetalHolding } from '@/types';
@@ -126,9 +127,11 @@ export default function AddMetalModal({ visible, defaultType = 'gold', editing, 
                 onChange={(v) => setPurity(Number(v))}
               />
             </ScrollView>
-            <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
-              <Text style={styles.saveBtnText}>{editing ? t('update') : t('add')}</Text>
-            </Pressable>
+            <GradientButton
+              label={editing ? t('update') : t('add')}
+              onPress={handleSave}
+              style={styles.saveBtn}
+            />
             <Pressable onPress={onClose} style={styles.cancelBtn}>
               <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
             </Pressable>

@@ -52,15 +52,17 @@ export const en = {
   wealthBreakdown: 'Wealth Breakdown',
   currencies: 'Currencies',
   totalWealth: 'Total Wealth',
-  zakahSummary: 'Zakah Summary',
+  zakahSummary: 'Your Zakah',
   zakahDue: 'Zakah Due',
   totalPaid: 'Total Paid',
   remaining: 'Remaining',
+  paid: 'paid',
+  fullyPaid: 'Fully paid',
 
   // Payments screen
   payments: 'Payments',
   logPayment: '+ Log Payment',
-  noPayments: "No payments logged yet. Tap '+ Log Payment' to record one.",
+  noPayments: 'No zakah payments logged yet.',
 
   // Payments screen
   paymentItem: 'this payment',
@@ -238,10 +240,12 @@ export const ar: typeof en = {
   wealthBreakdown: 'تفصيل الثروة',
   currencies: 'العملات',
   totalWealth: 'إجمالي الثروة',
-  zakahSummary: 'ملخص الزكاة',
+  zakahSummary: 'زكاتك',
   zakahDue: 'الزكاة الواجبة',
   totalPaid: 'إجمالي المدفوع',
   remaining: 'المتبقي',
+  paid: 'مدفوع',
+  fullyPaid: 'مدفوع بالكامل',
 
   // Payments screen
   payments: 'المدفوعات',

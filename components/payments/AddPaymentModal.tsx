@@ -12,6 +12,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Haptics from 'expo-haptics';
 import { useThemeColor } from '@/components/Themed';
+import GradientButton from '@/components/shared/GradientButton';
 import FormInput from '@/components/shared/FormInput';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { useZakah } from '@/context/ZakahContext';
@@ -202,9 +203,11 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
                 </View>
               ) : (
                 <>
-                  <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
-                    <Text style={styles.saveBtnText}>{editing ? t('saveChanges') : t('logPaymentBtn')}</Text>
-                  </Pressable>
+                  <GradientButton
+                    label={editing ? t('saveChanges') : t('logPaymentBtn')}
+                    onPress={handleSave}
+                    style={styles.saveBtn}
+                  />
                   {editing ? (
                     <Pressable onPress={() => setConfirmDelete(true)} style={styles.cancelBtn}>
                       <Text style={[styles.cancelText, { color: danger }]}>{t('deletePayment')}</Text>

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColor } from '@/components/Themed';
+import GradientButton from '@/components/shared/GradientButton';
 import EmptyState from '@/components/shared/EmptyState';
 import ConfirmDeleteSheet from '@/components/shared/ConfirmDeleteSheet';
 import CurrencyItem from '@/components/assets/CurrencyItem';
@@ -15,6 +16,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { CurrencyHolding, MetalHolding } from '@/types';
 import { formatPurity } from '@/utils/formatting';
 import SectionSeparator from '@/components/shared/SectionSeparator';
+import { G } from '@/constants/Gradients';
 
 type BalancesGroupMode = null | 'currency' | 'label';
 
@@ -38,9 +40,12 @@ function SectionHeader({
         <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
         {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
       </View>
-      <Pressable onPress={onAdd} style={[styles.addBtn, { backgroundColor: tint }]} hitSlop={8}>
-        <Text style={styles.addBtnText}>{addLabel}</Text>
-      </Pressable>
+      <GradientButton
+        label={addLabel}
+        onPress={onAdd}
+        style={styles.addBtn}
+        textStyle={styles.addBtnText}
+      />
     </View>
   );
 }
@@ -74,13 +79,24 @@ function SectionHeaderWithToggle({
       </View>
       <View style={styles.sectionRight}>
         <Pressable
-          style={[styles.togglePill, { borderColor: toggled ? tint : border, backgroundColor: toggled ? tint : 'transparent' }]}
+          style={[styles.togglePill, { borderColor: toggled ? tint : border }]}
           onPress={onToggle}>
+          {toggled && (
+            <LinearGradient
+              colors={G.teal}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+          )}
           <Text style={[styles.togglePillText, { color: toggled ? '#fff' : muted }]}>{toggleLabel}</Text>
         </Pressable>
-        <Pressable onPress={onAdd} style={[styles.addBtn, { backgroundColor: tint }]} hitSlop={8}>
-          <Text style={styles.addBtnText}>{addLabel}</Text>
-        </Pressable>
+        <GradientButton
+          label={addLabel}
+          onPress={onAdd}
+          style={styles.addBtn}
+          textStyle={styles.addBtnText}
+        />
       </View>
     </View>
   );
@@ -117,7 +133,7 @@ export default function AssetsScreen() {
   const [deleteMetal, setDeleteMetal] = useState<MetalHolding | undefined>();
 
   // Grouping
-  const [balancesGroupMode, setBalancesGroupMode] = useState<BalancesGroupMode>(null);
+  const [balancesGroupMode, setBalancesGroupMode] = useState<BalancesGroupMode>('currency');
   const [groupGold, setGroupGold] = useState(false);
   const [groupSilver, setGroupSilver] = useState(false);
 
@@ -170,7 +186,7 @@ export default function AssetsScreen() {
 
   function renderBalances() {
     if (sortedBalances.length === 0) {
-      return <EmptyState message={t('noBalances')} />;
+      return <EmptyState message={t('noBalances')} gradient={G.cyan} icon="credit-card" />;
     }
     if (balancesGroupMode === 'currency') {
       return groupBy(sortedBalances, (h) => h.currency).map(({ groupKey, items }) => (
@@ -192,14 +208,14 @@ export default function AssetsScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
+    <SafeAreaView edges={['top']} style={[styles.safe, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.inner}>
 
           {/* Intro card */}
-          <View style={[styles.introCard, { backgroundColor: tint + '18' }]}>
+          <View style={[styles.introCard, { backgroundColor: tint + '18', borderColor: tint + '30', borderWidth: 1 }]}>
             <LinearGradient
-              colors={['#0D9488', '#0F766E']}
+              colors={G.teal}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.introIconWrap}>
@@ -221,20 +237,24 @@ export default function AssetsScreen() {
 
           {/* Segmented group control */}
           <View style={[styles.segControl, { borderColor: tint }]}>
-            <Pressable
-              style={[styles.seg, balancesGroupMode === 'currency' && { backgroundColor: tint }]}
-              onPress={() => toggleBalancesGroup('currency')}>
-              <Text style={[styles.segText, { color: balancesGroupMode === 'currency' ? '#fff' : text }]}>
-                {t('groupByCurrency')}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.seg, balancesGroupMode === 'label' && { backgroundColor: tint }]}
-              onPress={() => toggleBalancesGroup('label')}>
-              <Text style={[styles.segText, { color: balancesGroupMode === 'label' ? '#fff' : text }]}>
-                {t('groupByLabel')}
-              </Text>
-            </Pressable>
+            {(['currency', 'label'] as const).map((mode) => {
+              const active = balancesGroupMode === mode;
+              return (
+                <Pressable key={mode} style={styles.seg} onPress={() => toggleBalancesGroup(mode)}>
+                  {active && (
+                    <LinearGradient
+                      colors={G.teal}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={StyleSheet.absoluteFillObject}
+                    />
+                  )}
+                  <Text style={[styles.segText, { color: active ? '#fff' : text }]}>
+                    {mode === 'currency' ? t('groupByCurrency') : t('groupByLabel')}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
 
           {renderBalances()}
@@ -252,7 +272,7 @@ export default function AssetsScreen() {
             addLabel={t('addItem')}
           />
           {sortedGold.length === 0 ? (
-            <EmptyState message={t('noGold')} />
+            <EmptyState message={t('noGold')} gradient={G.gold} icon="star" />
           ) : groupGold ? (
             groupBy(sortedGold, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
               <View key={groupKey}>
@@ -277,7 +297,7 @@ export default function AssetsScreen() {
             addLabel={t('addItem')}
           />
           {sortedSilver.length === 0 ? (
-            <EmptyState message={t('noSilver')} />
+            <EmptyState message={t('noSilver')} gradient={G.silverAlt} icon="disc" />
           ) : groupSilver ? (
             groupBy(sortedSilver, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
               <View key={groupKey}>
@@ -330,7 +350,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  spacer: { height: 40 },
+  spacer: { height: 90 },
 
   // Intro card
   introCard: {
@@ -365,7 +385,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 22, fontFamily: 'Inter_700Bold' },
   sectionDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 2 },
   sectionRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  togglePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5 },
+  togglePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, overflow: 'hidden' },
   togglePillText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
 
   addBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
@@ -380,7 +400,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     padding: 3,
   },
-  seg: { paddingVertical: 7, paddingHorizontal: 20, borderRadius: 20 },
+  seg: { paddingVertical: 7, paddingHorizontal: 20, borderRadius: 20, overflow: 'hidden' },
   segText: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
 
   // Group header with line

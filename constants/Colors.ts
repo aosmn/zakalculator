@@ -6,7 +6,7 @@ export default {
     text: '#111827',           // gray-900
     background: '#F9FAFB',     // gray-50
     tint: tintColorLight,
-    tabIconDefault: '#9CA3AF', // gray-400
+    tabIconDefault: '#6B7280', // gray-500
     tabIconSelected: tintColorLight,
     success: '#10B981',        // emerald-500
     danger: '#EF4444',
@@ -21,7 +21,7 @@ export default {
     text: '#F1F5F9',           // slate-100
     background: '#0F172A',     // slate-900
     tint: tintColorDark,
-    tabIconDefault: '#64748B', // slate-500
+    tabIconDefault: '#94A3B8', // slate-400
     tabIconSelected: tintColorDark,
     success: '#10B981',
     danger: '#F87171',

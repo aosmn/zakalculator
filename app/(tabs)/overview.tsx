@@ -9,10 +9,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { convertToBase, goldValue, silverValue, ZAKAH_RATE } from '@/utils/zakahCalculations';
 import { formatCurrency, formatWeight, formatPurity } from '@/utils/formatting';
 import SectionSeparator from '@/components/shared/SectionSeparator';
-
-const TEAL_GRADIENT: [string, string] = ['#0D9488', '#0F766E'];
-const GOLD_GRADIENT: [string, string] = ['#FBBF24', '#F59E0B'];
-const SILVER_GRADIENT: [string, string] = ['#D1D5DB', '#9CA3AF'];
+import { G } from '@/constants/Gradients';
 
 function SectionTitle({ title, description }: { title: string; description?: string }) {
   const text = useThemeColor({}, 'text');
@@ -50,25 +47,28 @@ function Row({
   const muted = useThemeColor({}, 'muted');
   const card = useThemeColor({}, 'card');
 
-  const bg = isTotal ? '#111827' : card;
   const labelColor = isTotal ? '#fff' : text;
   const valueColor = isTotal ? '#fff' : text;
   const subColor = isTotal ? 'rgba(255,255,255,0.6)' : muted;
   const zakahColor = '#F59E0B';
 
-  return (
-    <View style={[styles.row, { backgroundColor: bg }, !isTotal && cardShadow]}>
+  const rowContent = (
+    <>
       {/* Icon */}
       {isTotal ? (
-        <View style={[styles.iconWrap, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
-          <Feather name={iconName || 'credit-card'} size={16} color="#fff" />
-        </View>
-      ) : (
         <LinearGradient
-          colors={iconGradient || TEAL_GRADIENT}
+          colors={['rgba(255,255,255,0.28)', 'rgba(255,255,255,0.08)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.iconWrap}>
+          style={[styles.iconWrap, { shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 4 }]}>
+          <Feather name={iconName || 'credit-card'} size={16} color="#fff" />
+        </LinearGradient>
+      ) : (
+        <LinearGradient
+          colors={iconGradient || G.teal}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.iconWrap, { shadowColor: (iconGradient || G.teal)[0], shadowOpacity: 0.4, shadowRadius: 7, shadowOffset: { width: 0, height: 3 }, elevation: 5 }]}>
           <Feather name={iconName || 'credit-card'} size={16} color="#fff" />
         </LinearGradient>
       )}
@@ -87,6 +87,24 @@ function Row({
         </Text>
         {rightSub ? <Text style={[styles.rowSubRight, { color: subColor, textAlign: isRTL ? 'left' : 'right' }]}>{rightSub}</Text> : null}
       </View>
+    </>
+  );
+
+  if (isTotal) {
+    return (
+      <LinearGradient
+        colors={G.tealDark}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.row}>
+        {rowContent}
+      </LinearGradient>
+    );
+  }
+
+  return (
+    <View style={[styles.row, { backgroundColor: card }, cardShadow]}>
+      {rowContent}
     </View>
   );
 }
@@ -105,12 +123,12 @@ function ThemedEmptyCard({
   iconName?: React.ComponentProps<typeof Feather>['name'];
 }) {
   return (
-    <View style={[styles.themedEmptyCard, { backgroundColor: accent + '18' }]}>
+    <View style={[styles.themedEmptyCard, { backgroundColor: accent + '18', borderColor: accent + '30', borderWidth: 1 }]}>
       <LinearGradient
         colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.themedEmptyIcon}>
+        style={[styles.themedEmptyIcon, { shadowColor: gradient[0], shadowOpacity: 0.45, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 7 }]}>
         <Feather name={iconName} size={22} color="#fff" />
       </LinearGradient>
       <Text style={[styles.themedEmptyText, { color: textColor || accent }]}>{message}</Text>
@@ -124,7 +142,6 @@ export default function AssetsSummaryScreen() {
   const { currencyHoldings, metalHoldings, priceSettings, exchangeRates } = state;
   const { baseCurrency, goldPricePerGram, silverPricePerGram, goldPurityPrices } = priceSettings;
   const bg = useThemeColor({}, 'background');
-  const muted = useThemeColor({}, 'muted');
 
   // ── Per-currency totals ──────────────────────────────────────────────────
   const currencyMap = new Map<string, number>();
@@ -170,14 +187,19 @@ export default function AssetsSummaryScreen() {
   const grandTotal = currenciesBaseTotal + goldBaseTotal + silverBaseTotal;
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
+    <SafeAreaView edges={['top']} style={[styles.safe, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.inner}>
 
           {/* Balances by currency */}
           <SectionTitle title={t('balancesByCurrency')} description={t('balancesByCurrencyDesc')} />
           {currencyGroups.length === 0 ? (
-            <Text style={[styles.empty, { color: muted }]}>{t('noBalancesAdded')}</Text>
+            <ThemedEmptyCard
+              message={t('noBalancesAdded')}
+              gradient={G.cyan}
+              accent={G.cyan[0]}
+              iconName="credit-card"
+            />
           ) : (
             <>
               {currencyGroups.map(([currency, amount]) => {
@@ -210,7 +232,7 @@ export default function AssetsSummaryScreen() {
           {goldGroups.length === 0 ? (
             <ThemedEmptyCard
               message={t('noGoldAdded')}
-              gradient={GOLD_GRADIENT}
+              gradient={G.gold}
               accent="#F59E0B"
             />
           ) : (
@@ -223,7 +245,7 @@ export default function AssetsSummaryScreen() {
                   zakahRight={`${t('zakahColon')} ${formatWeight(weightGrams * ZAKAH_RATE)}`}
                   right={formatCurrency(valueBase, baseCurrency)}
                   iconName="star"
-                  iconGradient={GOLD_GRADIENT}
+                  iconGradient={G.gold}
                 />
               ))}
               <Row
@@ -244,7 +266,7 @@ export default function AssetsSummaryScreen() {
           {silverGroups.length === 0 ? (
             <ThemedEmptyCard
               message={t('noSilverAdded')}
-              gradient={SILVER_GRADIENT}
+              gradient={G.silver}
               accent="#9CA3AF"
               textColor="#6B7280"
               iconName="disc"
@@ -258,7 +280,7 @@ export default function AssetsSummaryScreen() {
                   sub={formatWeight(weightGrams)}
                   right={formatCurrency(valueBase, baseCurrency)}
                   iconName="disc"
-                  iconGradient={SILVER_GRADIENT}
+                  iconGradient={G.silver}
                 />
               ))}
               <Row
@@ -276,7 +298,7 @@ export default function AssetsSummaryScreen() {
           {/* Grand total — teal gradient card */}
           <SectionTitle title={t('grandTotal')} description={t('grandTotalDesc')} />
           <LinearGradient
-            colors={['#0F766E', '#0D9488']}
+            colors={G.tealGrand}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.grandTotalCard}>
@@ -303,7 +325,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  spacer: { height: 40 },
+  spacer: { height: 90 },
 
   sectionTitle: { fontSize: 22, fontFamily: 'Inter_700Bold', marginTop: 4, marginBottom: 2 },
   sectionDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', marginBottom: 12 },
@@ -365,5 +387,4 @@ const styles = StyleSheet.create({
   grandTotalSub: { color: 'rgba(255,255,255,0.7)', fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 2 },
   grandTotalValue: { color: '#fff', fontSize: 26, fontFamily: 'Inter_800ExtraBold' },
 
-  empty: { fontSize: 14, fontFamily: 'Inter_400Regular', marginBottom: 8 },
 });

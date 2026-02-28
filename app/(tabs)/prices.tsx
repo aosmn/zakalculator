@@ -8,7 +8,7 @@ export default function PricesScreen() {
   const bg = useThemeColor({}, 'background');
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: bg }]}>
+    <SafeAreaView edges={['top']} style={[styles.safe, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.inner}>
           <PriceSettings />
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1 },
   inner: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 90,
     maxWidth: 860,
     width: '100%',
     alignSelf: 'center',

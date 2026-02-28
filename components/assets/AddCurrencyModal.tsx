@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
+import GradientButton from '@/components/shared/GradientButton';
 import FormInput from '@/components/shared/FormInput';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { CurrencyHolding } from '@/types';
@@ -88,9 +89,11 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
                   keyboardType="decimal-pad"
                 />
               </ScrollView>
-              <Pressable style={[styles.saveBtn, { backgroundColor: tint }]} onPress={handleSave}>
-                <Text style={styles.saveBtnText}>{editing ? t('update') : t('add')}</Text>
-              </Pressable>
+              <GradientButton
+                label={editing ? t('update') : t('add')}
+                onPress={handleSave}
+                style={styles.saveBtn}
+              />
               <Pressable onPress={onClose} style={styles.cancelBtn}>
                 <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
               </Pressable>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useThemeColor } from '@/components/Themed';
 import { useLanguage } from '@/context/LanguageContext';
+import GradientButton, { GRADIENT_DANGER } from '@/components/shared/GradientButton';
 
 interface Props {
   visible: boolean;
@@ -24,9 +25,12 @@ export default function ConfirmDeleteSheet({ visible, itemName, onConfirm, onCan
         <View style={[styles.sheet, { backgroundColor: bg }]}>
           <Text style={[styles.title, { color: text }]}>{t('deleteTitle', { name: itemName ?? 'item' })}</Text>
           <Text style={[styles.subtitle, { color: muted }]}>{t('deleteUndone')}</Text>
-          <Pressable style={[styles.btn, { backgroundColor: danger }]} onPress={onConfirm}>
-            <Text style={styles.btnText}>{t('delete')}</Text>
-          </Pressable>
+          <GradientButton
+            label={t('delete')}
+            onPress={onConfirm}
+            colors={GRADIENT_DANGER}
+            style={styles.destructiveBtn}
+          />
           <Pressable style={[styles.btn, styles.cancel, { borderColor: border }]} onPress={onCancel}>
             <Text style={[styles.btnText, { color: text }]}>{t('cancel')}</Text>
           </Pressable>
@@ -41,7 +45,7 @@ const styles = StyleSheet.create({
   sheet: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 28, paddingBottom: 44 },
   title: { fontSize: 20, fontFamily: 'Inter_700Bold', textAlign: 'center', marginBottom: 10 },
   subtitle: { fontSize: 14, fontFamily: 'Inter_400Regular', textAlign: 'center', marginBottom: 28 },
-  btn: { borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 10 },
+  destructiveBtn: { borderRadius: 14, paddingVertical: 16, marginBottom: 10 },
   cancel: { backgroundColor: 'transparent', borderWidth: 1 },
   btnText: { fontSize: 16, fontFamily: 'Inter_600SemiBold', color: '#fff' },
 });

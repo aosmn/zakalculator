@@ -9,6 +9,7 @@ import ConfirmDeleteSheet from '@/components/shared/ConfirmDeleteSheet';
 import CurrencyPickerSheet from '@/components/shared/CurrencyPickerSheet';
 import { ExchangeRate } from '@/types';
 import { Feather } from '@expo/vector-icons';
+import GradientButton from '@/components/shared/GradientButton';
 
 const GOLD_KARATS = [24, 22, 21, 18, 14, 12, 10];
 
@@ -166,9 +167,12 @@ export default function PriceSettings() {
           </View>
         </View>
 
-        <Pressable style={[styles.actionBtn, { backgroundColor: tint }]} onPress={handleAddOrUpdateRate}>
-          <Text style={styles.actionBtnText}>{editingRate ? t('updateRate') : t('addRate')}</Text>
-        </Pressable>
+        <GradientButton
+          label={editingRate ? t('updateRate') : t('addRate')}
+          onPress={handleAddOrUpdateRate}
+          style={styles.actionBtn}
+          textStyle={styles.actionBtnText}
+        />
         {editingRate && (
           <Pressable
             onPress={() => { setEditingRate(null); setRateFrom(''); setRateValue(''); }}
@@ -275,8 +279,8 @@ const styles = StyleSheet.create({
   rateInputFrom: { flex: 1 },
   rateInputVal: { flex: 2 },
 
-  actionBtn: { borderRadius: 12, paddingVertical: 13, alignItems: 'center', marginTop: 12 },
-  actionBtnText: { color: '#fff', fontSize: 15, fontFamily: 'Inter_600SemiBold' },
+  actionBtn: { borderRadius: 12, paddingVertical: 13, marginTop: 12 },
+  actionBtnText: { fontSize: 15 },
   cancelEdit: { alignItems: 'center', paddingVertical: 10 },
   cancelText: { fontSize: 14, fontFamily: 'Inter_400Regular' },
 
