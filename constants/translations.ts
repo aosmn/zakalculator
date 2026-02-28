@@ -1,10 +1,10 @@
 export const en = {
   // Tabs
   tabAssets: "Assets",
-  tabOverview: "Overview",
-  tabPrices: "Prices",
   tabZakah: "Zakah",
   tabPayments: "Payments",
+  pricesRates: "Prices & Rates",
+  pricesCalloutDesc: "Set gold, silver & exchange rates",
 
   // Assets screen intro
   appIntroTitle: "Calculate Your Zakah",
@@ -21,6 +21,7 @@ export const en = {
   groupByCurrency: "By Currency",
   groupByLabel: "By Label",
   group: "Group",
+  totals: "Show subtotals",
   groupAll: "All",
   groupByPurity: "By Purity",
   addItem: "+ Add",
@@ -197,10 +198,10 @@ export const en = {
 export const ar: typeof en = {
   // Tabs
   tabAssets: "الأصول",
-  tabOverview: "نظرة عامة",
-  tabPrices: "الأسعار",
   tabZakah: "الزكاة",
   tabPayments: "المدفوعات",
+  pricesRates: "الأسعار والمعدلات",
+  pricesCalloutDesc: "حدّث أسعار الذهب والفضة وأسعار الصرف",
 
   // Assets screen intro
   appIntroTitle: "احسب زكاتك",
@@ -217,6 +218,7 @@ export const ar: typeof en = {
   groupByCurrency: "حسب العملة",
   groupByLabel: "حسب التسمية",
   group: "تجميع",
+  totals: "إظهار المجاميع الفرعية",
   groupAll: "الكل",
   groupByPurity: "حسب العيار",
   addItem: "+ إضافة",

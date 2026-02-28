@@ -18,18 +18,16 @@ export const G = {
   silver: ["#D1D5DB", "#9CA3AF"] as Gradient,
   silverAlt: ["#9CA3AF", "#6B7280"] as Gradient, // silver empty state
   indigo: ["#4F46E5", "#6366F1"] as Gradient, // cash breakdown card
+  limeCyan: ["#84CC16", "#38CCDE"] as Gradient,
   danger: ["#EF4444", "#DC2626"] as Gradient,
   disabled: ["#a4a9b0", "#9CA3AF"] as Gradient,
 };
 
 // Ordered palette for deterministic currency icon colour assignment
 export const CURRENCY_GRADIENTS: Gradient[] = [
-  G.cyan,
-  G.emerald,
-  G.red,
-  G.lime,
-  G.amber,
-  G.pink,
   G.teal,
+  G.cyan,
   G.cyanDeep,
+  G.tealCyan,
+  G.emerald,
 ];

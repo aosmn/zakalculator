@@ -18,8 +18,9 @@ export function formatNumber(value: number, decimals = 2): string {
   });
 }
 
-export function formatWeight(grams: number): string {
-  return `${formatNumber(grams, 2)}g`;
+export function formatWeight(grams: number, lang?: string): string {
+  const unit = lang === "ar" ? "جرام" : "g";
+  return `${formatNumber(grams, 2)}${unit}`;
 }
 
 export function formatDate(isoString: string): string {

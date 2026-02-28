@@ -74,7 +74,7 @@ export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
             <View style={[styles.textCol, isRTL && styles.textColRTL]}>
               <Text style={[styles.label, { color: text, textAlign: isRTL ? 'right' : 'left' }]}>{holding.label}</Text>
               <Text style={[styles.sub, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>
-                {formatWeight(holding.weightGrams)} · {formatPurity(holding.purity, holding.purityUnit)}
+                {formatWeight(holding.weightGrams, lang)} · {formatPurity(holding.purity, holding.purityUnit)}
               </Text>
             </View>
           </View>

@@ -102,7 +102,12 @@ function CustomTabBar({ state, descriptors, navigation }: TabBarProps) {
     default: isDark ? "rgb(10, 18, 35)" : "rgb(255, 255, 255)",
   });
 
-  const tabItems = state.routes.map((route: any, index: number) => {
+  const HIDDEN_TABS = new Set(["prices", "zakah"]);
+
+  const tabItems = state.routes
+    .filter((route: any) => !HIDDEN_TABS.has(route.name))
+    .map((route: any) => {
+    const index = state.routes.indexOf(route);
     const { options } = descriptors[route.key];
     const isFocused = state.index === index;
     const label = options.title ?? route.name;
@@ -302,25 +307,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="prices"
-          options={{
-            title: t("tabPrices"),
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="sliders" color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
           name="overview"
-          options={{
-            title: t("tabOverview"),
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="bar-chart" color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="zakah"
           options={{
             title: t("tabZakah"),
             tabBarIcon: ({ color }) => (
@@ -337,6 +324,9 @@ export default function TabLayout() {
             ),
           }}
         />
+        {/* Keep prices and zakah registered but off the tab bar */}
+        <Tabs.Screen name="prices" options={{ href: null }} />
+        <Tabs.Screen name="zakah" options={{ href: null }} />
       </Tabs>
 
       <OptionsSheet

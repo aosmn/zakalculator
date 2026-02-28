@@ -4,6 +4,7 @@ import { G } from "@/constants/Gradients";
 import { useLanguage } from "@/context/LanguageContext";
 import { useZakah } from "@/context/ZakahContext";
 import { formatCurrency, formatWeight } from "@/utils/formatting";
+import { ZAKAH_RATE } from "@/utils/zakahCalculations";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -15,11 +16,14 @@ import {
   useWindowDimensions,
 } from "react-native";
 
+const ZAKAH_AMBER = "#F59E0B";
+
 function StatCard({
   label,
   value,
   sub,
   subColor,
+  zakah,
   iconName,
   gradient,
   topStrip = true,
@@ -31,6 +35,7 @@ function StatCard({
   value: string;
   sub?: string;
   subColor?: string;
+  zakah?: string;
   iconName: React.ComponentProps<typeof Feather>["name"];
   gradient: [string, string];
   topStrip?: boolean;
@@ -47,7 +52,7 @@ function StatCard({
   const labelColor = hero ? "rgba(255,255,255,0.8)" : muted;
   const valueColor = hero ? "#fff" : text;
   const subTextColor = hero ? "rgba(255,255,255,0.65)" : (subColor ?? muted);
-  const iconColors: [string, string] = isWeb
+  const iconColors: [string, string] = isWeb && hero
     ? ["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]
     : gradient;
   const iconShadowColor = hero ? "#000" : gradient[0];
@@ -95,6 +100,16 @@ function StatCard({
           {sub ? (
             <Text style={[styles.compactSub, { color: subTextColor }]}>
               {sub}
+            </Text>
+          ) : null}
+          {zakah ? (
+            <Text
+              style={[
+                styles.compactZakah,
+                { color: hero ? "rgba(255,255,255,0.85)" : ZAKAH_AMBER },
+              ]}
+            >
+              {zakah}
             </Text>
           ) : null}
         </View>
@@ -157,6 +172,16 @@ function StatCard({
       {sub ? (
         <Text style={[styles.statSub, { color: subTextColor }]}>{sub}</Text>
       ) : null}
+      {zakah ? (
+        <Text
+          style={[
+            styles.statZakah,
+            { color: hero ? "rgba(255,255,255,0.85)" : ZAKAH_AMBER },
+          ]}
+        >
+          {zakah}
+        </Text>
+      ) : null}
     </View>
   );
 
@@ -190,8 +215,9 @@ function StatCard({
 
 export default function ZakahBreakdownCard() {
   const { calculation, state } = useZakah();
-  const { t } = useLanguage();
-  const { breakdown, totalWealthBaseCurrency } = calculation;
+  const { t, lang } = useLanguage();
+  const { breakdown, totalWealthBaseCurrency, zakahDueBaseCurrency } =
+    calculation;
   const { baseCurrency } = state.priceSettings;
   const text = useThemeColor({}, "text");
   const colorScheme = useColorScheme();
@@ -211,11 +237,15 @@ export default function ZakahBreakdownCard() {
     .filter((h) => h.type === "silver")
     .reduce((sum, h) => sum + h.weightGrams, 0);
 
+  const zakahLabel = (amount: number) =>
+    `${t("zakahColon")} ${formatCurrency(amount, baseCurrency)}`;
+
   const cards = [
     {
       label: t("currencies"),
       value: formatCurrency(breakdown.currenciesTotal, baseCurrency),
       sub: t("cashAndAccounts"),
+      zakah: zakahLabel(breakdown.currenciesTotal * ZAKAH_RATE),
       iconName: "credit-card" as const,
       gradient: G.cyan,
     },
@@ -224,15 +254,17 @@ export default function ZakahBreakdownCard() {
       value: formatCurrency(breakdown.goldTotal, baseCurrency),
       sub:
         goldPureGrams > 0
-          ? `${formatWeight(goldPureGrams)} ${t("eq24k")}`
+          ? `${formatWeight(goldPureGrams, lang)} ${t("eq24k")} · ${t("zakahColon")} ${formatWeight(goldPureGrams * ZAKAH_RATE, lang)}`
           : undefined,
+      zakah: zakahLabel(breakdown.goldTotal * ZAKAH_RATE),
       iconName: "star" as const,
       gradient: G.gold,
     },
     {
       label: t("silver"),
       value: formatCurrency(breakdown.silverTotal, baseCurrency),
-      sub: silverWeightTotal > 0 ? formatWeight(silverWeightTotal) : undefined,
+      sub: silverWeightTotal > 0 ? formatWeight(silverWeightTotal, lang) : undefined,
+      zakah: zakahLabel(breakdown.silverTotal * ZAKAH_RATE),
       iconName: "disc" as const,
       gradient: G.silver,
     },
@@ -240,6 +272,7 @@ export default function ZakahBreakdownCard() {
       label: t("totalWealth"),
       value: formatCurrency(totalWealthBaseCurrency, baseCurrency),
       sub: t("grandTotalDesc"),
+      zakah: zakahLabel(zakahDueBaseCurrency),
       iconName: "trending-up" as const,
       gradient: heroGradient,
       hero: true,
@@ -262,7 +295,7 @@ export default function ZakahBreakdownCard() {
               label={card.label}
               value={card.value}
               sub={card.sub}
-              // subColor={card.subColor}
+              zakah={card.zakah}
               iconName={card.iconName}
               gradient={card.gradient}
               topStrip={card.topStrip ?? true}
@@ -282,6 +315,7 @@ export default function ZakahBreakdownCard() {
                 value={card.value}
                 sub={card.sub}
                 subColor={card.subColor}
+                zakah={card.zakah}
                 iconName={card.iconName}
                 gradient={card.gradient}
                 topStrip={card.topStrip ?? true}
@@ -298,6 +332,7 @@ export default function ZakahBreakdownCard() {
                 value={card.value}
                 sub={card.sub}
                 subColor={card.subColor}
+                zakah={card.zakah}
                 iconName={card.iconName}
                 gradient={card.gradient}
                 topStrip={card.topStrip ?? true}
@@ -336,6 +371,7 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 13, fontFamily: "Inter_400Regular", marginBottom: 4 },
   statValue: { fontSize: 20, fontFamily: "Inter_800ExtraBold" },
   statSub: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 4 },
+  statZakah: { fontSize: 12, fontFamily: "Inter_600SemiBold", marginTop: 4 },
 
   // Mobile compact horizontal cards
   compactList: { gap: 10 },
@@ -367,5 +403,6 @@ const styles = StyleSheet.create({
   compactText: { flex: 1 },
   compactLabel: { fontSize: 13, fontFamily: "Inter_500Medium" },
   compactSub: { fontSize: 11, fontFamily: "Inter_400Regular", marginTop: 1 },
+  compactZakah: { fontSize: 11, fontFamily: "Inter_600SemiBold", marginTop: 2 },
   compactValue: { fontSize: 16, fontFamily: "Inter_700Bold", flexShrink: 0 },
 });

@@ -72,6 +72,9 @@ export default function SummaryCard() {
             marginEnd: !isWeb ? "auto" : 0,
           },
         ]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.6}
       >
         {formatCurrency(zakahDueBaseCurrency, baseCurrency)}
       </Text>
@@ -103,6 +106,9 @@ export default function SummaryCard() {
                 marginEnd: !isWeb ? "auto" : 0,
               },
             ]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
           >
             {formatCurrency(totalPaidBaseCurrency, baseCurrency)}
           </Text>
@@ -127,6 +133,9 @@ export default function SummaryCard() {
                 textAlign: isRTL ? "left" : "right",
               },
             ]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
           >
             {formatCurrency(remainingBaseCurrency, baseCurrency)}
           </Text>
@@ -135,7 +144,7 @@ export default function SummaryCard() {
 
       {/* Nisab */}
       <View style={styles.nisabRow}>
-        <Text style={styles.nisabLabel}>
+        <Text style={styles.nisabLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {t("nisabThreshold")}:{" "}
           {formatCurrency(nisabValueBaseCurrency, baseCurrency)}
         </Text>
@@ -253,11 +262,14 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(255,255,255,0.15)",
   },
   nisabLabel: {
+    flex: 1,
     fontSize: 12,
     fontFamily: "Inter_400Regular",
     color: "rgba(255,255,255,0.75)",
+    marginEnd: 8,
   },
   nisabBadge: {
+    flexShrink: 0,
     flexDirection: "row",
     alignItems: "center",
     gap: 5,

@@ -16,36 +16,27 @@ import { useLanguage } from '@/context/LanguageContext';
 import { CurrencyHolding, MetalHolding } from '@/types';
 import { formatPurity } from '@/utils/formatting';
 import SectionSeparator from '@/components/shared/SectionSeparator';
+import PricesCallout from '@/components/shared/PricesCallout';
+import GroupTotalRow from '@/components/shared/GroupTotalRow';
 import { G } from '@/constants/Gradients';
+import { convertToBase, goldValue, silverValue, ZAKAH_RATE } from '@/utils/zakahCalculations';
+import { formatCurrency, formatWeight } from '@/utils/formatting';
 
 type BalancesGroupMode = null | 'currency' | 'label';
 
 function SectionHeader({
   title,
   description,
-  onAdd,
-  addLabel,
 }: {
   title: string;
   description?: string;
-  onAdd: () => void;
-  addLabel: string;
 }) {
-  const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   return (
     <View style={styles.sectionHeader}>
-      <View style={styles.sectionLeft}>
-        <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
-        {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
-      </View>
-      <GradientButton
-        label={addLabel}
-        onPress={onAdd}
-        style={styles.addBtn}
-        textStyle={styles.addBtnText}
-      />
+      <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
+      {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
     </View>
   );
 }
@@ -56,48 +47,37 @@ function SectionHeaderWithToggle({
   toggled,
   onToggle,
   toggleLabel,
-  onAdd,
-  addLabel,
+  toggleGradient = G.teal,
+  toggleFlat = false,
 }: {
   title: string;
   description?: string;
-  toggled: boolean;
-  onToggle: () => void;
-  toggleLabel: string;
-  onAdd: () => void;
-  addLabel: string;
+  toggled?: boolean;
+  onToggle?: () => void;
+  toggleLabel?: string;
+  toggleGradient?: [string, string];
+  toggleFlat?: boolean;
 }) {
-  const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
   const border = useThemeColor({}, 'border');
+
   return (
     <View style={styles.sectionHeader}>
-      <View style={styles.sectionLeft}>
+      <View style={styles.sectionTitleRow}>
         <Text style={[styles.sectionTitle, { color: text }]}>{title}</Text>
-        {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
+        {toggleLabel && onToggle != null && (
+          <Pressable
+            style={[styles.togglePill, { borderColor: toggled ? toggleGradient[0] : border, backgroundColor: toggleFlat && toggled ? toggleGradient[0] : undefined }]}
+            onPress={onToggle}>
+            {!toggleFlat && toggled && (
+              <LinearGradient colors={toggleGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFillObject} />
+            )}
+            <Text style={[styles.togglePillText, { color: toggled ? '#fff' : muted }]}>{toggleLabel}</Text>
+          </Pressable>
+        )}
       </View>
-      <View style={styles.sectionRight}>
-        <Pressable
-          style={[styles.togglePill, { borderColor: toggled ? tint : border }]}
-          onPress={onToggle}>
-          {toggled && (
-            <LinearGradient
-              colors={G.teal}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={StyleSheet.absoluteFillObject}
-            />
-          )}
-          <Text style={[styles.togglePillText, { color: toggled ? '#fff' : muted }]}>{toggleLabel}</Text>
-        </Pressable>
-        <GradientButton
-          label={addLabel}
-          onPress={onAdd}
-          style={styles.addBtn}
-          textStyle={styles.addBtnText}
-        />
-      </View>
+      {description ? <Text style={[styles.sectionDesc, { color: muted }]}>{description}</Text> : null}
     </View>
   );
 }
@@ -115,11 +95,12 @@ function GroupHeader({ label }: { label: string }) {
 
 export default function AssetsScreen() {
   const { state, deleteCurrencyHolding, deleteMetalHolding } = useZakah();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const bg = useThemeColor({}, 'background');
   const tint = useThemeColor({}, 'tint');
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'muted');
+  const border = useThemeColor({}, 'border');
 
   // Modals
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
@@ -134,8 +115,9 @@ export default function AssetsScreen() {
 
   // Grouping
   const [balancesGroupMode, setBalancesGroupMode] = useState<BalancesGroupMode>('currency');
-  const [groupGold, setGroupGold] = useState(false);
-  const [groupSilver, setGroupSilver] = useState(false);
+  const [showBalancesTotals, setShowBalancesTotals] = useState(true);
+  const [showGoldTotals, setShowGoldTotals] = useState(true);
+  const [showSilverTotals, setShowSilverTotals] = useState(true);
 
   function openAddGold() { setMetalModalType('gold'); setEditingMetal(undefined); setShowMetalModal(true); }
   function openAddSilver() { setMetalModalType('silver'); setEditingMetal(undefined); setShowMetalModal(true); }
@@ -184,25 +166,70 @@ export default function AssetsScreen() {
     );
   }
 
+  const { baseCurrency, goldPricePerGram, silverPricePerGram, goldPurityPrices } = state.priceSettings;
+  const { exchangeRates } = state;
+
+  const currenciesTotalBase = sortedBalances.reduce(
+    (s, h) => s + convertToBase(h.amount, h.currency, baseCurrency, exchangeRates), 0
+  );
+  const goldTotalValue = sortedGold.reduce(
+    (s, h) => s + goldValue(h, goldPricePerGram, goldPurityPrices?.[String(h.purity)]), 0
+  );
+  const goldTotalWeight = sortedGold.reduce((s, h) => s + h.weightGrams, 0);
+  const goldPureTotalWeight = sortedGold.reduce((s, h) => {
+    const purityFraction = h.purityUnit === 'karats' ? h.purity / 24 : h.purity / 100;
+    return s + h.weightGrams * purityFraction;
+  }, 0);
+  const silverTotalValue = sortedSilver.reduce(
+    (s, h) => s + silverValue(h, silverPricePerGram), 0
+  );
+  const silverTotalWeight = sortedSilver.reduce((s, h) => s + h.weightGrams, 0);
+  const silverPureTotalWeight = sortedSilver.reduce((s, h) => {
+    const purityFraction = h.purityUnit === 'karats' ? h.purity / 24 : h.purity / 100;
+    return s + h.weightGrams * purityFraction;
+  }, 0);
+
   function renderBalances() {
     if (sortedBalances.length === 0) {
       return <EmptyState message={t('noBalances')} gradient={G.cyan} icon="credit-card" />;
     }
     if (balancesGroupMode === 'currency') {
-      return groupBy(sortedBalances, (h) => h.currency).map(({ groupKey, items }) => (
-        <View key={groupKey}>
-          <GroupHeader label={groupKey} />
-          {items.map(renderCurrencyItem)}
-        </View>
-      ));
+      return groupBy(sortedBalances, (h) => h.currency).map(({ groupKey: currency, items }) => {
+        const totalAmount = items.reduce((s, h) => s + h.amount, 0);
+        const totalBase = items.reduce((s, h) => s + convertToBase(h.amount, h.currency, baseCurrency, exchangeRates), 0);
+        return (
+          <View key={currency}>
+            <GroupHeader label={currency} />
+            {items.map(renderCurrencyItem)}
+            {showBalancesTotals && (
+              <GroupTotalRow
+                label={`${currency} · ${t('total')}`}
+                value={formatCurrency(totalAmount, currency)}
+                rightSub={currency !== baseCurrency ? `= ${formatCurrency(totalBase, baseCurrency)}` : undefined}
+                zakah={`${t('zakahColon')} ${formatCurrency(totalAmount * ZAKAH_RATE, currency)}`}
+              />
+            )}
+          </View>
+        );
+      });
     }
     if (balancesGroupMode === 'label') {
-      return groupBy(sortedBalances, (h) => h.label).map(({ groupKey, items }) => (
-        <View key={groupKey}>
-          <GroupHeader label={groupKey} />
-          {items.map(renderCurrencyItem)}
-        </View>
-      ));
+      return groupBy(sortedBalances, (h) => h.label).map(({ groupKey: label, items }) => {
+        const totalBase = items.reduce((s, h) => s + convertToBase(h.amount, h.currency, baseCurrency, exchangeRates), 0);
+        return (
+          <View key={label}>
+            <GroupHeader label={label} />
+            {items.map(renderCurrencyItem)}
+            {showBalancesTotals && (
+              <GroupTotalRow
+                label={`${label} · ${t('total')}`}
+                value={formatCurrency(totalBase, baseCurrency)}
+                zakah={`${t('zakahColon')} ${formatCurrency(totalBase * ZAKAH_RATE, baseCurrency)}`}
+              />
+            )}
+          </View>
+        );
+      });
     }
     return sortedBalances.map(renderCurrencyItem);
   }
@@ -227,37 +254,57 @@ export default function AssetsScreen() {
             </View>
           </View>
 
+          <PricesCallout />
+
           {/* Balances section header */}
-          <SectionHeader
-            title={t('balances')}
-            description={t('cashAndAccounts')}
-            onAdd={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
-            addLabel={t('addItem')}
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <Text style={[styles.sectionTitle, { color: text }]}>{t('balances')}</Text>
+              <View style={styles.sectionRight}>
+                <View style={[styles.segControl, { borderColor: tint }]}>
+                  {(['currency', 'label'] as const).map((mode) => {
+                    const active = balancesGroupMode === mode;
+                    return (
+                      <Pressable key={mode} style={styles.seg} onPress={() => toggleBalancesGroup(mode)}>
+                        {active && (
+                          <LinearGradient colors={G.teal} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFillObject} />
+                        )}
+                        <Text style={[styles.segText, { color: active ? '#fff' : text }]}>
+                          {mode === 'currency' ? t('groupByCurrency') : t('groupByLabel')}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {balancesGroupMode != null && (
+                  <Pressable
+                    style={[styles.togglePill, { borderColor: showBalancesTotals ? G.amber[0] : border, backgroundColor: showBalancesTotals ? G.amber[0] : undefined }]}
+                    onPress={() => setShowBalancesTotals((v) => !v)}>
+                    <Text style={[styles.togglePillText, { color: showBalancesTotals ? '#fff' : muted }]}>{t('totals')}</Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+            <Text style={[styles.sectionDesc, { color: muted }]}>{t('cashAndAccounts')}</Text>
+          </View>
+          <GradientButton
+            label={t('addItem')}
+            onPress={() => { setEditingCurrency(undefined); setShowCurrencyModal(true); }}
+            colors={G.tealCyan}
+            style={styles.addBtnFull}
+            textStyle={styles.addBtnText}
           />
 
-          {/* Segmented group control */}
-          <View style={[styles.segControl, { borderColor: tint }]}>
-            {(['currency', 'label'] as const).map((mode) => {
-              const active = balancesGroupMode === mode;
-              return (
-                <Pressable key={mode} style={styles.seg} onPress={() => toggleBalancesGroup(mode)}>
-                  {active && (
-                    <LinearGradient
-                      colors={G.teal}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={StyleSheet.absoluteFillObject}
-                    />
-                  )}
-                  <Text style={[styles.segText, { color: active ? '#fff' : text }]}>
-                    {mode === 'currency' ? t('groupByCurrency') : t('groupByLabel')}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
           {renderBalances()}
+          {sortedBalances.length > 0 && (
+            <GroupTotalRow
+              label={t('total')}
+              value={formatCurrency(currenciesTotalBase, baseCurrency)}
+              zakah={`${t('zakahColon')} ${formatCurrency(currenciesTotalBase * ZAKAH_RATE, baseCurrency)}`}
+              iconName="trending-up"
+              gradient={G.tealGrand}
+            />
+          )}
 
           <SectionSeparator />
 
@@ -265,23 +312,54 @@ export default function AssetsScreen() {
           <SectionHeaderWithToggle
             title={t('gold')}
             description={t('goldDesc')}
-            toggled={groupGold}
-            onToggle={() => setGroupGold((v) => !v)}
-            toggleLabel={t('group')}
-            onAdd={openAddGold}
-            addLabel={t('addItem')}
+            toggled={showGoldTotals}
+            onToggle={() => setShowGoldTotals((v) => !v)}
+            toggleLabel={t('totals')}
+            toggleGradient={G.amber}
+            toggleFlat
+          />
+          <GradientButton
+            label={t('addItem')}
+            onPress={openAddGold}
+            colors={G.tealCyan}
+            style={styles.addBtnFull}
+            textStyle={styles.addBtnText}
           />
           {sortedGold.length === 0 ? (
             <EmptyState message={t('noGold')} gradient={G.gold} icon="star" />
-          ) : groupGold ? (
-            groupBy(sortedGold, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
-              <View key={groupKey}>
-                <GroupHeader label={groupKey} />
-                {items.map(renderMetalItem)}
-              </View>
-            ))
           ) : (
-            sortedGold.map(renderMetalItem)
+            groupBy(sortedGold, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => {
+              const totalWeight = items.reduce((s, h) => s + h.weightGrams, 0);
+              const totalValue = items.reduce((s, h) => s + goldValue(h, goldPricePerGram, goldPurityPrices?.[String(h.purity)]), 0);
+              const pureWeight = items.reduce((s, h) => {
+                const purityFraction = h.purityUnit === 'karats' ? h.purity / 24 : h.purity / 100;
+                return s + h.weightGrams * purityFraction;
+              }, 0);
+              return (
+                <View key={groupKey}>
+                  <GroupHeader label={groupKey} />
+                  {items.map(renderMetalItem)}
+                  {showGoldTotals && (
+                    <GroupTotalRow
+                      label={`${groupKey} · ${t('total')}`}
+                      sub={formatWeight(totalWeight, lang)}
+                      value={formatCurrency(totalValue, baseCurrency)}
+                      zakah={`${t('zakahColon')} ${formatWeight(totalWeight * ZAKAH_RATE, lang)}`}
+                    />
+                  )}
+                </View>
+              );
+            })
+          )}
+          {sortedGold.length > 0 && (
+            <GroupTotalRow
+              label={t('total')}
+              sub={`${formatWeight(goldPureTotalWeight, lang)} ${t('eq24k')}`}
+              value={formatCurrency(goldTotalValue, baseCurrency)}
+              zakah={`${t('zakahColon')} ${formatWeight(goldPureTotalWeight * ZAKAH_RATE, lang)} ${t('eq24k')}`}
+              iconName="trending-up"
+              gradient={G.tealGrand}
+            />
           )}
 
           <SectionSeparator />
@@ -290,23 +368,49 @@ export default function AssetsScreen() {
           <SectionHeaderWithToggle
             title={t('silver')}
             description={t('silverDesc')}
-            toggled={groupSilver}
-            onToggle={() => setGroupSilver((v) => !v)}
-            toggleLabel={t('group')}
-            onAdd={openAddSilver}
-            addLabel={t('addItem')}
+            toggled={showSilverTotals}
+            onToggle={() => setShowSilverTotals((v) => !v)}
+            toggleLabel={t('totals')}
+            toggleGradient={G.amber}
+            toggleFlat
+          />
+          <GradientButton
+            label={t('addItem')}
+            onPress={openAddSilver}
+            colors={G.tealCyan}
+            style={styles.addBtnFull}
+            textStyle={styles.addBtnText}
           />
           {sortedSilver.length === 0 ? (
             <EmptyState message={t('noSilver')} gradient={G.silverAlt} icon="disc" />
-          ) : groupSilver ? (
-            groupBy(sortedSilver, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => (
-              <View key={groupKey}>
-                <GroupHeader label={groupKey} />
-                {items.map(renderMetalItem)}
-              </View>
-            ))
           ) : (
-            sortedSilver.map(renderMetalItem)
+            groupBy(sortedSilver, (h) => formatPurity(h.purity, h.purityUnit)).map(({ groupKey, items }) => {
+              const totalWeight = items.reduce((s, h) => s + h.weightGrams, 0);
+              const totalValue = items.reduce((s, h) => s + silverValue(h, silverPricePerGram), 0);
+              return (
+                <View key={groupKey}>
+                  <GroupHeader label={groupKey} />
+                  {items.map(renderMetalItem)}
+                  {showSilverTotals && (
+                    <GroupTotalRow
+                      label={`${groupKey} · ${t('total')}`}
+                      sub={formatWeight(totalWeight, lang)}
+                      value={formatCurrency(totalValue, baseCurrency)}
+                    />
+                  )}
+                </View>
+              );
+            })
+          )}
+          {sortedSilver.length > 0 && (
+            <GroupTotalRow
+              label={t('total')}
+              sub={formatWeight(silverPureTotalWeight, lang)}
+              value={formatCurrency(silverTotalValue, baseCurrency)}
+              zakah={`${t('zakahColon')} ${formatCurrency(silverTotalValue * ZAKAH_RATE, baseCurrency)}`}
+              iconName="trending-up"
+              gradient={G.tealGrand}
+            />
           )}
 
           <View style={styles.spacer} />
@@ -375,21 +479,35 @@ const styles = StyleSheet.create({
 
   // Section headers
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
     marginBottom: 12,
     marginTop: 4,
   },
-  sectionLeft: { flex: 1, marginRight: 12 },
-  sectionTitle: { fontSize: 22, fontFamily: 'Inter_700Bold' },
-  sectionDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 2 },
-  sectionRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 2,
+  },
+  sectionTitle: { fontSize: 22, fontFamily: 'Inter_700Bold', flexShrink: 1 },
+  sectionDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 2, marginBottom: 4 },
   togglePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, overflow: 'hidden' },
   togglePillText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
 
-  addBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
-  addBtnText: { fontSize: 14, fontFamily: 'Inter_700Bold', color: '#fff' },
+  addBtnFull: {
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  addBtnText: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5 },
+
+  sectionRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 
   // Segmented control
   segControl: {
@@ -397,7 +515,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 1.5,
     alignSelf: 'flex-start',
-    marginBottom: 14,
     padding: 3,
   },
   seg: { paddingVertical: 7, paddingHorizontal: 20, borderRadius: 20, overflow: 'hidden' },

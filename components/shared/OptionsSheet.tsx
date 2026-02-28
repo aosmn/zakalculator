@@ -9,6 +9,7 @@ import { Feather } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Modal,
@@ -48,6 +49,7 @@ export default function OptionsSheet({ visible, onClose }: Props) {
   const { lang, setLang, t } = useLanguage();
   const { toggleTheme } = useThemeToggle();
   const colorScheme = useColorScheme() ?? "light";
+  const router = useRouter();
 
   const [pendingData, setPendingData] = useState<
     ZakahState | StoredAppData | null
@@ -275,6 +277,25 @@ export default function OptionsSheet({ visible, onClose }: Props) {
                 ))}
               </View>
             </View>
+
+            <View style={[styles.divider, { backgroundColor: border }]} />
+
+            {/* Prices & Rates */}
+            <Pressable
+              style={styles.toggleRow}
+              onPress={() => {
+                onClose();
+                router.push("/prices");
+              }}
+            >
+              <View style={styles.toggleLabel}>
+                <Feather name="sliders" size={15} color={muted} />
+                <Text style={[styles.toggleLabelText, { color: text }]}>
+                  {t("pricesRates")}
+                </Text>
+              </View>
+              <Feather name="chevron-right" size={16} color={muted} />
+            </Pressable>
 
             <View style={[styles.divider, { backgroundColor: border }]} />
 
