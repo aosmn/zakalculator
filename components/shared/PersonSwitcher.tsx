@@ -1,4 +1,12 @@
-import React, { useState } from 'react';
+import { useThemeColor } from "@/components/Themed";
+import GradientButton, {
+  GRADIENT_DANGER,
+} from "@/components/shared/GradientButton";
+import { useLanguage } from "@/context/LanguageContext";
+import { useZakah } from "@/context/ZakahContext";
+import { Feather } from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import React, { useState } from "react";
 import {
   Modal,
   Pressable,
@@ -7,36 +15,43 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Feather } from '@expo/vector-icons';
-import { useThemeColor } from '@/components/Themed';
-import GradientButton, { GRADIENT_DANGER } from '@/components/shared/GradientButton';
-import { useZakah } from '@/context/ZakahContext';
-import { useLanguage } from '@/context/LanguageContext';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type SheetMode = 'list' | 'add' | 'rename';
+type SheetMode = "list" | "add" | "rename";
 
 export default function PersonSwitcher() {
-  const { people, activePerson, switchPerson, addPerson, renamePerson, deletePerson } = useZakah();
+  const {
+    people,
+    activePerson,
+    switchPerson,
+    addPerson,
+    renamePerson,
+    deletePerson,
+  } = useZakah();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [mode, setMode] = useState<SheetMode>('list');
-  const [inputValue, setInputValue] = useState('');
+  const [mode, setMode] = useState<SheetMode>("list");
+  const [inputValue, setInputValue] = useState("");
   const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const { t } = useLanguage();
-  const bg = useThemeColor({}, 'card');
-  const text = useThemeColor({}, 'text');
-  const muted = useThemeColor({}, 'muted');
-  const tint = useThemeColor({}, 'tint');
-  const border = useThemeColor({}, 'border');
-  const danger = useThemeColor({}, 'danger');
+  const bg = useThemeColor({}, "card");
+  const text = useThemeColor({}, "text");
+  const muted = useThemeColor({}, "muted");
+  const tint = useThemeColor({}, "tint");
+  const border = useThemeColor({}, "border");
+  const danger = useThemeColor({}, "danger");
+
+  const insets = useSafeAreaInsets();
 
   function openSheet() {
-    setMode('list');
-    setInputValue('');
+    setMode("list");
+    setInputValue("");
     setRenamingId(null);
     setDeleteTarget(null);
     setIsOpen(true);
@@ -44,8 +59,8 @@ export default function PersonSwitcher() {
 
   function closeSheet() {
     setIsOpen(false);
-    setMode('list');
-    setInputValue('');
+    setMode("list");
+    setInputValue("");
     setRenamingId(null);
     setDeleteTarget(null);
   }
@@ -56,8 +71,8 @@ export default function PersonSwitcher() {
   }
 
   function handleAddPress() {
-    setInputValue('');
-    setMode('add');
+    setInputValue("");
+    setMode("add");
   }
 
   function handleAddConfirm() {
@@ -70,7 +85,7 @@ export default function PersonSwitcher() {
   function handleRenamePress(id: string, currentName: string) {
     setRenamingId(id);
     setInputValue(currentName);
-    setMode('rename');
+    setMode("rename");
   }
 
   function handleRenameConfirm() {
@@ -91,7 +106,9 @@ export default function PersonSwitcher() {
   }
 
   const displayName =
-    activePerson.name.length > 12 ? activePerson.name.slice(0, 12) + '…' : activePerson.name;
+    activePerson.name.length > 12
+      ? activePerson.name.slice(0, 12) + "…"
+      : activePerson.name;
 
   return (
     <>
@@ -103,53 +120,99 @@ export default function PersonSwitcher() {
       </Pressable>
 
       {/* Bottom-sheet modal */}
-      <Modal visible={isOpen} transparent animationType="slide" onRequestClose={closeSheet}>
+      <Modal
+        visible={isOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={closeSheet}
+      >
         <Pressable style={styles.overlay} onPress={closeSheet}>
-          <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
-
+          <Pressable
+            style={[
+              styles.sheet,
+              { backgroundColor: bg, paddingBottom: 44 + insets.bottom },
+            ]}
+          >
             {/* ── List mode ── */}
-            {mode === 'list' && !deleteTarget && (
+            {mode === "list" && !deleteTarget && (
               <>
-                <View style={[styles.sheetHeader, { borderBottomColor: border }]}>
+                <View
+                  style={[styles.sheetHeader, { borderBottomColor: border }]}
+                >
                   <View style={styles.titleGroup}>
-                    <Text style={[styles.sheetTitle, { color: text }]}>{t('people')}</Text>
-                    <Text style={[styles.sheetDesc, { color: muted }]}>{t('peopleSectionDesc')}</Text>
+                    <Text style={[styles.sheetTitle, { color: text }]}>
+                      {t("people")}
+                    </Text>
+                    <Text style={[styles.sheetDesc, { color: muted }]}>
+                      {t("peopleSectionDesc")}
+                    </Text>
                   </View>
                   <Pressable onPress={handleAddPress} hitSlop={8}>
                     <FontAwesome name="plus" size={18} color={tint} />
                   </Pressable>
                 </View>
-                <ScrollView style={styles.list} keyboardShouldPersistTaps="handled">
+                <ScrollView
+                  style={styles.list}
+                  keyboardShouldPersistTaps="handled"
+                >
                   {people.map((person) => {
                     const isActive = person.id === activePerson.id;
                     return (
                       <Pressable
                         key={person.id}
-                        style={[styles.personRow, isActive && { backgroundColor: tint + '18' }]}
-                        onPress={() => handleSwitch(person.id)}>
+                        style={[
+                          styles.personRow,
+                          isActive && { backgroundColor: tint + "18" },
+                        ]}
+                        onPress={() => handleSwitch(person.id)}
+                      >
                         <View style={styles.personRowLeft}>
                           {isActive ? (
-                            <FontAwesome name="check" size={14} color={tint} style={styles.checkIcon} />
+                            <FontAwesome
+                              name="check"
+                              size={14}
+                              color={tint}
+                              style={styles.checkIcon}
+                            />
                           ) : (
                             <View style={styles.checkPlaceholder} />
                           )}
-                          <Text style={[styles.personName, { color: isActive ? tint : text }]}>
+                          <Text
+                            style={[
+                              styles.personName,
+                              { color: isActive ? tint : text },
+                            ]}
+                          >
                             {person.name}
                           </Text>
                         </View>
                         <View style={styles.rowActions}>
                           <Pressable
-                            onPress={() => handleRenamePress(person.id, person.name)}
+                            onPress={() =>
+                              handleRenamePress(person.id, person.name)
+                            }
                             hitSlop={8}
-                            style={styles.iconBtn}>
-                            <FontAwesome name="pencil" size={14} color={muted} />
+                            style={styles.iconBtn}
+                          >
+                            <FontAwesome
+                              name="pencil"
+                              size={14}
+                              color={muted}
+                            />
                           </Pressable>
                           {!isActive && people.length > 1 && (
                             <Pressable
-                              onPress={() => handleDeletePress(person.id, person.name)}
+                              onPress={() =>
+                                handleDeletePress(person.id, person.name)
+                              }
                               hitSlop={8}
-                              style={styles.iconBtn}>
-                              <Feather name="trash-2" size={15} color={danger} />
+                              style={styles.iconBtn}
+                            >
+                              <Feather
+                                name="trash-2"
+                                size={15}
+                                color={danger}
+                              />
                             </Pressable>
                           )}
                         </View>
@@ -157,40 +220,63 @@ export default function PersonSwitcher() {
                     );
                   })}
                 </ScrollView>
-                <Pressable style={[styles.cancelBtn, { borderTopColor: border }]} onPress={closeSheet}>
-                  <Text style={[styles.cancelText, { color: muted }]}>{t('cancel')}</Text>
+                <Pressable
+                  style={[styles.cancelBtn, { borderTopColor: border }]}
+                  onPress={closeSheet}
+                >
+                  <Text style={[styles.cancelText, { color: muted }]}>
+                    {t("cancel")}
+                  </Text>
                 </Pressable>
               </>
             )}
 
             {/* ── Delete confirmation ── */}
-            {mode === 'list' && deleteTarget && (
+            {mode === "list" && deleteTarget && (
               <>
-                <Text style={[styles.sheetTitle, { color: text, marginBottom: 8 }]}>{t('deleteTitle', { name: deleteTarget.name })}</Text>
+                <Text
+                  style={[styles.sheetTitle, { color: text, marginBottom: 8 }]}
+                >
+                  {t("deleteTitle", { name: deleteTarget.name })}
+                </Text>
                 <Text style={[styles.deleteMsg, { color: muted }]}>
-                  {t('deletePersonMsg')}
+                  {t("deletePersonMsg")}
                 </Text>
                 <GradientButton
-                  label={t('deletePerson')}
+                  label={t("deletePerson")}
                   onPress={handleDeleteConfirm}
                   colors={GRADIENT_DANGER}
                   style={styles.actionBtn}
                 />
                 <Pressable
-                  style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
-                  onPress={() => setDeleteTarget(null)}>
-                  <Text style={[styles.actionBtnText, { color: text }]}>{t('cancel')}</Text>
+                  style={[
+                    styles.actionBtn,
+                    styles.actionBtnOutline,
+                    { borderColor: border },
+                  ]}
+                  onPress={() => setDeleteTarget(null)}
+                >
+                  <Text style={[styles.actionBtnText, { color: text }]}>
+                    {t("cancel")}
+                  </Text>
                 </Pressable>
               </>
             )}
 
             {/* ── Add mode ── */}
-            {mode === 'add' && (
+            {mode === "add" && (
               <>
-                <Text style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}>{t('addPerson')}</Text>
+                <Text
+                  style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}
+                >
+                  {t("addPerson")}
+                </Text>
                 <TextInput
-                  style={[styles.input, { borderColor: border, color: text, backgroundColor: bg }]}
-                  placeholder={t('nameField')}
+                  style={[
+                    styles.input,
+                    { borderColor: border, color: text, backgroundColor: bg },
+                  ]}
+                  placeholder={t("nameField")}
                   placeholderTextColor={muted}
                   value={inputValue}
                   onChangeText={setInputValue}
@@ -199,26 +285,40 @@ export default function PersonSwitcher() {
                   returnKeyType="done"
                 />
                 <GradientButton
-                  label={t('addBtn')}
+                  label={t("addBtn")}
                   onPress={handleAddConfirm}
                   disabled={!inputValue.trim()}
                   style={styles.actionBtn}
                 />
                 <Pressable
-                  style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
-                  onPress={() => setMode('list')}>
-                  <Text style={[styles.actionBtnText, { color: muted }]}>{t('back')}</Text>
+                  style={[
+                    styles.actionBtn,
+                    styles.actionBtnOutline,
+                    { borderColor: border },
+                  ]}
+                  onPress={() => setMode("list")}
+                >
+                  <Text style={[styles.actionBtnText, { color: muted }]}>
+                    {t("back")}
+                  </Text>
                 </Pressable>
               </>
             )}
 
             {/* ── Rename mode ── */}
-            {mode === 'rename' && (
+            {mode === "rename" && (
               <>
-                <Text style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}>{t('renamePerson')}</Text>
+                <Text
+                  style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}
+                >
+                  {t("renamePerson")}
+                </Text>
                 <TextInput
-                  style={[styles.input, { borderColor: border, color: text, backgroundColor: bg }]}
-                  placeholder={t('nameField')}
+                  style={[
+                    styles.input,
+                    { borderColor: border, color: text, backgroundColor: bg },
+                  ]}
+                  placeholder={t("nameField")}
                   placeholderTextColor={muted}
                   value={inputValue}
                   onChangeText={setInputValue}
@@ -227,19 +327,25 @@ export default function PersonSwitcher() {
                   returnKeyType="done"
                 />
                 <GradientButton
-                  label={t('doneBtn')}
+                  label={t("doneBtn")}
                   onPress={handleRenameConfirm}
                   disabled={!inputValue.trim()}
                   style={styles.actionBtn}
                 />
                 <Pressable
-                  style={[styles.actionBtn, styles.actionBtnOutline, { borderColor: border }]}
-                  onPress={() => setMode('list')}>
-                  <Text style={[styles.actionBtnText, { color: muted }]}>{t('back')}</Text>
+                  style={[
+                    styles.actionBtn,
+                    styles.actionBtnOutline,
+                    { borderColor: border },
+                  ]}
+                  onPress={() => setMode("list")}
+                >
+                  <Text style={[styles.actionBtnText, { color: muted }]}>
+                    {t("back")}
+                  </Text>
                 </Pressable>
               </>
             )}
-
           </Pressable>
         </Pressable>
       </Modal>
@@ -249,30 +355,30 @@ export default function PersonSwitcher() {
 
 const styles = StyleSheet.create({
   trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   triggerName: {
     fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: "Inter_600SemiBold",
   },
   overlay: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
   sheet: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 28,
     paddingBottom: 44,
-    maxHeight: '60%',
+    maxHeight: "60%",
   },
   sheetHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     borderBottomWidth: 1,
     paddingBottom: 12,
     marginBottom: 4,
@@ -283,27 +389,27 @@ const styles = StyleSheet.create({
   },
   sheetTitle: {
     fontSize: 20,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: "Inter_700Bold",
   },
   sheetDesc: {
     fontSize: 12,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: "Inter_400Regular",
     marginTop: 2,
   },
   list: {
     flexGrow: 0,
   },
   personRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 6,
     borderRadius: 10,
   },
   personRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   checkIcon: {
@@ -314,11 +420,11 @@ const styles = StyleSheet.create({
   },
   personName: {
     fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: "Inter_600SemiBold",
   },
   rowActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   iconBtn: {
@@ -327,17 +433,17 @@ const styles = StyleSheet.create({
   cancelBtn: {
     borderTopWidth: 1,
     paddingTop: 14,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 8,
   },
   cancelText: {
     fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: "Inter_400Regular",
   },
   deleteMsg: {
     fontSize: 14,
-    fontFamily: 'Inter_400Regular',
-    textAlign: 'center',
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
     marginBottom: 20,
     lineHeight: 20,
   },
@@ -347,22 +453,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: "Inter_400Regular",
     marginBottom: 14,
   },
   actionBtn: {
     borderRadius: 14,
     paddingVertical: 16,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 10,
   },
   actionBtnOutline: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 1,
   },
   actionBtnText: {
     fontSize: 16,
-    fontFamily: 'Inter_600SemiBold',
-    color: '#fff',
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
   },
 });

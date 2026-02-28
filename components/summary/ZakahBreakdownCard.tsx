@@ -7,7 +7,13 @@ import { formatCurrency, formatWeight } from "@/utils/formatting";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 
 function StatCard({
   label,
@@ -35,12 +41,13 @@ function StatCard({
   const card = useThemeColor({}, "card");
   const text = useThemeColor({}, "text");
   const muted = useThemeColor({}, "muted");
+  const isWeb = Platform.OS === "web";
 
   const bgColor = tintedBg ? gradient[1] + "18" : card;
   const labelColor = hero ? "rgba(255,255,255,0.8)" : muted;
   const valueColor = hero ? "#fff" : text;
   const subTextColor = hero ? "rgba(255,255,255,0.65)" : (subColor ?? muted);
-  const iconColors: [string, string] = hero
+  const iconColors: [string, string] = isWeb
     ? ["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]
     : gradient;
   const iconShadowColor = hero ? "#000" : gradient[0];

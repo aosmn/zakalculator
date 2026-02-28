@@ -44,7 +44,11 @@ export default function SummaryCard() {
     >
       <View style={styles.titleRow}>
         <LinearGradient
-          colors={["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]}
+          colors={
+            isWeb
+              ? ["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]
+              : G.tealCyan
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.iconWrap}
