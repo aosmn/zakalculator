@@ -106,13 +106,6 @@ export default function AddMetalModal({ visible, defaultType = 'gold', editing, 
               {editing ? t('editMetalTitle') : t('addMetalTitle')}
             </Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <FormInput label={t('labelField')} placeholder="e.g. Gold Ring" value={label} onChangeText={setLabel} />
-              <PickerRow
-                label={t('type')}
-                options={[{ label: t('goldOption'), value: 'gold' }, { label: t('silverOption'), value: 'silver' }]}
-                value={type}
-                onChange={(v) => setType(v as 'gold' | 'silver')}
-              />
               <FormInput
                 label={t('weightGrams')}
                 placeholder="0.00"
@@ -120,6 +113,13 @@ export default function AddMetalModal({ visible, defaultType = 'gold', editing, 
                 onChangeText={setWeight}
                 keyboardType="decimal-pad"
               />
+              <PickerRow
+                label={t('type')}
+                options={[{ label: t('goldOption'), value: 'gold' }, { label: t('silverOption'), value: 'silver' }]}
+                value={type}
+                onChange={(v) => setType(v as 'gold' | 'silver')}
+              />
+              <FormInput label={t('labelField')} placeholder="e.g. Gold Ring" value={label} onChangeText={setLabel} />
               <PickerRow
                 label={type === 'gold' ? t('purityKarats') : t('purityPercent')}
                 options={purityOptions}

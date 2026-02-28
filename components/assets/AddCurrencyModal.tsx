@@ -68,7 +68,13 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
             <Pressable style={[styles.sheet, { backgroundColor: bg }]}>
               <Text style={[styles.title, { color: text }]}>{editing ? t('editCurrencyTitle') : t('addCurrencyTitle')}</Text>
               <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-                <FormInput label={t('labelField')} placeholder="e.g. Savings Account" value={label} onChangeText={setLabel} />
+                <FormInput
+                  label={t('amount')}
+                  placeholder="0.00"
+                  value={amount}
+                  onChangeText={setAmount}
+                  keyboardType="decimal-pad"
+                />
 
                 {/* Currency dropdown */}
                 <View style={styles.fieldContainer}>
@@ -81,13 +87,7 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
                   </Pressable>
                 </View>
 
-                <FormInput
-                  label={t('amount')}
-                  placeholder="0.00"
-                  value={amount}
-                  onChangeText={setAmount}
-                  keyboardType="decimal-pad"
-                />
+                <FormInput label={t('labelField')} placeholder="e.g. Savings Account" value={label} onChangeText={setLabel} />
               </ScrollView>
               <GradientButton
                 label={editing ? t('update') : t('add')}

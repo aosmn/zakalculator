@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useThemeColor } from '@/components/Themed';
-import GradientButton from '@/components/shared/GradientButton';
-import EmptyState from '@/components/shared/EmptyState';
-import ConfirmDeleteSheet from '@/components/shared/ConfirmDeleteSheet';
-import PaymentItem from '@/components/payments/PaymentItem';
-import AddPaymentModal from '@/components/payments/AddPaymentModal';
-import { useZakah } from '@/context/ZakahContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { ZakahPayment } from '@/types';
-import { formatCurrency } from '@/utils/formatting';
-import { G } from '@/constants/Gradients';
+import { useThemeColor } from "@/components/Themed";
+import AddPaymentModal from "@/components/payments/AddPaymentModal";
+import PaymentItem from "@/components/payments/PaymentItem";
+import ConfirmDeleteSheet from "@/components/shared/ConfirmDeleteSheet";
+import EmptyState from "@/components/shared/EmptyState";
+import GradientButton from "@/components/shared/GradientButton";
+import { G } from "@/constants/Gradients";
+import { useLanguage } from "@/context/LanguageContext";
+import { useZakah } from "@/context/ZakahContext";
+import { ZakahPayment } from "@/types";
+import { formatCurrency } from "@/utils/formatting";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PaymentsScreen() {
   const { state, deletePayment, calculation } = useZakah();
   const { t } = useLanguage();
   const { baseCurrency } = state.priceSettings;
-  const bg = useThemeColor({}, 'background');
-  const text = useThemeColor({}, 'text');
-  const muted = useThemeColor({}, 'muted');
-  const tint = useThemeColor({}, 'tint');
-  const border = useThemeColor({}, 'border');
+  const bg = useThemeColor({}, "background");
+  const text = useThemeColor({}, "text");
+  const muted = useThemeColor({}, "muted");
+  const tint = useThemeColor({}, "tint");
+  const border = useThemeColor({}, "border");
 
   const [showModal, setShowModal] = useState(false);
-  const [editingPayment, setEditingPayment] = useState<ZakahPayment | undefined>();
+  const [editingPayment, setEditingPayment] = useState<
+    ZakahPayment | undefined
+  >();
   const [deleteTarget, setDeleteTarget] = useState<ZakahPayment | undefined>();
 
   function openEdit(payment: ZakahPayment) {
@@ -38,14 +40,22 @@ export default function PaymentsScreen() {
   }
 
   return (
-    <SafeAreaView edges={['top']} style={[styles.safe, { backgroundColor: bg }]}>
+    <SafeAreaView
+      edges={["top"]}
+      style={[styles.safe, { backgroundColor: bg }]}
+    >
       <View style={styles.pageWrap}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: text }]}>{t('tabPayments')}</Text>
+          <Text style={[styles.headerTitle, { color: text }]}>
+            {t("tabPayments")}
+          </Text>
           <GradientButton
-            label={t('logPayment')}
-            onPress={() => { setEditingPayment(undefined); setShowModal(true); }}
+            label={t("logPayment")}
+            onPress={() => {
+              setEditingPayment(undefined);
+              setShowModal(true);
+            }}
             style={styles.addBtn}
             textStyle={styles.addBtnText}
           />
@@ -56,17 +66,30 @@ export default function PaymentsScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
           renderItem={({ item }) => (
-            <PaymentItem payment={item} onPress={() => openEdit(item)} onLongPress={() => setDeleteTarget(item)} />
+            <PaymentItem
+              payment={item}
+              onPress={() => openEdit(item)}
+              onLongPress={() => setDeleteTarget(item)}
+            />
           )}
           ListEmptyComponent={
-            <EmptyState message={t('noPayments')} gradient={G.teal} icon="check-circle" />
+            <EmptyState
+              message={t("noPayments")}
+              gradient={G.silverAlt}
+              icon="check-circle"
+            />
           }
           ListFooterComponent={
             state.payments.length > 0 ? (
               <View style={[styles.footer, { borderTopColor: border }]}>
-                <Text style={[styles.footerLabel, { color: muted }]}>{t('totalPaid')}</Text>
+                <Text style={[styles.footerLabel, { color: muted }]}>
+                  {t("totalPaid")}
+                </Text>
                 <Text style={[styles.footerValue, { color: text }]}>
-                  {formatCurrency(calculation.totalPaidBaseCurrency, baseCurrency)}
+                  {formatCurrency(
+                    calculation.totalPaidBaseCurrency,
+                    baseCurrency,
+                  )}
                 </Text>
               </View>
             ) : null
@@ -74,12 +97,19 @@ export default function PaymentsScreen() {
         />
       </View>
 
-      <AddPaymentModal visible={showModal} editing={editingPayment} onClose={handleClose} />
+      <AddPaymentModal
+        visible={showModal}
+        editing={editingPayment}
+        onClose={handleClose}
+      />
 
       <ConfirmDeleteSheet
         visible={!!deleteTarget}
-        itemName={t('paymentItem')}
-        onConfirm={() => { if (deleteTarget) deletePayment(deleteTarget.id); setDeleteTarget(undefined); }}
+        itemName={t("paymentItem")}
+        onConfirm={() => {
+          if (deleteTarget) deletePayment(deleteTarget.id);
+          setDeleteTarget(undefined);
+        }}
         onCancel={() => setDeleteTarget(undefined)}
       />
     </SafeAreaView>
@@ -91,22 +121,28 @@ const styles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     maxWidth: 860,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 8,
   },
-  headerTitle: { fontSize: 22, fontFamily: 'Inter_700Bold' },
+  headerTitle: { fontSize: 22, fontFamily: "Inter_700Bold" },
   addBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
-  addBtnText: { fontSize: 14, fontFamily: 'Inter_700Bold', color: '#fff' },
+  addBtnText: { fontSize: 14, fontFamily: "Inter_700Bold", color: "#fff" },
   list: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 100 },
-  footer: { borderTopWidth: 1, marginTop: 8, paddingTop: 16, flexDirection: 'row', justifyContent: 'space-between' },
-  footerLabel: { fontSize: 15, fontFamily: 'Inter_400Regular' },
-  footerValue: { fontSize: 16, fontFamily: 'Inter_700Bold' },
+  footer: {
+    borderTopWidth: 1,
+    marginTop: 8,
+    paddingTop: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  footerLabel: { fontSize: 15, fontFamily: "Inter_400Regular" },
+  footerValue: { fontSize: 16, fontFamily: "Inter_700Bold" },
 });

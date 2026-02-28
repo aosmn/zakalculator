@@ -66,23 +66,24 @@ export default function CurrencyItem({ holding, onPress, onDelete }: Props) {
         onPress={onPress}
         onHoverIn={onHoverIn}
         onHoverOut={onHoverOut}>
-        <View style={[styles.row, isRTL && styles.rowRTL]}>
-          {/* Gradient icon avatar */}
-          <LinearGradient
-            colors={gradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[styles.iconWrap, { shadowColor: gradient[0], shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 }]}>
-            <Feather name="briefcase" size={20} color="#fff" />
-          </LinearGradient>
-          {/* Label + sub amount */}
-          <View style={styles.textCol}>
-            <Text style={[styles.label, { color: text, textAlign: isRTL ? 'right' : 'left' }]}>
-              {holding.label} · {holding.currency}
-            </Text>
-            <Text style={[styles.sub, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>
-              {formatCurrency(holding.amount, holding.currency)}
-            </Text>
+        <View style={styles.row}>
+          {/* Icon + label group — I18nManager/browser keeps them adjacent in RTL */}
+          <View style={styles.iconLabelGroup}>
+            <LinearGradient
+              colors={gradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.iconWrap, { shadowColor: gradient[0], shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 }]}>
+              <Feather name="briefcase" size={20} color="#fff" />
+            </LinearGradient>
+            <View style={[styles.textCol, isRTL && styles.textColRTL]}>
+              <Text style={[styles.label, { color: text, textAlign: isRTL ? 'right' : 'left' }]}>
+                {holding.label} · {holding.currency}
+              </Text>
+              <Text style={[styles.sub, { color: muted, textAlign: isRTL ? 'right' : 'left' }]}>
+                {formatCurrency(holding.amount, holding.currency)}
+              </Text>
+            </View>
           </View>
           {/* Value + delete */}
           <View style={styles.rightCol}>
@@ -115,7 +116,6 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     gap: 16,
   },
-  rowRTL: { flexDirection: 'row-reverse' },
   iconWrap: {
     width: 44,
     height: 44,
@@ -124,7 +124,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
+  iconLabelGroup: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16 },
   textCol: { flex: 1, justifyContent: 'center' },
+  textColRTL: { flexGrow: 0, flexShrink: 1, flexBasis: 'auto' },
   label: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
   sub: { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 3 },
   rightCol: { alignItems: 'flex-end', justifyContent: 'space-between' },
