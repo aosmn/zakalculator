@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -272,6 +272,19 @@ export default function AssetsScreen() {
 
           <PricesCallout />
 
+          {/* Subtotals toggle */}
+          <Pressable
+            style={[styles.switchRow, { backgroundColor: bg, borderColor: border }]}
+            onPress={() => setShowGroupTotals((v) => !v)}>
+            <Switch
+              value={showGroupTotals}
+              onValueChange={setShowGroupTotals}
+              trackColor={{ false: G.silver[0], true: G.tealDark[0] }}
+              thumbColor="#fff"
+            />
+            <Text style={[styles.switchLabel, { color: text }]}>{t('totals')}</Text>
+          </Pressable>
+
           {/* Balances section header */}
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleRow}>
@@ -292,13 +305,6 @@ export default function AssetsScreen() {
                     );
                   })}
                 </View>
-                {balancesGroupMode != null && (
-                  <Pressable
-                    style={[styles.togglePill, { borderColor: showGroupTotals ? G.amber[0] : border, backgroundColor: showGroupTotals ? G.amber[0] : undefined }]}
-                    onPress={() => setShowGroupTotals((v) => !v)}>
-                    <Text style={[styles.togglePillText, { color: showGroupTotals ? '#fff' : muted }]}>{t('totals')}</Text>
-                  </Pressable>
-                )}
               </View>
             </View>
             <Text style={[styles.sectionDesc, { color: muted }]}>{t('cashAndAccounts')}</Text>
@@ -495,6 +501,22 @@ const styles = StyleSheet.create({
   sectionDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 2, marginBottom: 4 },
   togglePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, overflow: 'hidden' },
   togglePillText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  switchLabel: { fontSize: 15, fontFamily: 'Inter_500Medium' },
 
   addBtnFull: {
     paddingVertical: 16,
@@ -529,7 +551,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   groupHeaderText: {
-    fontSize: 12,
+    fontSize: 15,
     fontFamily: 'Inter_600SemiBold',
     marginRight: 8,
     letterSpacing: 0.5,

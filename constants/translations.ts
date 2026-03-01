@@ -21,7 +21,7 @@ export const en = {
   groupByCurrency: "By Currency",
   groupByLabel: "By Label",
   group: "Group",
-  totals: "Show subtotals",
+  totals: "Show subtotals per group",
   groupAll: "All",
   groupByPurity: "By Purity",
   addItem: "+ Add",
