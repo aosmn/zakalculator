@@ -40,7 +40,7 @@ export default function ConfirmDeleteSheet({
         <View
           style={[
             styles.sheet,
-            { backgroundColor: bg, paddingBottom: 28 + insets.bottom },
+            { backgroundColor: bg, paddingBottom: 24 + insets.bottom },
           ]}
         >
           <Text style={[styles.title, { color: text }]}>

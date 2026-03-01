@@ -202,7 +202,7 @@ export default function OptionsSheet({ visible, onClose }: Props) {
         <Pressable
           style={[
             styles.sheet,
-            { backgroundColor: bg, paddingBottom: 40 + insets.bottom },
+            { backgroundColor: bg, paddingBottom: 24 + insets.bottom },
           ]}
         >
           {/* ── Language + Color mode + Backup ── */}

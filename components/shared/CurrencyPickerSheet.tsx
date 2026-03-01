@@ -90,7 +90,7 @@ export default function CurrencyPickerSheet({
         <Pressable
           style={[
             styles.sheet,
-            { backgroundColor: bg, paddingBottom: 40 + insets.bottom },
+            { backgroundColor: bg, paddingBottom: 24 + insets.bottom },
           ]}
         >
           <Text style={[styles.title, { color: text }]}>

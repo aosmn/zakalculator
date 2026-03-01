@@ -132,7 +132,7 @@ export default function PersonSwitcher() {
           <Pressable
             style={[
               styles.sheet,
-              { backgroundColor: bg, paddingBottom: 44 + insets.bottom },
+              { backgroundColor: bg, paddingBottom: 24 + insets.bottom },
             ]}
           >
             {/* ── List mode ── */}
