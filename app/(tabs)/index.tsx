@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -113,11 +114,21 @@ export default function AssetsScreen() {
   const [deleteCurrency, setDeleteCurrency] = useState<CurrencyHolding | undefined>();
   const [deleteMetal, setDeleteMetal] = useState<MetalHolding | undefined>();
 
+  // Intro card
+  const [showIntro, setShowIntro] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@intro_dismissed').then((val) => {
+      if (val !== 'true') setShowIntro(true);
+    });
+  }, []);
+  function dismissIntro() {
+    setShowIntro(false);
+    AsyncStorage.setItem('@intro_dismissed', 'true');
+  }
+
   // Grouping
   const [balancesGroupMode, setBalancesGroupMode] = useState<BalancesGroupMode>('currency');
-  const [showBalancesTotals, setShowBalancesTotals] = useState(true);
-  const [showGoldTotals, setShowGoldTotals] = useState(true);
-  const [showSilverTotals, setShowSilverTotals] = useState(true);
+  const [showGroupTotals, setShowGroupTotals] = useState(true);
 
   function openAddGold() { setMetalModalType('gold'); setEditingMetal(undefined); setShowMetalModal(true); }
   function openAddSilver() { setMetalModalType('silver'); setEditingMetal(undefined); setShowMetalModal(true); }
@@ -201,7 +212,7 @@ export default function AssetsScreen() {
           <View key={currency}>
             <GroupHeader label={currency} />
             {items.map(renderCurrencyItem)}
-            {showBalancesTotals && (
+            {showGroupTotals && (
               <GroupTotalRow
                 label={`${currency} · ${t('total')}`}
                 value={formatCurrency(totalAmount, currency)}
@@ -220,7 +231,7 @@ export default function AssetsScreen() {
           <View key={label}>
             <GroupHeader label={label} />
             {items.map(renderCurrencyItem)}
-            {showBalancesTotals && (
+            {showGroupTotals && (
               <GroupTotalRow
                 label={`${label} · ${t('total')}`}
                 value={formatCurrency(totalBase, baseCurrency)}
@@ -240,19 +251,24 @@ export default function AssetsScreen() {
         <View style={styles.inner}>
 
           {/* Intro card */}
-          <View style={[styles.introCard, { backgroundColor: tint + '18', borderColor: tint + '30', borderWidth: 1 }]}>
-            <LinearGradient
-              colors={G.teal}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.introIconWrap}>
-              <Feather name="star" size={18} color="#fff" />
-            </LinearGradient>
-            <View style={styles.introContent}>
-              <Text style={[styles.introTitle, { color: text }]}>{t('appIntroTitle')}</Text>
-              <Text style={[styles.introDesc, { color: muted }]}>{t('appIntroDesc')}</Text>
+          {showIntro && (
+            <View style={[styles.introCard, { backgroundColor: tint + '18', borderColor: tint + '30', borderWidth: 1 }]}>
+              <LinearGradient
+                colors={G.teal}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.introIconWrap}>
+                <Feather name="star" size={18} color="#fff" />
+              </LinearGradient>
+              <View style={styles.introContent}>
+                <Text style={[styles.introTitle, { color: text }]}>{t('appIntroTitle')}</Text>
+                <Text style={[styles.introDesc, { color: muted }]}>{t('appIntroDesc')}</Text>
+              </View>
+              <Pressable onPress={dismissIntro} style={styles.introClose} hitSlop={8}>
+                <Feather name="x" size={16} color={muted} />
+              </Pressable>
             </View>
-          </View>
+          )}
 
           <PricesCallout />
 
@@ -278,9 +294,9 @@ export default function AssetsScreen() {
                 </View>
                 {balancesGroupMode != null && (
                   <Pressable
-                    style={[styles.togglePill, { borderColor: showBalancesTotals ? G.amber[0] : border, backgroundColor: showBalancesTotals ? G.amber[0] : undefined }]}
-                    onPress={() => setShowBalancesTotals((v) => !v)}>
-                    <Text style={[styles.togglePillText, { color: showBalancesTotals ? '#fff' : muted }]}>{t('totals')}</Text>
+                    style={[styles.togglePill, { borderColor: showGroupTotals ? G.amber[0] : border, backgroundColor: showGroupTotals ? G.amber[0] : undefined }]}
+                    onPress={() => setShowGroupTotals((v) => !v)}>
+                    <Text style={[styles.togglePillText, { color: showGroupTotals ? '#fff' : muted }]}>{t('totals')}</Text>
                   </Pressable>
                 )}
               </View>
@@ -309,15 +325,7 @@ export default function AssetsScreen() {
           <SectionSeparator />
 
           {/* Gold */}
-          <SectionHeaderWithToggle
-            title={t('gold')}
-            description={t('goldDesc')}
-            toggled={showGoldTotals}
-            onToggle={() => setShowGoldTotals((v) => !v)}
-            toggleLabel={t('totals')}
-            toggleGradient={G.amber}
-            toggleFlat
-          />
+          <SectionHeader title={t('gold')} description={t('goldDesc')} />
           <GradientButton
             label={t('addItem')}
             onPress={openAddGold}
@@ -339,7 +347,7 @@ export default function AssetsScreen() {
                 <View key={groupKey}>
                   <GroupHeader label={groupKey} />
                   {items.map(renderMetalItem)}
-                  {showGoldTotals && (
+                  {showGroupTotals && (
                     <GroupTotalRow
                       label={`${groupKey} · ${t('total')}`}
                       sub={formatWeight(totalWeight, lang)}
@@ -365,15 +373,7 @@ export default function AssetsScreen() {
           <SectionSeparator />
 
           {/* Silver */}
-          <SectionHeaderWithToggle
-            title={t('silver')}
-            description={t('silverDesc')}
-            toggled={showSilverTotals}
-            onToggle={() => setShowSilverTotals((v) => !v)}
-            toggleLabel={t('totals')}
-            toggleGradient={G.amber}
-            toggleFlat
-          />
+          <SectionHeader title={t('silver')} description={t('silverDesc')} />
           <GradientButton
             label={t('addItem')}
             onPress={openAddSilver}
@@ -391,7 +391,7 @@ export default function AssetsScreen() {
                 <View key={groupKey}>
                   <GroupHeader label={groupKey} />
                   {items.map(renderMetalItem)}
-                  {showSilverTotals && (
+                  {showGroupTotals && (
                     <GroupTotalRow
                       label={`${groupKey} · ${t('total')}`}
                       sub={formatWeight(totalWeight, lang)}
@@ -476,6 +476,7 @@ const styles = StyleSheet.create({
   introContent: { flex: 1 },
   introTitle: { fontSize: 16, fontFamily: 'Inter_700Bold', marginBottom: 4 },
   introDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 20 },
+  introClose: { padding: 4, alignSelf: 'flex-start' },
 
   // Section headers
   sectionHeader: {

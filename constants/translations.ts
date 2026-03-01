@@ -218,7 +218,7 @@ export const ar: typeof en = {
   groupByCurrency: "حسب العملة",
   groupByLabel: "حسب التسمية",
   group: "تجميع",
-  totals: "إظهار المجاميع الفرعية",
+  totals: "عرض الإجماليات الفرعية",
   groupAll: "الكل",
   groupByPurity: "حسب العيار",
   addItem: "+ إضافة",
