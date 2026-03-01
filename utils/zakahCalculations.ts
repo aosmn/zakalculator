@@ -67,7 +67,9 @@ export function calculateZakah(state: ZakahState): ZakahCalculationResult {
 
   const zakahDueBaseCurrency = isAboveNisab ? totalWealthBaseCurrency * ZAKAH_RATE : 0;
 
-  const totalPaidBaseCurrency = payments.reduce((sum, p) => sum + p.amountBaseCurrency, 0);
+  const totalPaidBaseCurrency = payments
+    .filter((p) => !p.status || p.status === 'completed')
+    .reduce((sum, p) => sum + p.amountBaseCurrency, 0);
 
   const remainingBaseCurrency = Math.max(0, zakahDueBaseCurrency - totalPaidBaseCurrency);
 

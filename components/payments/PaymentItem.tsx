@@ -12,13 +12,15 @@ interface Props {
 }
 
 export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isRTL = lang === "ar";
+  const isPending = payment.status === "pending";
   const card = useThemeColor({}, "card");
   const border = useThemeColor({}, "border");
   const text = useThemeColor({}, "text");
   const muted = useThemeColor({}, "muted");
   const tint = useThemeColor({}, "tint");
+  const amber = "#D97706";
 
   const [hovered, setHovered] = useState(false);
   const hoverAnim = useRef(new Animated.Value(0)).current;
@@ -65,7 +67,7 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
         {
           backgroundColor: card,
           borderColor: border,
-          borderStartColor: tint,
+          borderStartColor: isPending ? amber : tint,
           transform: [{ translateY }],
         },
       ]}
@@ -99,8 +101,13 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
               {payment.note}
             </Text>
           ) : null}
+          {isPending && (
+            <View style={[styles.pendingBadge, { backgroundColor: amber + "20" }]}>
+              <Text style={[styles.pendingBadgeText, { color: amber }]}>{t("statusPending")}</Text>
+            </View>
+          )}
         </View>
-        <Text style={[styles.amount, { color: tint }]}>
+        <Text style={[styles.amount, { color: isPending ? amber : tint }]}>
           {formatCurrency(payment.amountDisplayCurrency, payment.currency)}
         </Text>
       </Pressable>
@@ -128,4 +135,12 @@ const styles = StyleSheet.create({
   date: { fontSize: 12, fontFamily: "Inter_400Regular", marginBottom: 2 },
   note: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
   amount: { fontSize: 18, fontFamily: "Inter_700Bold" },
+  pendingBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginTop: 5,
+  },
+  pendingBadgeText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
 });

@@ -46,6 +46,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
   const [currency, setCurrency] = useState(baseCurrency);
   const [note, setNote] = useState("");
   const [paidAt, setPaidAt] = useState<Date>(new Date());
+  const [status, setStatus] = useState<'pending' | 'completed'>('completed');
   const [showPicker, setShowPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -59,11 +60,13 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
         setCurrency(editing.currency);
         setNote(editing.note ?? "");
         setPaidAt(new Date(editing.paidAt));
+        setStatus(editing.status ?? 'completed');
       } else {
         setAmount("");
         setCurrency(baseCurrency);
         setNote("");
         setPaidAt(new Date());
+        setStatus('completed');
       }
     }
   }, [visible, editing, baseCurrency]);
@@ -83,6 +86,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
       amountDisplayCurrency: parsed,
       note: note.trim(),
       paidAt: paidAt.toISOString(),
+      status,
     };
     if (editing) {
       updatePayment(editing.id, data);
@@ -228,6 +232,28 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
                   value={note}
                   onChangeText={setNote}
                 />
+                <View style={styles.fieldContainer}>
+                  <Text style={[styles.fieldLabel, { color: muted }]}>{t("statusLabel")}</Text>
+                  <View style={styles.pills}>
+                    {(["completed", "pending"] as const).map((s) => (
+                      <Pressable
+                        key={s}
+                        style={[
+                          styles.pill,
+                          {
+                            borderColor: status === s ? tint : border,
+                            backgroundColor: status === s ? tint + "18" : "transparent",
+                          },
+                        ]}
+                        onPress={() => setStatus(s)}
+                      >
+                        <Text style={[styles.pillText, { color: status === s ? tint : muted }]}>
+                          {s === "completed" ? t("statusCompleted") : t("statusPending")}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
                 {renderDateField()}
               </ScrollView>
               {confirmDelete ? (
@@ -327,6 +353,14 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
+  pills: { flexDirection: "row", gap: 8 },
+  pill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1.5,
+  },
+  pillText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
   currencyBtn: {
     borderWidth: 1,
     borderRadius: 10,

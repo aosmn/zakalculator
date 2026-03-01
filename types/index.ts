@@ -36,6 +36,7 @@ export interface ZakahPayment {
   amountDisplayCurrency: number;
   note: string;
   paidAt: string;
+  status?: 'pending' | 'completed';
 }
 
 export interface ZakahState {

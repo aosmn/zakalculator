@@ -11,8 +11,19 @@ import { useZakah } from "@/context/ZakahContext";
 import { ZakahPayment } from "@/types";
 import { formatCurrency } from "@/utils/formatting";
 import React, { useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+function GroupHeader({ label }: { label: string }) {
+  const muted = useThemeColor({}, "muted");
+  const border = useThemeColor({}, "border");
+  return (
+    <View style={styles.groupHeaderRow}>
+      <Text style={[styles.groupHeaderText, { color: muted }]}>{label}</Text>
+      <View style={[styles.groupHeaderLine, { backgroundColor: border }]} />
+    </View>
+  );
+}
 
 export default function PaymentsScreen() {
   const { state, deletePayment, calculation } = useZakah();
@@ -21,13 +32,9 @@ export default function PaymentsScreen() {
   const bg = useThemeColor({}, "background");
   const text = useThemeColor({}, "text");
   const muted = useThemeColor({}, "muted");
-  const tint = useThemeColor({}, "tint");
-  const border = useThemeColor({}, "border");
 
   const [showModal, setShowModal] = useState(false);
-  const [editingPayment, setEditingPayment] = useState<
-    ZakahPayment | undefined
-  >();
+  const [editingPayment, setEditingPayment] = useState<ZakahPayment | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<ZakahPayment | undefined>();
 
   function openEdit(payment: ZakahPayment) {
@@ -40,20 +47,20 @@ export default function PaymentsScreen() {
     setEditingPayment(undefined);
   }
 
+  const pendingPayments = state.payments.filter((p) => p.status === "pending");
+  const completedPayments = state.payments.filter((p) => !p.status || p.status === "completed");
+
+  const pendingTotal = pendingPayments.reduce((sum, p) => sum + p.amountBaseCurrency, 0);
+
+  const hasAny = state.payments.length > 0;
+
   return (
-    <SafeAreaView
-      edges={["top"]}
-      style={[styles.safe, { backgroundColor: bg }]}
-    >
+    <SafeAreaView edges={["top"]} style={[styles.safe, { backgroundColor: bg }]}>
       <View style={styles.pageWrap}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: text }]}>
-            {t("tabPayments")}
-          </Text>
-          <Text style={[styles.headerDesc, { color: muted }]}>
-            {t("paymentsDesc")}
-          </Text>
+          <Text style={[styles.headerTitle, { color: text }]}>{t("tabPayments")}</Text>
+          <Text style={[styles.headerDesc, { color: muted }]}>{t("paymentsDesc")}</Text>
         </View>
 
         <GradientButton
@@ -67,39 +74,60 @@ export default function PaymentsScreen() {
           textStyle={styles.addBtnText}
         />
 
-        <FlatList
-          data={state.payments}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <PaymentItem
-              payment={item}
-              onPress={() => openEdit(item)}
-              onLongPress={() => setDeleteTarget(item)}
-            />
-          )}
-          ListEmptyComponent={
+        <ScrollView contentContainerStyle={styles.list}>
+          {!hasAny && (
             <EmptyState
               message={t("noPayments")}
               gradient={G.silverAlt}
               icon="check-circle"
             />
-          }
-          ListHeaderComponent={
-            state.payments.length > 0 ? (
-              <View style={styles.totalWrap}>
-                <GroupTotalRow
-                  label={t("totalPaid")}
-                  value={formatCurrency(calculation.totalPaidBaseCurrency, baseCurrency)}
-                  iconName="credit-card"
-                  gradient={G.subtotal}
-                  dividerTop={false}
+          )}
+
+          {/* Pending section */}
+          {pendingPayments.length > 0 && (
+            <>
+              <GroupHeader label={t("pendingPayments")} />
+              {pendingPayments.map((item) => (
+                <PaymentItem
+                  key={item.id}
+                  payment={item}
+                  onPress={() => openEdit(item)}
+                  onLongPress={() => setDeleteTarget(item)}
                 />
-                <View style={styles.totalDivider} />
-              </View>
-            ) : null
-          }
-        />
+              ))}
+              <GroupTotalRow
+                label={t("pendingTotal")}
+                value={formatCurrency(pendingTotal, baseCurrency)}
+                iconName="clock"
+                gradient={G.amber}
+                dividerTop={false}
+                dividerBottom={completedPayments.length > 0}
+              />
+            </>
+          )}
+
+          {/* Completed section */}
+          {completedPayments.length > 0 && (
+            <>
+              <GroupHeader label={t("completedPayments")} />
+              {completedPayments.map((item) => (
+                <PaymentItem
+                  key={item.id}
+                  payment={item}
+                  onPress={() => openEdit(item)}
+                  onLongPress={() => setDeleteTarget(item)}
+                />
+              ))}
+              <GroupTotalRow
+                label={t("totalPaid")}
+                value={formatCurrency(calculation.totalPaidBaseCurrency, baseCurrency)}
+                iconName="credit-card"
+                gradient={G.subtotal}
+                dividerTop={false}
+              />
+            </>
+          )}
+        </ScrollView>
       </View>
 
       <AddPaymentModal
@@ -148,8 +176,25 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  addBtnText: { fontSize: 17, fontFamily: "Inter_700Bold", color: "#fff", textTransform: "uppercase", letterSpacing: 0.5 },
-  list: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 100 },
-  totalWrap: { marginBottom: 20 },
-  totalDivider: { height: 1, marginTop: 16, marginHorizontal: 4, backgroundColor: "rgba(0,0,0,0.15)" },
+  addBtnText: {
+    fontSize: 17,
+    fontFamily: "Inter_700Bold",
+    color: "#fff",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  list: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },
+  groupHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 14,
+    marginBottom: 8,
+  },
+  groupHeaderText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    marginRight: 8,
+    letterSpacing: 0.5,
+  },
+  groupHeaderLine: { flex: 1, height: 1 },
 });
