@@ -2,7 +2,8 @@ export const en = {
   // Tabs
   tabAssets: "Assets",
   tabZakah: "Zakah",
-  tabPayments: "Payments",
+  tabPayments: "Payment History",
+  paymentsDesc: "Track your Zakah payments and donations",
   pricesRates: "Prices & Rates",
   pricesCalloutDesc: "Set gold, silver & exchange rates",
 
@@ -28,6 +29,15 @@ export const en = {
   noBalances: "No balances yet. Tap + Add to get started.",
   noGold: "No gold holdings yet.",
   noSilver: "No silver holdings yet.",
+  emptyBalancesTitle: "Track Your Cash & Accounts",
+  emptyBalancesDesc: "Add bank accounts, cash savings, or any currency balance to calculate Zakah on your liquid assets.",
+  addBalanceItem: "+ Add Balance",
+  emptyGoldTitle: "Track Your Gold Holdings",
+  emptyGoldDesc: "Add your gold items by weight and purity (24k, 22k, 21k, 18k, etc.) to calculate their value and Zakah.",
+  addGoldItem: "+ Add Gold Item",
+  emptySilverTitle: "Track Your Silver Holdings",
+  emptySilverDesc: "Add your silver items by weight and purity to calculate their value and Zakah obligation.",
+  addSilverItem: "+ Add Silver Item",
 
   // Overview screen
   balancesByCurrency: "Balances by Currency",
@@ -199,7 +209,8 @@ export const ar: typeof en = {
   // Tabs
   tabAssets: "الأصول",
   tabZakah: "الزكاة",
-  tabPayments: "المدفوعات",
+  tabPayments: "سجل المدفوعات",
+  paymentsDesc: "تتبع مدفوعات الزكاة والتبرعات",
   pricesRates: "الأسعار والمعدلات",
   pricesCalloutDesc: "حدّث أسعار الذهب والفضة وأسعار الصرف",
 
@@ -225,6 +236,15 @@ export const ar: typeof en = {
   noBalances: "لا توجد أرصدة بعد. اضغط + إضافة للبدء.",
   noGold: "لا توجد مقتنيات ذهب بعد.",
   noSilver: "لا توجد مقتنيات فضة بعد.",
+  emptyBalancesTitle: "تتبّع نقدك وحساباتك",
+  emptyBalancesDesc: "أضف حساباتك المصرفية أو المدخرات النقدية لحساب زكاة أصولك السائلة.",
+  addBalanceItem: "+ إضافة رصيد",
+  emptyGoldTitle: "تتبّع مقتنياتك من الذهب",
+  emptyGoldDesc: "أضف قطع الذهب بالوزن والعيار (24، 22، 21، 18 قيراطاً...) لحساب قيمتها وزكاتها.",
+  addGoldItem: "+ إضافة ذهب",
+  emptySilverTitle: "تتبّع مقتنياتك من الفضة",
+  emptySilverDesc: "أضف قطع الفضة بالوزن والعيار لحساب قيمتها والزكاة الواجبة.",
+  addSilverItem: "+ إضافة فضة",
 
   // Overview screen
   balancesByCurrency: "الأرصدة حسب العملة",

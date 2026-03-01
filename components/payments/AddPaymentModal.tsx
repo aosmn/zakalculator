@@ -309,6 +309,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 24,
     paddingBottom: 40,
+    maxWidth: 540,
+    width: "100%",
+    alignSelf: "center",
   },
   title: {
     fontSize: 20,

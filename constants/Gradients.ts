@@ -7,6 +7,7 @@ export const G = {
   tealCyanDark: ["#164E63", "#0891B2"] as Gradient, // deep cyan-900 → cyan-600 (dark mode)
   tealGrand: ["#0F766E", "#0D9488"] as Gradient, // overview grand total
   tealDark: ["#0D3347", "#111827"] as Gradient, // overview total rows
+  subtotal: ["#1E293B", "#164E63"] as Gradient, // group subtotals — slate-800 → cyan-900
   cyan: ["#0891B2", "#06B6D4"] as Gradient,
   cyanDeep: ["#0E7490", "#0891B2"] as Gradient,
   emerald: ["#059669", "#10B981"] as Gradient,
@@ -19,6 +20,7 @@ export const G = {
   silverAlt: ["#9CA3AF", "#6B7280"] as Gradient, // silver empty state
   indigo: ["#4F46E5", "#6366F1"] as Gradient, // cash breakdown card
   limeCyan: ["#84CC16", "#38CCDE"] as Gradient,
+  limeCyanDeep: ["#3F6212", "#155E75"] as Gradient, // deep lime-800 → cyan-800
   danger: ["#EF4444", "#DC2626"] as Gradient,
   disabled: ["#a4a9b0", "#9CA3AF"] as Gradient,
 };

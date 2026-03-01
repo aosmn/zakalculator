@@ -13,6 +13,8 @@ interface Props {
   zakah?: string;
   iconName?: React.ComponentProps<typeof Feather>["name"];
   gradient?: [string, string];
+  dividerTop?: boolean;
+  dividerBottom?: boolean;
 }
 
 export default function GroupTotalRow({
@@ -23,13 +25,15 @@ export default function GroupTotalRow({
   zakah,
   iconName = "trending-up",
   gradient = G.tealDark,
+  dividerTop = true,
+  dividerBottom = false,
 }: Props) {
   const { lang } = useLanguage();
   const isRTL = lang === "ar";
 
   return (
     <>
-    <View style={styles.divider} />
+    {dividerTop && <View style={styles.divider} />}
     <LinearGradient
       colors={gradient}
       start={{ x: 0, y: 0 }}
@@ -74,6 +78,7 @@ export default function GroupTotalRow({
         ) : null}
       </View>
     </LinearGradient>
+    {dividerBottom && <View style={styles.divider} />}
     </>
   );
 }
@@ -118,7 +123,7 @@ const styles = StyleSheet.create({
   zakah: {
     fontSize: 12,
     fontFamily: "Inter_500Medium",
-    color: "#F59E0B",
+    color: "#fff",
     marginTop: 2,
   },
   value: { fontSize: 20, fontFamily: "Inter_700Bold", color: "#fff" },

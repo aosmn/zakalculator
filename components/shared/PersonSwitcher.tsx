@@ -39,7 +39,9 @@ export default function PersonSwitcher() {
     name: string;
   } | null>(null);
 
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const isRTL = lang === "ar";
+  const rowDir = isRTL ? "row-reverse" : "row";
   const bg = useThemeColor({}, "card");
   const text = useThemeColor({}, "text");
   const muted = useThemeColor({}, "muted");
@@ -137,13 +139,26 @@ export default function PersonSwitcher() {
             {mode === "list" && !deleteTarget && (
               <>
                 <View
-                  style={[styles.sheetHeader, { borderBottomColor: border }]}
+                  style={[
+                    styles.sheetHeader,
+                    { borderBottomColor: border, flexDirection: rowDir },
+                  ]}
                 >
                   <View style={styles.titleGroup}>
-                    <Text style={[styles.sheetTitle, { color: text }]}>
+                    <Text
+                      style={[
+                        styles.sheetTitle,
+                        { color: text, textAlign: isRTL ? "right" : "left" },
+                      ]}
+                    >
                       {t("people")}
                     </Text>
-                    <Text style={[styles.sheetDesc, { color: muted }]}>
+                    <Text
+                      style={[
+                        styles.sheetDesc,
+                        { color: muted, textAlign: isRTL ? "right" : "left" },
+                      ]}
+                    >
                       {t("peopleSectionDesc")}
                     </Text>
                   </View>
@@ -162,17 +177,23 @@ export default function PersonSwitcher() {
                         key={person.id}
                         style={[
                           styles.personRow,
+                          { flexDirection: rowDir },
                           isActive && { backgroundColor: tint + "18" },
                         ]}
                         onPress={() => handleSwitch(person.id)}
                       >
-                        <View style={styles.personRowLeft}>
+                        <View
+                          style={[
+                            styles.personRowLeft,
+                            { flexDirection: rowDir },
+                          ]}
+                        >
                           {isActive ? (
                             <FontAwesome
                               name="check"
                               size={14}
                               color={tint}
-                              style={styles.checkIcon}
+                              style={[styles.checkIcon]}
                             />
                           ) : (
                             <View style={styles.checkPlaceholder} />
@@ -180,7 +201,10 @@ export default function PersonSwitcher() {
                           <Text
                             style={[
                               styles.personName,
-                              { color: isActive ? tint : text },
+                              {
+                                color: isActive ? tint : text,
+                                textAlign: isRTL ? "right" : "left",
+                              },
                             ]}
                           >
                             {person.name}
@@ -235,11 +259,23 @@ export default function PersonSwitcher() {
             {mode === "list" && deleteTarget && (
               <>
                 <Text
-                  style={[styles.sheetTitle, { color: text, marginBottom: 8 }]}
+                  style={[
+                    styles.sheetTitle,
+                    {
+                      color: text,
+                      marginBottom: 8,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
                 >
                   {t("deleteTitle", { name: deleteTarget.name })}
                 </Text>
-                <Text style={[styles.deleteMsg, { color: muted }]}>
+                <Text
+                  style={[
+                    styles.deleteMsg,
+                    { color: muted, textAlign: isRTL ? "right" : "left" },
+                  ]}
+                >
                   {t("deletePersonMsg")}
                 </Text>
                 <GradientButton
@@ -267,7 +303,14 @@ export default function PersonSwitcher() {
             {mode === "add" && (
               <>
                 <Text
-                  style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}
+                  style={[
+                    styles.sheetTitle,
+                    {
+                      color: text,
+                      marginBottom: 16,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
                 >
                   {t("addPerson")}
                 </Text>
@@ -309,7 +352,14 @@ export default function PersonSwitcher() {
             {mode === "rename" && (
               <>
                 <Text
-                  style={[styles.sheetTitle, { color: text, marginBottom: 16 }]}
+                  style={[
+                    styles.sheetTitle,
+                    {
+                      color: text,
+                      marginBottom: 16,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
                 >
                   {t("renamePerson")}
                 </Text>
@@ -374,6 +424,9 @@ const styles = StyleSheet.create({
     padding: 28,
     paddingBottom: 44,
     maxHeight: "60%",
+    maxWidth: 540,
+    width: "100%",
+    alignSelf: "center",
   },
   sheetHeader: {
     flexDirection: "row",
@@ -385,7 +438,7 @@ const styles = StyleSheet.create({
   },
   titleGroup: {
     flex: 1,
-    marginRight: 12,
+    marginEnd: 12,
   },
   sheetTitle: {
     fontSize: 20,
@@ -414,6 +467,7 @@ const styles = StyleSheet.create({
   },
   checkIcon: {
     width: 20,
+    margin: 6,
   },
   checkPlaceholder: {
     width: 20,

@@ -78,6 +78,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     padding: 28,
     paddingBottom: 44,
+    maxWidth: 540,
+    width: "100%",
+    alignSelf: "center",
   },
   title: {
     fontSize: 20,
@@ -92,6 +95,7 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   destructiveBtn: { borderRadius: 14, paddingVertical: 16, marginBottom: 10 },
+  btn: { borderRadius: 14, paddingVertical: 16, alignItems: "center" },
   cancel: { backgroundColor: "transparent", borderWidth: 1 },
   btnText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#fff" },
 });

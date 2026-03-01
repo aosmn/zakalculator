@@ -18,7 +18,7 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
   const border = useThemeColor({}, "border");
   const text = useThemeColor({}, "text");
   const muted = useThemeColor({}, "muted");
-  const success = useThemeColor({}, "success");
+  const tint = useThemeColor({}, "tint");
 
   const [hovered, setHovered] = useState(false);
   const hoverAnim = useRef(new Animated.Value(0)).current;
@@ -65,27 +65,42 @@ export default function PaymentItem({ payment, onPress, onLongPress }: Props) {
         {
           backgroundColor: card,
           borderColor: border,
-          borderStartColor: success,
+          borderStartColor: tint,
           transform: [{ translateY }],
         },
       ]}
     >
       <Pressable
-        style={styles.pressable}
+        style={[
+          styles.pressable,
+          // { flexDirection: isRTL ? "row-reverse" : "row" },
+        ]}
         onHoverIn={onHoverIn}
         onHoverOut={onHoverOut}
         onPress={onPress}
         onLongPress={onLongPress}
       >
         <View style={isRTL ? styles.right : styles.left}>
-          <Text style={[styles.date, { color: muted }]}>
+          <Text
+            style={[
+              styles.date,
+              { color: muted, textAlign: isRTL ? "right" : "left" },
+            ]}
+          >
             {formatDate(payment.paidAt)}
           </Text>
           {payment.note ? (
-            <Text style={[styles.note, { color: text }]}>{payment.note}</Text>
+            <Text
+              style={[
+                styles.note,
+                { color: text, textAlign: isRTL ? "right" : "left" },
+              ]}
+            >
+              {payment.note}
+            </Text>
           ) : null}
         </View>
-        <Text style={[styles.amount, { color: success }]}>
+        <Text style={[styles.amount, { color: tint }]}>
           {formatCurrency(payment.amountDisplayCurrency, payment.currency)}
         </Text>
       </Pressable>

@@ -188,6 +188,8 @@ export default function OptionsSheet({ visible, onClose }: Props) {
   }
 
   const isDark = colorScheme === "dark";
+  const isRTL = lang === "ar";
+  const rowDir = isRTL ? "row-reverse" : "row";
 
   return (
     <Modal
@@ -206,8 +208,8 @@ export default function OptionsSheet({ visible, onClose }: Props) {
           {/* ── Language + Color mode + Backup ── */}
           <>
             {/* Language */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleLabel}>
+            <View style={[styles.toggleRow, { flexDirection: rowDir }]}>
+              <View style={[styles.toggleLabel, { flexDirection: rowDir }]}>
                 <Feather name="globe" size={15} color={muted} />
                 <Text style={[styles.toggleLabelText, { color: text }]}>
                   {t("language")}
@@ -241,8 +243,8 @@ export default function OptionsSheet({ visible, onClose }: Props) {
             </View>
 
             {/* Color mode */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleLabel}>
+            <View style={[styles.toggleRow, { flexDirection: rowDir }]}>
+              <View style={[styles.toggleLabel, { flexDirection: rowDir }]}>
                 <Feather
                   name={isDark ? "moon" : "sun"}
                   size={15}
@@ -282,33 +284,33 @@ export default function OptionsSheet({ visible, onClose }: Props) {
 
             {/* Prices & Rates */}
             <Pressable
-              style={styles.toggleRow}
+              style={[styles.toggleRow, { flexDirection: rowDir }]}
               onPress={() => {
                 onClose();
                 router.push("/prices");
               }}
             >
-              <View style={styles.toggleLabel}>
+              <View style={[styles.toggleLabel, { flexDirection: rowDir }]}>
                 <Feather name="sliders" size={15} color={muted} />
                 <Text style={[styles.toggleLabelText, { color: text }]}>
                   {t("pricesRates")}
                 </Text>
               </View>
-              <Feather name="chevron-right" size={16} color={muted} />
+              <Feather name={isRTL ? "chevron-left" : "chevron-right"} size={16} color={muted} />
             </Pressable>
 
             <View style={[styles.divider, { backgroundColor: border }]} />
 
             {/* Backup & Restore */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleLabel}>
+            <View style={[styles.toggleRow, { flexDirection: rowDir }]}>
+              <View style={[styles.toggleLabel, { flexDirection: rowDir }]}>
                 <Feather name="archive" size={15} color={muted} />
                 <Text style={[styles.toggleLabelText, { color: text }]}>
                   {t("backupRestore")}
                 </Text>
               </View>
             </View>
-            <Text style={[styles.backupDesc, { color: muted }]}>
+            <Text style={[styles.backupDesc, { color: muted, textAlign: isRTL ? "right" : "left" }]}>
               {t("backupDesc")}
             </Text>
             {pendingData ? (
@@ -316,7 +318,7 @@ export default function OptionsSheet({ visible, onClose }: Props) {
                 <Text
                   style={[
                     styles.toggleLabelText,
-                    { color: text, marginBottom: 8 },
+                    { color: text, marginBottom: 8, textAlign: isRTL ? "right" : "left" },
                   ]}
                 >
                   {isStoredAppData(pendingData)
@@ -395,6 +397,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
     maxHeight: "70%",
+    maxWidth: 540,
+    width: "100%",
+    alignSelf: "center",
   },
 
   divider: { height: 1, marginVertical: 16 },
