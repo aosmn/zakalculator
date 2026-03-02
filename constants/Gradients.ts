@@ -16,7 +16,9 @@ export const G = {
   amber: ["#D97706", "#F59E0B"] as Gradient,
   pink: ["#DB2777", "#EC4899"] as Gradient,
   gold: ["#FBBF24", "#F59E0B"] as Gradient,
+  goldDark: ["#D97706", "#B45309"] as Gradient,
   silver: ["#D1D5DB", "#9CA3AF"] as Gradient,
+  silverDark: ["#64748B", "#475569"] as Gradient,
   silverAlt: ["#9CA3AF", "#6B7280"] as Gradient, // silver empty state
   indigo: ["#4F46E5", "#6366F1"] as Gradient, // cash breakdown card
   limeCyan: ["#84CC16", "#38CCDE"] as Gradient,

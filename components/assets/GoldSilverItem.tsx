@@ -1,3 +1,4 @@
+import { useColorScheme } from "@/components/useColorScheme";
 import { useThemeColor } from "@/components/Themed";
 import { G } from "@/constants/Gradients";
 import { useLanguage } from "@/context/LanguageContext";
@@ -28,6 +29,7 @@ export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
   const { lang } = useLanguage();
   const isRTL = lang === "ar";
   const isWeb = Platform.OS === "web";
+  const isDark = useColorScheme() === "dark";
   const {
     goldPricePerGram,
     silverPricePerGram,
@@ -76,7 +78,10 @@ export default function GoldSilverItem({ holding, onPress, onDelete }: Props) {
         )
       : silverValue(holding, silverPricePerGram);
 
-  const gradient = holding.type === "gold" ? G.gold : G.silver;
+  const gradient =
+    holding.type === "gold"
+      ? isDark ? G.goldDark : G.gold
+      : isDark ? G.silverDark : G.silver;
   const iconName: React.ComponentProps<typeof Feather>["name"] =
     holding.type === "gold" ? "star" : "disc";
 

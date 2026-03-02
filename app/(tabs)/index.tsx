@@ -1,3 +1,4 @@
+import { useColorScheme } from "@/components/useColorScheme";
 import { cardShadow, useThemeColor } from "@/components/Themed";
 import AddCurrencyModal from "@/components/assets/AddCurrencyModal";
 import AddMetalModal from "@/components/assets/AddMetalModal";
@@ -150,6 +151,9 @@ export default function AssetsScreen() {
   const muted = useThemeColor({}, "muted");
   const border = useThemeColor({}, "border");
   const chromeText = useThemeColor({}, "chromeText");
+  const isDark = useColorScheme() === "dark";
+  const goldGradient = isDark ? G.goldDark : G.gold;
+  const silverGradient = isDark ? G.silverDark : G.silverAlt;
 
   // Modals
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
@@ -410,7 +414,7 @@ export default function AssetsScreen() {
           <GradientButton
             label={t("addItem")}
             onPress={openAddGold}
-            colors={G.gold}
+            colors={goldGradient}
             style={styles.addBtnFull}
             textStyle={styles.addBtnText}
           />
@@ -418,7 +422,7 @@ export default function AssetsScreen() {
 
         {sortedGold.length === 0 ? (
           <SectionEmptyCard
-            gradient={G.gold}
+            gradient={goldGradient}
             icon="star"
             title={t("emptyGoldTitle")}
             description={t("emptyGoldDesc")}
@@ -478,7 +482,7 @@ export default function AssetsScreen() {
           <GradientButton
             label={t("addItem")}
             onPress={openAddSilver}
-            colors={G.silverAlt}
+            colors={silverGradient}
             style={styles.addBtnFull}
             textStyle={styles.addBtnText}
           />
@@ -486,7 +490,7 @@ export default function AssetsScreen() {
 
         {sortedSilver.length === 0 ? (
           <SectionEmptyCard
-            gradient={G.silverAlt}
+            gradient={silverGradient}
             icon="disc"
             title={t("emptySilverTitle")}
             description={t("emptySilverDesc")}
@@ -544,8 +548,8 @@ export default function AssetsScreen() {
       icon: "credit-card",
       gradient: G.tealCyan,
     },
-    { key: "gold", label: t("gold"), icon: "star", gradient: G.gold },
-    { key: "silver", label: t("silver"), icon: "disc", gradient: G.silverAlt },
+    { key: "gold", label: t("gold"), icon: "star", gradient: goldGradient },
+    { key: "silver", label: t("silver"), icon: "disc", gradient: silverGradient },
   ];
 
   return (
