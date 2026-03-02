@@ -41,37 +41,26 @@ export default function GroupTotalRow({
         end={{ x: 1, y: 1 }}
         style={styles.row}
       >
-        <LinearGradient
-          colors={
-            isWeb
-              ? ["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]
-              : gradient
-          }
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.iconWrap}
-        >
-          <Feather name={iconName} size={16} color="#fff" />
-        </LinearGradient>
+        <View style={[styles.iconLabelGroup]}>
+          <LinearGradient
+            colors={
+              isWeb
+                ? ["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]
+                : gradient
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconWrap}
+          >
+            <Feather name={iconName} size={16} color="#fff" />
+          </LinearGradient>
 
-        <View style={styles.left}>
-          <Text style={[styles.label, { textAlign: isRTL ? "right" : "left" }]}>
-            {label}
-          </Text>
-          {sub ? (
-            <Text style={[styles.sub, { textAlign: isRTL ? "right" : "left" }]}>
-              {sub}
-            </Text>
-          ) : null}
-          {zakah ? (
-            <Text
-              style={[styles.zakah, { textAlign: isRTL ? "right" : "left" }]}
-            >
-              {zakah}
-            </Text>
-          ) : null}
+          <View style={(styles.left, isWeb && { alignItems: "flex-start" })}>
+            <Text style={[styles.label]}>{label}</Text>
+            {sub ? <Text style={[styles.sub]}>{sub}</Text> : null}
+            {zakah ? <Text style={[styles.zakah]}>{zakah}</Text> : null}
+          </View>
         </View>
-
         <View style={styles.right}>
           <Text style={[styles.value, { textAlign: isRTL ? "left" : "right" }]}>
             {value}
@@ -139,5 +128,11 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     color: "rgba(255,255,255,0.6)",
     marginTop: 2,
+  },
+  iconLabelGroup: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
   },
 });

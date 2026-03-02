@@ -74,7 +74,7 @@ export default function PaymentsScreen() {
           textStyle={styles.addBtnText}
         />
 
-        <ScrollView contentContainerStyle={styles.list}>
+        <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
           {!hasAny && (
             <EmptyState
               message={t("noPayments")}
