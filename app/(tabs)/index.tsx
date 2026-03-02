@@ -5,6 +5,7 @@ import CurrencyItem from "@/components/assets/CurrencyItem";
 import GoldSilverItem from "@/components/assets/GoldSilverItem";
 import ConfirmDeleteSheet from "@/components/shared/ConfirmDeleteSheet";
 import GradientButton from "@/components/shared/GradientButton";
+import GroupByToggle from "@/components/shared/GroupByToggle";
 import GroupTotalRow from "@/components/shared/GroupTotalRow";
 import PricesCallout from "@/components/shared/PricesCallout";
 import { G } from "@/constants/Gradients";
@@ -372,31 +373,7 @@ export default function AssetsScreen() {
         )}
 
         {/* Grouping control */}
-        <View style={styles.groupingRow}>
-          <View style={[styles.segControl, { backgroundColor: border }]}>
-            {(["currency", "label"] as const).map((mode) => {
-              const active = balancesGroupMode === mode;
-              return (
-                <Pressable
-                  key={mode}
-                  style={[styles.seg, active && styles.segActive]}
-                  onPress={() => toggleBalancesGroup(mode)}
-                >
-                  <Text
-                    style={[
-                      styles.segText,
-                      { color: active ? chromeText : muted },
-                    ]}
-                  >
-                    {mode === "currency"
-                      ? t("groupByCurrency")
-                      : t("groupByLabel")}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+        <GroupByToggle value={balancesGroupMode} onChange={toggleBalancesGroup} />
 
         {sortedBalances.length === 0 ? (
           <SectionEmptyCard
@@ -847,28 +824,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // Balances grouping control
-  groupingRow: {
-    flexDirection: "row",
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  segControl: {
-    flexDirection: "row",
-    borderRadius: 24,
-    alignSelf: "flex-start",
-    padding: 3,
-  },
-  seg: {
-    paddingVertical: 7,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  segActive: {
-    backgroundColor: "#fff",
-  },
-  segText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
 
   // Group header with line
   groupHeaderRow: {
