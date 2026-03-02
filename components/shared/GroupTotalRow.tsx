@@ -1,9 +1,9 @@
-import { Feather } from "@expo/vector-icons";
 import { G } from "@/constants/Gradients";
 import { useLanguage } from "@/context/LanguageContext";
+import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 interface Props {
   label: string;
@@ -30,55 +30,62 @@ export default function GroupTotalRow({
 }: Props) {
   const { lang } = useLanguage();
   const isRTL = lang === "ar";
+  const isWeb = Platform.OS === "web";
 
   return (
     <>
-    {dividerTop && <View style={styles.divider} />}
-    <LinearGradient
-      colors={gradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.row}
-    >
+      {dividerTop && <View style={styles.divider} />}
       <LinearGradient
-        colors={["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]}
+        colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.iconWrap}
+        style={styles.row}
       >
-        <Feather name={iconName} size={16} color="#fff" />
+        <LinearGradient
+          colors={
+            isWeb
+              ? ["rgba(255,255,255,0.28)", "rgba(255,255,255,0.08)"]
+              : gradient
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.iconWrap}
+        >
+          <Feather name={iconName} size={16} color="#fff" />
+        </LinearGradient>
+
+        <View style={styles.left}>
+          <Text style={[styles.label, { textAlign: isRTL ? "right" : "left" }]}>
+            {label}
+          </Text>
+          {sub ? (
+            <Text style={[styles.sub, { textAlign: isRTL ? "right" : "left" }]}>
+              {sub}
+            </Text>
+          ) : null}
+          {zakah ? (
+            <Text
+              style={[styles.zakah, { textAlign: isRTL ? "right" : "left" }]}
+            >
+              {zakah}
+            </Text>
+          ) : null}
+        </View>
+
+        <View style={styles.right}>
+          <Text style={[styles.value, { textAlign: isRTL ? "left" : "right" }]}>
+            {value}
+          </Text>
+          {rightSub ? (
+            <Text
+              style={[styles.rightSub, { textAlign: isRTL ? "left" : "right" }]}
+            >
+              {rightSub}
+            </Text>
+          ) : null}
+        </View>
       </LinearGradient>
-
-      <View style={styles.left}>
-        <Text style={[styles.label, { textAlign: isRTL ? "right" : "left" }]}>
-          {label}
-        </Text>
-        {sub ? (
-          <Text style={[styles.sub, { textAlign: isRTL ? "right" : "left" }]}>
-            {sub}
-          </Text>
-        ) : null}
-        {zakah ? (
-          <Text style={[styles.zakah, { textAlign: isRTL ? "right" : "left" }]}>
-            {zakah}
-          </Text>
-        ) : null}
-      </View>
-
-      <View style={styles.right}>
-        <Text style={[styles.value, { textAlign: isRTL ? "left" : "right" }]}>
-          {value}
-        </Text>
-        {rightSub ? (
-          <Text
-            style={[styles.rightSub, { textAlign: isRTL ? "left" : "right" }]}
-          >
-            {rightSub}
-          </Text>
-        ) : null}
-      </View>
-    </LinearGradient>
-    {dividerBottom && <View style={styles.divider} />}
+      {dividerBottom && <View style={styles.divider} />}
     </>
   );
 }

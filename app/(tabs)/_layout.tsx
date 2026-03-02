@@ -38,7 +38,7 @@ function HeaderTitle({ color }: { color: string }) {
     <View style={headerStyles.container}>
       {isDark ? (
         <LinearGradient
-          colors={["rgba(255,255,255,0.90)", "rgba(255,237,213,0.80)"]}
+          colors={["#FFFFFF", "#FFEDD5"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={headerStyles.iconWrapDark}

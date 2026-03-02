@@ -77,7 +77,7 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
         <Pressable style={styles.overlay} onPress={onClose}>
           <KeyboardAvoidingView
             behavior="padding"
-            style={[styles.kav, { paddingBottom: insets.bottom }]}
+            style={styles.kav}
           >
             <Pressable
               style={[
@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 40,
     maxWidth: 540,
+    maxHeight: "90%",
     width: "100%",
     alignSelf: "center",
   },

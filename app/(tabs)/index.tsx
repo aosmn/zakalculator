@@ -858,11 +858,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignSelf: "flex-start",
     padding: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   seg: {
     paddingVertical: 7,
@@ -872,11 +867,6 @@ const styles = StyleSheet.create({
   },
   segActive: {
     backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
   },
   segText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
 
