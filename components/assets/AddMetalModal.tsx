@@ -147,7 +147,7 @@ export default function AddMetalModal({
               />
               <FormInput
                 label={t("labelField")}
-                placeholder="e.g. Gold Ring"
+                placeholder={t("metalLabelPlaceholder")}
                 value={label}
                 onChangeText={setLabel}
               />

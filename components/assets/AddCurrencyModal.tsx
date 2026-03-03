@@ -121,7 +121,7 @@ export default function AddCurrencyModal({ visible, editing, onClose }: Props) {
 
                 <FormInput
                   label={t("labelField")}
-                  placeholder="e.g. Savings Account"
+                  placeholder={t("labelPlaceholder")}
                   value={label}
                   onChangeText={setLabel}
                 />

@@ -13,6 +13,7 @@ export default function GroupByToggle({ value, onChange }: Props) {
   const muted = useThemeColor({}, "muted");
   const border = useThemeColor({}, "border");
   const chromeText = useThemeColor({}, "chromeText");
+  const card = useThemeColor({}, "card");
 
   return (
     <View
@@ -31,7 +32,7 @@ export default function GroupByToggle({ value, onChange }: Props) {
           return (
             <Pressable
               key={mode}
-              style={[styles.seg, active && styles.segActive]}
+              style={[styles.seg, active && { backgroundColor: card }]}
               onPress={() => onChange(mode)}
             >
               <Text
@@ -70,8 +71,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
   },
-  segActive: {
-    backgroundColor: "#fff",
-  },
-  segText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
+segText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
 });

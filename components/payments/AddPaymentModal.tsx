@@ -228,7 +228,7 @@ export default function AddPaymentModal({ visible, editing, onClose }: Props) {
                 </View>
                 <FormInput
                   label={t("noteOptional")}
-                  placeholder="e.g. Paid to charity X"
+                  placeholder={t("notePlaceholder")}
                   value={note}
                   onChangeText={setNote}
                 />

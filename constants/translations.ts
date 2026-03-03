@@ -30,13 +30,16 @@ export const en = {
   noGold: "No gold holdings yet.",
   noSilver: "No silver holdings yet.",
   emptyBalancesTitle: "Track Your Cash & Accounts",
-  emptyBalancesDesc: "Add bank accounts, cash savings, or any currency balance to calculate Zakah on your liquid assets.",
+  emptyBalancesDesc:
+    "Add bank accounts, cash savings, or any currency balance to calculate Zakah on your liquid assets.",
   addBalanceItem: "+ Add Balance",
   emptyGoldTitle: "Track Your Gold Holdings",
-  emptyGoldDesc: "Add your gold items by weight and purity (24k, 22k, 21k, 18k, etc.) to calculate their value and Zakah.",
+  emptyGoldDesc:
+    "Add your gold items by weight and purity (24k, 22k, 21k, 18k, etc.) to calculate their value and Zakah.",
   addGoldItem: "+ Add Gold Item",
   emptySilverTitle: "Track Your Silver Holdings",
-  emptySilverDesc: "Add your silver items by weight and purity to calculate their value and Zakah obligation.",
+  emptySilverDesc:
+    "Add your silver items by weight and purity to calculate their value and Zakah obligation.",
   addSilverItem: "+ Add Silver Item",
 
   // Overview screen
@@ -84,6 +87,7 @@ export const en = {
   editPayment: "Edit Payment",
   amount: "Amount",
   currency: "CURRENCY",
+  notePlaceholder: "e.g. Paid to charity X",
   noteOptional: "Note (optional)",
   date: "DATE",
   statusLabel: "STATUS",
@@ -126,6 +130,7 @@ export const en = {
   addCurrencyTitle: "Add Currency Holding",
   editCurrencyTitle: "Edit Currency Holding",
   labelField: "Label",
+  labelPlaceholder: "e.g. Savings Account",
   currencyField: "CURRENCY",
   add: "Add",
   update: "Update",
@@ -137,6 +142,7 @@ export const en = {
   goldOption: "Gold",
   silverOption: "Silver",
   weightGrams: "Weight (grams)",
+  metalLabelPlaceholder: "e.g. Gold Ring",
   purityKarats: "Purity (karats)",
   purityPercent: "Purity (%)",
 
@@ -243,10 +249,12 @@ export const ar: typeof en = {
   noGold: "لا توجد مقتنيات ذهب بعد.",
   noSilver: "لا توجد مقتنيات فضة بعد.",
   emptyBalancesTitle: "تتبّع نقدك وحساباتك",
-  emptyBalancesDesc: "أضف حساباتك المصرفية أو المدخرات النقدية لحساب زكاة أصولك السائلة.",
+  emptyBalancesDesc:
+    "أضف حساباتك المصرفية أو المدخرات النقدية لحساب زكاة أصولك السائلة.",
   addBalanceItem: "+ إضافة رصيد",
   emptyGoldTitle: "تتبّع مقتنياتك من الذهب",
-  emptyGoldDesc: "أضف قطع الذهب بالوزن والعيار (24، 22، 21، 18 قيراطاً...) لحساب قيمتها وزكاتها.",
+  emptyGoldDesc:
+    "أضف قطع الذهب بالوزن والعيار (24، 22، 21، 18 قيراطاً...) لحساب قيمتها وزكاتها.",
   addGoldItem: "+ إضافة ذهب",
   emptySilverTitle: "تتبّع مقتنياتك من الفضة",
   emptySilverDesc: "أضف قطع الفضة بالوزن والعيار لحساب قيمتها والزكاة الواجبة.",
@@ -295,10 +303,11 @@ export const ar: typeof en = {
   editPayment: "تعديل الدفعة",
   amount: "المبلغ",
   currency: "العملة",
+  notePlaceholder: "مثال: دفع لجمعية خيرية",
   noteOptional: "ملاحظة (اختياري)",
   date: "التاريخ",
   statusLabel: "الحالة",
-  statusPending: "معلّق",
+  statusPending: "قيد الانتظار",
   statusCompleted: "مكتمل",
   pendingPayments: "المدفوعات المعلّقة",
   completedPayments: "مكتملة",
@@ -336,6 +345,7 @@ export const ar: typeof en = {
   addCurrencyTitle: "إضافة رصيد عملة",
   editCurrencyTitle: "تعديل رصيد عملة",
   labelField: "التسمية",
+  labelPlaceholder: "مثال: حساب التوفير",
   currencyField: "العملة",
   add: "إضافة",
   update: "تحديث",
@@ -347,6 +357,7 @@ export const ar: typeof en = {
   goldOption: "ذهب",
   silverOption: "فضة",
   weightGrams: "الوزن (جرام)",
+  metalLabelPlaceholder: "مثال: خاتم ذهب",
   purityKarats: "النقاء (قيراط)",
   purityPercent: "النقاء (%)",
 
