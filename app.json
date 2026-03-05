@@ -15,7 +15,7 @@
     },
     "android": {
       "package": "com.zakalculator.app",
-      "versionCode": 2,
+      "versionCode": 4,
       "supportsTablet": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
