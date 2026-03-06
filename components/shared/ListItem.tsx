@@ -212,7 +212,7 @@ export default function ListItem({
                 {
                   justifyContent:
                     endItemsCount > 1 ? "space-between" : "center",
-                  alignItems: "flex-end",
+                  alignItems: "stretch",
                 },
               ]}
             >
@@ -246,9 +246,7 @@ export default function ListItem({
                 <Pressable
                   onPress={onDelete}
                   hitSlop={8}
-                  {...(enforceRTLStylesForWeb && {
-                    style: { alignItems: "flex-end" },
-                  })}
+                  style={{ alignSelf: "flex-end" }}
                 >
                   <Feather name="trash-2" size={15} color={danger} />
                 </Pressable>
@@ -293,7 +291,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   startCol: { flex: 1, justifyContent: "center", gap: 3 },
-  endCol: { alignItems: "flex-end" },
+  endCol: { flex: 1, alignItems: "flex-end" },
   topStartText: { fontSize: 12, fontFamily: "Inter_400Regular" },
   midStartText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
   bottomStartText: { fontSize: 13, fontFamily: "Inter_400Regular" },

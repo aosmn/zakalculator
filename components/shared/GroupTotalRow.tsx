@@ -55,10 +55,30 @@ export default function GroupTotalRow({
             <Feather name={iconName} size={16} color="#fff" />
           </LinearGradient>
 
-          <View style={(styles.left, isWeb && { alignItems: "flex-start" })}>
-            <Text style={[styles.label]}>{label}</Text>
-            {sub ? <Text style={[styles.sub]}>{sub}</Text> : null}
-            {zakah ? <Text style={[styles.zakah]}>{zakah}</Text> : null}
+          <View style={styles.left}>
+            <Text
+              style={[styles.label, , { textAlign: isRTL ? "right" : "left" }]}
+            >
+              {label}
+            </Text>
+            {sub ? (
+              <Text
+                style={[styles.sub, , { textAlign: isRTL ? "right" : "left" }]}
+              >
+                {sub}
+              </Text>
+            ) : null}
+            {zakah ? (
+              <Text
+                style={[
+                  styles.zakah,
+                  ,
+                  { textAlign: isRTL ? "right" : "left" },
+                ]}
+              >
+                {zakah}
+              </Text>
+            ) : null}
           </View>
         </View>
         <View style={styles.right}>
@@ -107,8 +127,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 4,
   },
-  left: { flex: 1 },
-  right: { alignItems: "flex-end" },
+  left: { flex: 1, alignItems: "stretch" },
+  right: { flex: 1, alignItems: "stretch" },
   label: { fontSize: 15, fontFamily: "Inter_700Bold", color: "#fff" },
   sub: {
     fontSize: 12,
@@ -122,7 +142,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginTop: 2,
   },
-  value: { fontSize: 20, fontFamily: "Inter_700Bold", color: "#fff" },
+  value: {
+    fontSize: 20,
+    fontFamily: "Inter_700Bold",
+    color: "#fff",
+  },
   rightSub: {
     fontSize: 12,
     fontFamily: "Inter_400Regular",
