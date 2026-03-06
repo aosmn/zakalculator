@@ -94,7 +94,7 @@ export default function GroupTotalRow({
   );
 
   const endText = (
-    <View style={styles.endTextWrap}>
+    <View>
       <Text
         numberOfLines={2}
         adjustsFontSizeToFit
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   iconLabelGroup: {
     flex: 1,
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     alignSelf: "flex-start",
     gap: 16,
   },
@@ -218,7 +218,6 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.6)",
   },
   zakah: { fontSize: 12, fontFamily: "Inter_500Medium", color: "#fff" },
-  endTextWrap: { flex: 1 },
   value: { fontSize: 20, fontFamily: "Inter_700Bold", color: "#fff" },
   valueVert: { fontSize: 24, fontFamily: "Inter_800ExtraBold", color: "#fff" },
   rightSub: {

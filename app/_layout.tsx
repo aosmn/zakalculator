@@ -8,11 +8,12 @@ import {
   Inter_700Bold,
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { ZakahProvider } from '@/context/ZakahContext';
@@ -44,7 +45,11 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
+    if (!loaded) return;
+    SplashScreen.hideAsync();
+    AsyncStorage.getItem('hasSeenIntro').then((val) => {
+      if (!val) router.replace('/intro');
+    });
   }, [loaded]);
 
   if (!loaded) return null;
@@ -68,6 +73,7 @@ function RootLayoutNav() {
         <View style={{ flex: 1, direction: lang === 'ar' ? 'rtl' : 'ltr' }}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="intro" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
           </Stack>
         </View>

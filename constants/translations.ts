@@ -215,6 +215,19 @@ export const en = {
   currencyNGN: "Nigerian Naira",
   currencyZAR: "South African Rand",
   currencyLKR: "Sri Lankan Rupee",
+
+  // Intro / onboarding
+  introWelcome: "Welcome to ZaKalculator",
+  introTagline: "The simplest way to calculate and track your Zakah.",
+  introGetStarted: "Get Started",
+  introFeature1Title: "Accurate Zakah Calculation",
+  introFeature1Desc: "Know exactly how much Zakah you owe based on Nisab and your total assets.",
+  introFeature2Title: "Track All Your Assets",
+  introFeature2Desc: "Add gold, silver, and cash balances — all converted to your base currency.",
+  introFeature3Title: "Multiple People",
+  introFeature3Desc: "Calculate Zakah separately for each family member in one place.",
+  introFeature4Title: "Payment History",
+  introFeature4Desc: "Log your payments and track what's been paid and what remains.",
 };
 
 export const ar: typeof en = {
@@ -401,6 +414,19 @@ export const ar: typeof en = {
   couldNotRead:
     "تعذّر قراءة الملف. تأكد من أنه نسخة احتياطية صالحة من زاكالكيولاتور.",
   importSuccess: "تمت استعادة البيانات بنجاح.",
+
+  // Intro
+  introWelcome: "مرحباً بك في زاكالكيولاتور",
+  introTagline: "أسهل طريقة لحساب زكاتك وتتبعها.",
+  introGetStarted: "ابدأ الآن",
+  introFeature1Title: "حساب دقيق للزكاة",
+  introFeature1Desc: "اعرف مقدار زكاتك بدقة بناءً على النصاب وإجمالي أصولك.",
+  introFeature2Title: "تتبع جميع أصولك",
+  introFeature2Desc: "أضف الذهب والفضة والأرصدة النقدية — كلها تُحوَّل إلى عملتك الأساسية.",
+  introFeature3Title: "أشخاص متعددون",
+  introFeature3Desc: "احسب الزكاة بشكل منفصل لكل فرد من أفراد العائلة في مكان واحد.",
+  introFeature4Title: "سجل المدفوعات",
+  introFeature4Desc: "سجّل مدفوعاتك وتتبع ما تم دفعه وما تبقى.",
 
   // Currency names
   currencyUSD: "دولار أمريكي",
