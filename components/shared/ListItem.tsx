@@ -56,6 +56,7 @@ export default function ListItem({
   const { lang } = useLanguage();
   const isRTL = lang === "ar";
   const isWeb = Platform.OS === "web";
+  const enforceRTLStylesForWeb = isRTL && isWeb;
   const card = useThemeColor({}, "card");
   const border = useThemeColor({}, "border");
   const text = useThemeColor({}, "text");
@@ -167,7 +168,7 @@ export default function ListItem({
                     styles.topStartText,
                     {
                       color: muted,
-                      textAlign: isWeb && isRTL ? "right" : "left",
+                      textAlign: enforceRTLStylesForWeb ? "right" : "left",
                     },
                   ]}
                 >
@@ -180,7 +181,7 @@ export default function ListItem({
                     styles.midStartText,
                     {
                       color: text,
-                      textAlign: isWeb && isRTL ? "right" : "left",
+                      textAlign: enforceRTLStylesForWeb ? "right" : "left",
                     },
                   ]}
                 >
@@ -193,7 +194,7 @@ export default function ListItem({
                     styles.bottomStartText,
                     {
                       color: muted,
-                      textAlign: isWeb && isRTL ? "right" : "left",
+                      textAlign: enforceRTLStylesForWeb ? "right" : "left",
                     },
                   ]}
                 >
@@ -211,8 +212,7 @@ export default function ListItem({
                 {
                   justifyContent:
                     endItemsCount > 1 ? "space-between" : "center",
-                  alignItems:
-                    isWeb && isWeb && isRTL ? "flex-start" : "flex-end",
+                  alignItems: "flex-end",
                 },
               ]}
             >
@@ -222,7 +222,7 @@ export default function ListItem({
                     styles.topEndText,
                     {
                       color: muted,
-                      textAlign: isWeb && isRTL ? "left" : "right",
+                      textAlign: enforceRTLStylesForWeb ? "left" : "right",
                     },
                   ]}
                 >
@@ -235,7 +235,7 @@ export default function ListItem({
                     styles.midEndText,
                     {
                       color: midEndColor ?? text,
-                      textAlign: isWeb && isRTL ? "left" : "right",
+                      textAlign: enforceRTLStylesForWeb ? "left" : "right",
                     },
                   ]}
                 >
@@ -243,7 +243,13 @@ export default function ListItem({
                 </Text>
               )}
               {onDelete != null && (
-                <Pressable onPress={onDelete} hitSlop={8}>
+                <Pressable
+                  onPress={onDelete}
+                  hitSlop={8}
+                  {...(enforceRTLStylesForWeb && {
+                    style: { alignItems: "flex-end" },
+                  })}
+                >
                   <Feather name="trash-2" size={15} color={danger} />
                 </Pressable>
               )}
@@ -270,6 +276,7 @@ const styles = StyleSheet.create({
   pressable: { borderRadius: 16, overflow: "hidden" },
   row: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "stretch",
     paddingHorizontal: 18,
     paddingTop: 18,
